@@ -1,0 +1,14 @@
+# Archivos auxiliares de LaTeX
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.synctex.gz
+
+# Carpeta de salida del compilador (opcional)
+output/
+build/
+
+# Archivos temporales del sistema
+.DS_Store
+Thumbs.db
