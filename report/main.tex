@@ -1,0 +1,76 @@
+\documentclass[a4paper,12pt]{report}
+
+% PACKAGES AND CONFIGURATIONS
+\input{packages}
+
+% HEADER AND FOOTER
+\pagestyle{fancy}
+\fancyhf{} 
+
+\setlength{\headheight}{42.25491pt}
+\addtolength{\topmargin}{-30.25491pt}
+
+\fancyhead[L]{\includegraphics[width=5cm]{images/default/logo_UPC_header.png}}
+\fancyhead[R]{Real-Time Optimal Trajectory Generation for Fixed-Wing UAVs}
+
+
+\renewcommand{\headrulewidth}{0.5pt} 
+
+\begin{document}
+
+%% - COVER PAGE - %%
+\newgeometry{left=2.5cm,bottom=0.1cm,textwidth=19cm}
+\pagestyle{empty}
+\begin{figure}[h]
+\includegraphics[width=6cm]{{images/default/logo_UPC_header.png}}
+\end{figure}
+\begin{wrapfigure}{r}{0.25\textwidth} 
+    \centering
+    \includegraphics[angle=90, width=0.08\textwidth]{images/default/bachelorfinalthesis.JPG}
+\end{wrapfigure}
+\phantom{abs}
+\vspace{1cm}
+\begin{center}
+\scalebox{2}{
+  \parbox{0.9\linewidth}{
+    \textcolor{RoyalBlue}{
+      Real-Time Optimal Trajectory Generation \\
+      for Fixed-Wing UAVs in Firefighting \\
+      Missions via Numerical Integration \\
+      and Constrained Optimization
+    }
+  }
+}
+\end{center}
+\vspace{1cm}
+\textbf{\scalebox{1.5}{{Document:}}}
+\vspace{0.5 cm} \\
+\scalebox{1.5}{\textcolor{RoyalBlue}{Report}} 
+\vspace{1cm}
+\textbf{\scalebox{1.5}{{Author:}}}
+\vspace{0.5 cm} \\
+\scalebox{1.5}{{\textcolor{RoyalBlue}{Abimael Campillo Simón}}}                      
+\vspace{1cm}
+\textbf{\scalebox{1.5}{{Director/Co-director:}}}
+\vspace{0.5 cm} \\
+\scalebox{1.5}{{\textcolor{RoyalBlue}{Prof.\ Dr.\ Alex Ferrer Ferre / Miguel Pareja Muñoz}}}                      
+\vspace{1cm}
+\textbf{\scalebox{1.5}{{Degree:}}}
+\vspace{0.5 cm} \\
+\scalebox{1.5}{{\textcolor{RoyalBlue}{Bachelor in Aerospace Technology Engineering}}}                 
+\vspace{1cm}
+\textbf{\scalebox{1.5}{{Examination session:}}}
+\vspace{0.5 cm} \\
+\scalebox{1.5}{{\textcolor{RoyalBlue}{Autumn 2025}}}     
+\restoregeometry
+
+%% - DOCUMENT - %%
+\chapter{Introduction}
+\onehalfspacing
+\lipsum[1-3]
+
+\section{Motivación}
+
+\lipsum[4]
+
+\end{document}
