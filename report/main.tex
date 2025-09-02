@@ -10,23 +10,26 @@
 \setlength{\headheight}{42.25491pt}
 \addtolength{\topmargin}{-30.25491pt}
 
-\fancyhead[L]{\includegraphics[width=5cm]{images/default/logo_UPC_header.png}}
-\fancyhead[R]{Real-Time Optimal Trajectory Generation for Fixed-Wing UAVs}
-
+\fancyhead[L]{\includegraphics[width=5.5cm]{images/default/logo_UPC_header.png}}
+\fancyhead[R]{Real-Time Optimal Trajectory \\ Generation for Fixed-Wing UAVs}
+\fancyfoot[C]{\thepage}
 
 \renewcommand{\headrulewidth}{0.5pt} 
 
+
+
+%% DOCUMENT %%
 \begin{document}
 
 %% - COVER PAGE - %%
-\newgeometry{left=2.5cm,bottom=0.1cm,textwidth=19cm}
+\newgeometry{left=2.5cm,bottom=0.1cm,textwidth=18cm}
 \pagestyle{empty}
 \begin{figure}[h]
 \includegraphics[width=6cm]{{images/default/logo_UPC_header.png}}
 \end{figure}
 \begin{wrapfigure}{r}{0.25\textwidth} 
     \centering
-    \includegraphics[angle=90, width=0.08\textwidth]{images/default/bachelorfinalthesis.JPG}
+    \includegraphics[angle=90, width=0.09\textwidth]{images/default/bachelorfinalthesis.JPG}
 \end{wrapfigure}
 \phantom{abs}
 \vspace{1cm}
@@ -61,16 +64,30 @@
 \vspace{1cm}\\
 \textbf{\scalebox{1.5}{{Examination session:}}}
 \vspace{0.5 cm} \\
-\scalebox{1.5}{{\textcolor{RoyalBlue}{Autumn 2025}}}     
+\scalebox{1.5}{{\textcolor{RoyalBlue}{Autumn 2025}}}
 \restoregeometry
 
 %% - DOCUMENT - %%
-\chapter{Introduction}
-\onehalfspacing
-\lipsum[1-3]
+\pagenumbering{roman}
+% INTRODUCTORY CHAPTERS
+\input{chapters/abstract}
+\input{chapters/acknoledgments}
+\input{chapters/preface}
 
-\section{Motivación}
+% TABLES OF CONTENTS, FIGURES AND TABLES
+\tableofcontents
+\listoffigures
+\listoftables
+\newpage
 
-\lipsum[4]
+% MAIN CONTENT
+\pagestyle{fancy}
+\pagenumbering{arabic}
+\input{chapters/preface}
+
+% REFERENCES
+\printbibliography[heading=bibintoc,title={References}]
+
+% APPENDICES
 
 \end{document}
