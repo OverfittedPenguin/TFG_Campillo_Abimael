@@ -3,8 +3,19 @@ This repository includes all the files of my final bachelor's degree thesis. Thi
 
 Included in the repository are two different folders: report and code. Inside the report folder, the user can find the latest version of the bachelor thesis report in PDF format, along with the source folder (src), which contains all the different LaTeX files. In the code folder, there is a main code file programmed in MATLAB, as well as other source code files inside a folder. 
 
+# INSTRUCTIONS OF USE
+TBD
+
+# CRONOGRAPH
 *July 2025* - Project's kick off.
+
 *August 2025* - Research and familiarisation with the mathematical formulation of the Optimal Control problem.
-*September 2025* - First wording of the thesis project and start of the src code.
+
+*September 2025* - First wording of the thesis project and start of the source code.
+
+# RELEASES
+TBD
 
 # LICENSE
+Real-Time Optimal Trajectory Generation for Fixed-Wing UAVs in Firefighting Missions via Numerical Integration and Constrained Optimization  © 2025 by Abimael Campilllo Simón is licensed under CC BY-NC-ND 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-nd/4.0/
+
