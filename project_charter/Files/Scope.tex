@@ -1,0 +1,87 @@
+\chapter{Scope}
+
+This section includes a brief description of the work-packages this thesis addressed along with the high-level deliverables of each \gls{wp}. This description follows a chronological order such that the work pipeline evolution is graduated according to the milestones of the project, also defined. Then, the not included points on this thesis are also remarked at the end of the section.
+
+\begin{itemize}
+    \item \textbf{\gls{wp} 0. Project Management.}
+    \begin{itemize}
+        \item Set-up of the workspace environment.
+        \item Wording of the different deliverables of the project.
+        \item Scheduling of the tasks and meetings. 
+        \item Wording of the minutes of meetings.
+        \item Version control of the code and all documents.
+        \item Environmental analysis and budget of the project.
+    \end{itemize}
+    \underline{\textbf{High-level deliverables:}} project charter, thesis' report (with appendices, environmental analysis and budget), developed code.
+    
+    \item \textbf{\gls{wp} 1. Literature review and theoretical background.}
+    \begin{itemize}
+        \item State-of-the-art of trajectory optimisation concepts, actual commercial, open-source and academic software used in optimal trajectory computation.
+        \item Identification of the actual research gaps.
+        \item Theoretical background about the optimal control problem and the direct and indirect approaches used to solve it.
+        \item Theoretical background on gradient descent techniques to solve optimisation problems by the simplification of the problem to an adjoint problem.
+    \end{itemize}
+    \underline{\textbf{High-level deliverables:}} state-of-the-art of actual situation in trajectory optimisation problems and, a theoretical background on the optimal control problem, gradient descent techniques and the adjoint problem.
+
+    \item \textbf{\gls{wp} 2. Implementation of benchmark problems.}
+    \begin{itemize}
+        \item Formulation of the flight mechanics associated to a vertical plane restricted flight trajectory and to a coordinated turn restricted in the horizontal plane.
+        \item Implementation and validation of a code that integrates the flight mechanics equations using a trapezoidal scheme in three different scenarios that would constitute the benchmark problems: a flight path that consists in an descent, cruise level-flight and an ascent; a restricted trajectory between two points A and B; a coordinated turn in an horizontal plane with a wind-field (adapted version of Zermelo's problem).
+        \item Implementation of a function that transforms a continuos trajectory in a discretised set of points and converts those relative points in absolute \gls{gps} coordinates, given an initial absolute \gls{gps} point (i.e. flight plan generator function).
+        \item Verification of the discretised solution with a real autopilot in a \gls{qhil} environment.
+        \end{itemize}
+    \underline{\textbf{High-level deliverables:}} the code associated to the three defined benchmark problems and the flight plan generator function and, the conclusions about the validation and verification processes.
+
+    \item \textbf{\gls{wp} 3. Implementation of the water-drop manoeuvre.}
+    \begin{itemize}
+        \item Requirements of the stakeholders of the project.
+        \item Formulation of the flight mechanics associated to a vertical plane water-drop manoeuvre, including discontinuous weight of the \gls{uav} during discharge and the aircraft operational limits.
+        \item Pre-processing, when needed, and formulation of the different constraints mentioned: \gls{dem}, \gls{nfz} and wind conditions. \footnote{Notice that the detected obstacles will be treated as \gls{nfz} and, therefore, its definition is not necessary. When the \gls{uav} detects a new obstacle on its flight path, the algorithm will receive a set of coordinates to treat it as a new \gls{nfz} and then optimal trajectory will be recomputed.}
+        \item Implementation and validation of a code capable of computing the optimal flight trajectory to perform the water-drop manoeuvre in a given set of initial conditions (aircraft dynamics and pre-defined constraints) and the \gls{gps} discharge point.
+        \item Implementation of changes, if needed, on the flight plan generator function and verification through \gls{qhil} for a minimum time flight trajectory.
+        \item Analysis of code performance for different set of constraints.
+        \end{itemize}
+    \underline{\textbf{High-level deliverables:}} the code associated to the water-drop manoeuvre, the flight plan generator function (if implemented changes). Conclusions about the validation and verification processes and code performance analysis.
+
+    \item \textbf{\gls{wp} 4. Implementation of a GO/NO-GO logic.}
+    \begin{itemize}
+        \item Implementation of a GO/NO-GO logic based on obtaining all the vertical plane flight trajectories for a set of headings and the actual dynamics of the aircraft.
+        \item Representation of all the plane associated trajectories in green (GO) or red (NO-GO) based on the aircraft actual dynamics.
+        \item Implementation of a function that choices the most suitable trajectory to descent, discharge and ascent safely within the aircraft operational limits.
+        \item Analysis of code performance.
+        \end{itemize}
+    \underline{\textbf{High-level deliverables:}} the code associated to GO/NO-GO logic, the flight plan generator function (if implemented changes). Conclusions about the verification process and code performance analysis.
+
+    \item \textbf{\gls{wp} 5. Code performance dedicated analysis.}
+    \begin{itemize}
+        \item Recapitulation and summary about code performance. 
+        \item Proposal of solutions, if needed, to improve code performance to get closer to real-time computation.
+        \item Comments about the feasibility for an embedded implementation on-board the \gls{uav}.
+        \end{itemize}
+    \underline{\textbf{High-level deliverables:}} overall analysis and description of the possible solutions to enhance the code performance towards a real-time computation or on-board implementation. 
+\end{itemize}
+
+In the following figure, a work breakdown structure can be seen to clarify the work-packages addressed by this project and the tasks related in each case according to an specific codification that will be used later on.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{Figures/WBS.png}
+    \caption{Work breakdown structure of the project, including all the work-packages and tasks. Own source.}
+    \label{fig: WBS}
+\end{figure}
+
+In addition, the following points will \textbf{not} be included on the project development:
+\begin{itemize}
+    \item The design of the \gls{uav} or its payloads, including any of the phases of the designing process.
+    \item A fully description of the systems on-board the \gls{uav} or its characteristics, when non-related to the aim of the project.
+    \item The execution of the computed trajectories in real flight missions or live hardware tests beyond the \gls{qhil} environment. 
+    \item The computation of flight trajectories for non-firefighting missions (p.e. search and rescue, surveillance, etc.). 
+    \item The assessment of environmental factors (e.g., turbulence, sensor noise, GPS drift) under real operational conditions.
+    \item The integration of the algorithm within the payloads on-board the \gls{uav} or on ground segment systems, including the interfacing of the trajectory generation module with other on-board systems (e.g. telemetry, propulsion control, payload actuators) or a ground control station.
+    \item Any low-level modification on the actual autopilot firmware, including inner-loop and outer-loop controllers reimplementation or modification.
+    \item A full real-time implementation of the algorithm on resource-constrained embedded hardware, including any type of sensor data fusion.
+    \item A high-fidelity modelling of the water-drop print, the fire plume or a shallow-water model of the fire environment.
+    \item A benchmarking against hard real-time constraints or performance guarantees under strict time budgets.
+    \item The certification of the provided algorithm according to regulations affecting critical software embedded in \gls{uas} (i.e. RTCA DO-178C and RTCA DO-254) or cybersecurity related regulations (i.e. RTCA DO-326A, RTCA DO-365A and RTCA DO-355A).
+    \item The migration of the code to the embedded system programming language (i.e C or C++).
+\end{itemize}

@@ -1,0 +1,151 @@
+
+%%%%%%%%%%%%%%%%% -------- BEGINNING DOCUMENT ---------%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[11pt]{report}
+\input{packages}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%-------- MARGINS BEGINNING  ---------%%%%%%%%%%%%%%%%%%%
+
+
+
+\setpapersize{A4}
+\setmargins{2.2cm}          % LEFT MARGIN
+{0cm}                       % UPPER MARGIN
+{16.5cm}                    % WIDTH OF THE TEXT
+{24.57cm}                   % HEIGHT OF THE TEXT
+{55pt}                      % HEIGHT OF THE HEADERS
+{1.25cm}                    % Space between the text and the headers
+{1pt}                       % Height of the foot of the page
+{0.5cm}                     % Space between the text and the foot of the                                page
+%% END MARGINS
+
+  
+                        
+%%%%%%%%%%%%%%%%%%% -------- END OF MARGINS ---------%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%% -------- DOCUMENT CONFIGURATION ---------%%%%%%%%%%%%%%%%%%%%
+
+%INTERLINE
+\spacing{1.5}
+
+%TABLE CONFIGURATIONS
+
+\captionsetup[table]{skip=10pt}
+
+\setlength{\tabcolsep}{20pt}
+\renewcommand{\arraystretch}{1.5}
+
+%HEADERS
+
+\pagestyle{fancy}
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \rhead{{\textbf{Real-Time Optimal Trajectory \\ Generation for Fixed-Wing UAVs}}}
+  \lhead{\includegraphics[width=5.5cm]{Figures/logo_eseiaat.png} }
+   \cfoot{\thepage}
+   }
+  
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%-------- BEGINNING OF THE COVER  ---------%%%%%%%%%%%%%
+
+\begin{document}
+\input{Files/Abbreviations}
+\renewcommand{\bibname}{References}
+\newgeometry{left=4.5cm,bottom=0.1cm,textwidth=19cm}
+\pagestyle{empty}
+\begin{figure}[h]
+\includegraphics[width=7cm]{Figures/logo_eseiaat.png}
+\end{figure}
+\begin{wrapfigure}{r}{0.25\textwidth} 
+    \centering
+    \includegraphics[angle=90, width=0.09\textwidth]{Figures/bachelorfinalthesis.JPG}
+\end{wrapfigure}
+\phantom{abs}
+\vspace{1cm}
+\begin{center}
+\scalebox{2}{
+  \parbox{0.9\linewidth}{
+    \textcolor{RoyalBlue}{
+      Real-Time Optimal Trajectory Generation \\
+      for Fixed-Wing UAVs in Firefighting \\
+      Missions via Numerical Integration \\
+      and Constrained Optimization
+    }
+  }
+}
+\end{center}
+\vspace{1cm}
+\textbf{\scalebox{1.5}{{Document:}}}
+\vspace{0.5 cm} \\
+\scalebox{1.5}{\textcolor{RoyalBlue}{Project Charter}} 
+\vspace{1cm}\\
+\textbf{\scalebox{1.5}{{Author:}}}
+\vspace{0.5 cm} \\
+\scalebox{1.5}{{\textcolor{RoyalBlue}{Abimael Campillo Simón}}}                      
+\vspace{1cm}\\
+\textbf{\scalebox{1.5}{{Director/Co-director:}}}
+\vspace{0.5 cm} \\
+\scalebox{1.5}{{\textcolor{RoyalBlue}{Prof.\ Dr.\ Alex Ferrer Ferre / Miguel Pareja Muñoz}}}                      
+\vspace{1cm}\\
+\textbf{\scalebox{1.5}{{Degree:}}}
+\vspace{0.5 cm} \\
+\scalebox{1.5}{{\textcolor{RoyalBlue}{Bachelor in Aerospace Technology Engineering}}}                 
+\vspace{1cm}\\
+\textbf{\scalebox{1.5}{{Examination session:}}}
+\vspace{0.5 cm} \\
+\scalebox{1.5}{{\textcolor{RoyalBlue}{Autumn 2025}}}
+\restoregeometry
+
+%%%%%%%%%%%%-------- END OF THE COVER ---------%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% White page
+\newpage
+
+\thispagestyle{empty}
+\phantom{abc}
+\vspace{9.5cm}
+\begin{center}
+INTENTIONALLY LEFT BLANK.
+\end{center}
+\newpage
+
+\pagestyle{fancy}
+\pagenumbering{Roman}
+
+
+
+% Contents
+\tableofcontents
+\listoffigures
+\listoftables
+\printglossaries
+
+
+\newpage
+%Sections
+
+\pagenumbering{arabic}
+
+\input{Files/Object}
+\newpage
+\input{Files/Scope}
+\newpage
+\input{Files/Requirements}
+\newpage
+\input{Files/Justification}
+\newpage
+\input{Files/Schedule}
+\newpage
+
+%bibliography
+
+\newpage
+\printbibliography
+
+
+\end{document}
