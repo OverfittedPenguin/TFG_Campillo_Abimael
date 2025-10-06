@@ -11,7 +11,9 @@ TBD
 
 *August 2025* - Research and familiarisation with the mathematical formulation of the Optimal Control problem.
 
-*September 2025* - First wording of the thesis project and start of the source code.
+*September 2025* -Benchmarking and thesis wording.
+
+*October 2025* - Project charter.
 
 # RELEASES
 TBD
