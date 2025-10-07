@@ -1,13 +1,50 @@
 \chapter{Requirements}
 
-List of the basic specifications and constraints that the student must consider that the final solution will have.
+This section includes the basic requirements and constraints that have been considered for this project development. Essentially, they have been divided into five different self-defined subsections or categories, as listed below. It has to be pinpointed that each requirement has an associated code in order to maintain traceability throughout all the project development.
 
-
-It can also include the most important specifications that limit the development of the project, such as, for example: \textbf{\textit{Software to be used, norms or regulations to be followed, work environment, etc. 
-}}
-
-\textbf{\underline{Important}}
 \begin{itemize}
-    \item Each of the requirements must be briefly explained, adding, if necessary, concrete examples of the project.
-    \item It should be noted that this section has to include the requirements about the project; in any case, knowledge or requirements that the student must have in order to carry out the project should be added.
+    \item \textbf{Software and Tools requirements.}
+    \begin{itemize}
+        \item \underline{REQ-ST-1:} The trajectory optimization algorithm shall be implemented in an open-source programming language (e.g. Python $\geq$ 3.10).
+        \item \underline{REQ-ST-2:} The numerical implementation shall use open-source scientific libraries, such asNumPy, SciPy, CasADi, Matplotlib, etc.
+        \item \underline{REQ-ST-3:} The source code and documentation shall be maintained using Git version control.
+        \item \underline{REQ-ST-4:} All high-level deliverables that are documents itself (report, project charter, appendices, budget and environmental impact) shall be written using LaTeX in Overleaf or in a local machine compiler. The source code must live on the Git repository for version control.
+        \item \underline{REQ-ST-5:} No proprietary software (e.g. MATLAB, AMPL) shall be used in the development.
+    \end{itemize}
+
+    \item \textbf{Numerics and Algorithmics requirements.}
+    \begin{itemize}
+        \item \underline{REQ-NA-1:} The flight dynamics shall be modelled using a point-mass approximation for fixed-wing UAVs in 2D (vertical) or planar (horizontal) motion, when needed.
+        \item \underline{REQ-NA-2:} The integration scheme used for the numerical solution of the equations of motion shall be chosen based on its numerical stability, accuracy, and computational efficiency, ensuring suitability for real-time or near real-time implementation.
+        \item \underline{REQ-NA-3:} The optimization shall rely on gradient-based methods, using either finite-difference or adjoint-based gradient computation.
+        \item \underline{REQ-NA-4:} The algorithm shall include environmental and operational constraints, such as \gls{dem}, \gls{nfz}s, wind fields and the operational limits of the aircraft (e.g. maximum bank angle, maximum turn radius, load factors and flight envelope).
+        \item \underline{REQ-NA-5:} The output trajectories shall be discretized and converted into \gls{gps} waypoints expressed in latitude, longitude, and altitude coordinates, ensuring compatibility with any autopilot flight plan format.
+        \item \underline{REQ-NA-6:} The system shall include a GO/NO-GO logic to assess trajectory feasibility based on \gls{uav} dynamic limits.
+    \end{itemize}
+
+    \item \textbf{Validation and Verification requirements.}
+    \begin{itemize}
+        \item \underline{REQ-VV-1:} The algorithm shall be verified through numerical benchmark problems, including descent–cruise–ascent, A to B trajectory, and horizontal Zermelo navigation.
+        \item \underline{REQ-VV-2:} The computed trajectories shall be validated in a \gls{qhil} setup using a real autopilot.
+        \item \underline{REQ-VV-3:} The validation and verification processes shall not involve real flight testing or live hardware execution.
+        \item \underline{REQ-VV-4:} The performance and correctness of the algorithm shall be assessed against known analytical or reference results when possible.
+    \end{itemize}
+
+    \item \textbf{Computational constraints.}
+    \begin{itemize}
+        \item \underline{REQ-CC-1:} All computations shall be feasible on a standard personal computer without GPU acceleration.
+        \item \underline{REQ-CC-2:} The algorithm shall balance numerical accuracy and computational efficiency, aiming for near real-time feasibility.
+        \item \underline{REQ-CC-3:} The code shall be modular and maintainable, allowing future optimization for embedded implementation, although such implementation is out of scope.
+        \item \underline{REQ-CC-4:} Execution times and convergence behaviour shall be analysed to assess code performance.
+    \end{itemize}
+
+    \item \textbf{Study constraints.}
+    \begin{itemize}
+        \item \underline{REQ-SC-1:} The project scope is limited to firefighting missions using fixed-wing UAVs.
+        \item \underline{REQ-SC-2:} The project shall exclude UAV design, propulsion, or payload development.
+        \item \underline{REQ-SC-3:} No modification of autopilot firmware or embedded system programming shall be conducted.
+        \item \underline{REQ-SC-4:} No real-time certified software compliance (e.g., DO-178C, DO-254) is required.
+        \item \underline{REQ-SC-5:} The project shall include an environmental impact assessment and budget analysis as part of the final deliverables.
+        \item \underline{REQ-SC-6:} The thesis shall be completed within the established academic timeline (i.e. January 12, 2026).
+    \end{itemize}
 \end{itemize}
