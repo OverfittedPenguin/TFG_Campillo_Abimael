@@ -1,12 +1,22 @@
-report/main.acn
-report/main.bbl
-report/main.blg
-report/main.bcf
-report/main.glo
-report/main.glsdefs
-report/main.ist
-report/main.lof
-report/main.toc
-report/main.lot
-report/main.nlo
-report/main.run.xml
+# LaTeX build artifacts
+*.aux
+*.log
+*.bbl
+*.blg
+*.bcf
+*.run.xml
+*.toc
+*.lof
+*.lot
+*.acn
+*.acr
+*.alg
+*.glg
+*.glo
+*.gls
+*.glsdefs
+*.ist
+*.nlo
+
+# Python virtual environment
+code/venv/
