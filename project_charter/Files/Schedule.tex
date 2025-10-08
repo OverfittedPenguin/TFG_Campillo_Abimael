@@ -2,87 +2,91 @@
 
 The following section includes a brief description of the tasks that can be seen on the work breakdown structure and how each task contributes to the achievement of the object of this project. Each description also includes a time estimation (in hours, h) of time required for its completion. Then, the dependencies between tasks is identified to produce a Gantt diagram, that can be seen at the end of the section. 
 
-\textcolor{red}{Tasks description including time estimation, dependencies table and explanation, Gantt diagram of WP and tasks and explanation}
-
 \section{Tasks description and dependencies}
 For each task, the description includes the main object, the time estimation (Time in h) and its dependencies with other tasks [Associated Tasks].
 
 \subsection*{\gls{wp} 0. Project Management.}
 \begin{itemize}
-    \item \textbf{0.1. Workspace environment (8 h) [--]:} Configuration of the workspace environment in local folders but using a cloud repository in GitHub. It also includes the configuration of the LaTeX documents (packages, layouts, etc.). 
+    \item \textbf{0.1. Workspace environment (5 h) [--]:} Configuration of the workspace environment in local folders but using a cloud repository in GitHub. It also includes the configuration of the LaTeX documents (packages, layouts, etc.). 
     
-    \item \textbf{0.2. Wording of the deliverables (100 h) [0.6/WP1/WP2/WP3/WP4/WP5]:} Wording of the thesis project charter, thesis report, appendices, budget, environmental impact and other related documents that could arise. 
+    \item \textbf{0.2. Wording of the deliverables (60 h) [0.6/WP1/WP2/WP3/WP4/WP5]:} Wording of the thesis project charter, thesis report, appendices, budget, environmental impact and other related documents that could arise. 
     
-    \item \textbf{0.3. Scheduling (8 h) [--]:} Identification of time dedication for each task. Gantt diagram production and task allocation on a calendar. The possible changes due to unforeseen circumstances are also considered part of this task. 
+    \item \textbf{0.3. Scheduling (6 h) [--]:} Identification of time dedication for each task. Gantt diagram production and task allocation on a calendar. The possible changes due to unforeseen circumstances are also considered part of this task. 
     
-    \item \textbf{0.4. Minutes of meetings (2.5 h) [--]:} Wording of the minutes of the meetings done within the development of the overall project. 
+    \item \textbf{0.4. Minutes of meetings (2 h) [--]:} Wording of the minutes of the meetings done within the development of the overall project. 
     
-    \item \textbf{0.5. Version control (2.5 h) [WP0/WP1/WP2/WP3/WP4/WP5]:} Git version control implementation on the repository. Also consists on commit modifications every time something (e.g. code, documents) change. 
+    \item \textbf{0.5. Version control (2 h) [WP0/WP1/WP2/WP3/WP4/WP5]:} Git version control implementation on the repository. Also consists on commit modifications every time something (e.g. code, documents) change. 
     
-    \item \textbf{0.6. Environmental impact analysis (12 h) [WP1/WP2/WP3/WP4/WP5]:} Production of an environmental impact analysis of the project once it is almost finished (i.e. when all the other \gls{wp}s are done). 
+    \item \textbf{0.6. Environmental impact analysis (8 h) [WP1/WP2/WP3/WP4/WP5]:} Production of an environmental impact analysis of the project once it is almost finished (i.e. when all the other \gls{wp}s are done). 
 \end{itemize}
 
 \subsection*{\gls{wp} 1. State-of-the-art and theoretical background.}
 \begin{itemize}
-    \item \textbf{1.1. State-of-the-art (X h) [--]:}
+    \item \textbf{1.1. State-of-the-art (15 h) [--]:} Investigation and reviewing of actual algorithms used in trajectory optimisation and analysis of the back-end used in existing tools, examining the advantages and disadvantages of each.
     
-    \item \textbf{1.2. Research gaps (X h) [--]:} 
+    \item \textbf{1.2. Research gaps (3 h) [1.1]:} From the state-of-the-art and actual tools, the research gaps have to be identified in order to understand which are the main features the algorithm that is going to be developed has to include.
     
-    \item \textbf{1.3. Optimal control problem review (X h) [--]:} 
+    \item \textbf{1.3. Optimal control problem review (13.5 h) [--]:} Mathematical review and understand of the optimal control problem and the equations associated for a general formulation and the use of direct and indirect approaches for solving the problem. This task also includes the formulation of the equations in optimal control notation and general optimisation notation, which means that general optimisation problems have also to be reviewed and understood.
     
-    \item \textbf{1.4. Gradient methods and adjoint problem review (X h) [--]:}  
+    \item \textbf{1.4. Gradient methods and adjoint problem review (13.5 h) [--]:} Mathematical review and understand of gradient methods applied for solving optimisation problems. Review of the adjoint problem and its application it is also included on this task.
 
 \end{itemize}
 
 \subsection*{\gls{wp} 2. Benchmark problems.}
 \begin{itemize}
-    \item \textbf{2.1. Flight mechanics (X h) [--]:}
+    \item \textbf{2.1. Flight mechanics (12 h) [--]:} Review of the equations of motion for an aircraft point mass model with restricted motion to vertical or horizontal plane. Mathematical formulation of the equations of motion for three different benchmark cases: descent-cruise-ascent flight; flight between two points A and B in a vertical plane and; coordinated turn under wind field between point A and B.
     
-    \item \textbf{2.2. Implementation and validation of benchmark problems (X h) [--]:} 
+    \item \textbf{2.2. Implementation and validation of benchmark problems (30 h) [1.3 / 1.4 / 2.1]:} Implementation of the equations of motion for an aircraft point mass model with restricted motion in a code program for three different benchmark cases: descent-cruise-ascent flight; flight between two points A and B in a vertical plane and; coordinated turn under wind field between point A and B. All three cases have to be validated. 
     
-    \item \textbf{2.3. Flight Plan Generator function (X h) [--]:} 
+    \item \textbf{2.3. Flight Plan Generator function (6 h) [2.2]:} Generation of a function that discretises the continuous trajectory into a set of waypoints, which converts the relative position into an absolute GPS position for a given initial point. The output of the function has to be in flight plan file format.
     
-    \item \textbf{2.4. Gradient methods and adjoint problem review (X h) [--]:}  
+    \item \textbf{2.4. \gls{qhil} verification for benchmark problems (12 h) [2.3]:} Planning and execution of verification tests under \gls{qhil} environment. This task may include planning, preparation, acceptance criteria definition and testing.
 
 \end{itemize}
 
 \subsection*{\gls{wp} 3. Water-drop manoeuvre.}
 \begin{itemize}
-    \item \textbf{3.1. Stakeholders requirements (X h) [--]:}
+    \item \textbf{3.1. Stakeholders requirements (2 h) [--]:} Identification of the requirements associated to the project of the company regarding the water-drop manoeuvre.
     
-    \item \textbf{3.2. Flight mechanics on the water-drop manoeuvre (X h) [--]:} 
+    \item \textbf{3.2. Flight mechanics on the water-drop manoeuvre (8 h) [--]:} Review of the equations of motion for an aircraft point mass model with restricted motion to vertical plane. Mathematical formulation of the equations of motion for the water-drop manoeuvre.
     
-    \item \textbf{3.3. Constraints handling and definition (X h) [--]:} 
+    \item \textbf{3.3. Constraints handling and definition (16 h) [--]:} Definition of the constraints the code will handle \gls{dem}, \gls{nfz}s, wind conditions and operational limits. Mathematical formulation inside the optimal control problem for all those constraints.
     
-    \item \textbf{3.4. Implementation and validation of the solution (X h) [--]:}  
+    \item \textbf{3.4. Implementation and validation of the solution (60 h) [3.1 / 3.2 / 3.3]:} Implementation of the equations of motion for an aircraft point mass model with restricted vertical plane motion in a code program for the water drop manoeuvre. Validation of the code using the water-drop manoeuvre itself or a benchmark problem from the previous \gls{wp}. 
 
-    \item \textbf{3.5. \gls{qhil} verification of the water-drop manoeuvre(X h) [--]:}  
+    \item \textbf{3.5. \gls{qhil} verification of the water-drop manoeuvre (12 h) [WP2 / 3.4]:} Planning and execution of verification tests under \gls{qhil} environment regarding the water-drop manoeuvre. This task may include planning, preparation, acceptance criteria definition and testing. 
 
-    \item \textbf{3.6. Code performance notes (X h) [--]:}  
+    \item \textbf{3.6. Code performance notes (8 h) [3.5]:}  Analysis of the code performance analysis. This task may include planning,definition of code performance criteria that has to be analysed and testing. 
 
 \end{itemize}
 \subsection*{\gls{wp} 4. GO / NO-GO logic.}
 \begin{itemize}
-    \item \textbf{4.1. Go / No-Go logic implementation (X h) [--]:}
+    \item \textbf{4.1. Go / No-Go logic implementation (20 h) [3.5]:} Implementation of a function that logically accepts or deny a solution regarding constraints compliance.
     
-    \item \textbf{4.2. Representation function (X h) [--]:} 
+    \item \textbf{4.2. Representation function (4 h) [4.1]:} Implementation of a function that represents in a plot the vertical planes and its trajectories in different colours when the trajectory its feasible (Go) and not feasible (No-Go) for a given set of headings and and initial altitude or point.
     
-    \item \textbf{4.3. Optimal Trajectory Choice function (X h) [--]:} 
+    \item \textbf{4.3. Optimal Trajectory Choice function (8 h) [4.1]:} Implementation of a function that selects the most optimal, but feasible, flight trajectory of a vertical plane or a combination of planes regarding the operational limits of the aircraft and an optimality criteria (e.g. minimum time, minimum fuel consumption, etc.).
     
-    \item \textbf{4.4. Code performance notes about the logic (X h) [--]:}  
+    \item \textbf{4.4. Code performance notes about the logic (16 h) [4.2 / 4.3]:} Analysis of the code performance analysis for different criteria (e.g. different initial conditions, different optimality conditions, etc.). This task may include planning,definition of code performance criteria that has to be analysed and testing.  
 
 \end{itemize}
 
 \subsection*{\gls{wp} 5. Code performance assessment.}
 \begin{itemize}
-    \item \textbf{5.1. Recapitulation of code performance (X h) [--]:}
+    \item \textbf{5.1. Recapitulation of code performance (6 h) [3.6 / 4.4]:} Summary of the conclusions about code performance as result of previous tasks 3.6 and 4.4.
     
-    \item \textbf{5.2. Enhancing performance (X h) [--]:} 
+    \item \textbf{5.2. Enhancing performance (6 h) [5.1]:} Conduct a research about what measures could be implemented for enhancing the critical points in code performance from previous task. 
     
-    \item \textbf{5.3. Embedded solution feasibility analysis ( X h) [--]:}
+    \item \textbf{5.3. Embedded solution feasibility analysis (6 h) [5.2]:} Description of the implementations that could be made to enhance code performance towards a real time embedded solution in a microcontroller.
 
 \end{itemize}
 
 \section{Gantt diagram}
+The following page includes a landscape Gantt diagram, including all the tasks listed above and with its dependencies mark on the Gantt. As can be seen, the timeline is in days and the dedication per day is, 2h per day on WP0, WP1, WP2 and WP4. For WP3 and WP5 the dedication is represented by 3h per day. In addition, it has to be pinpointed that the wording of the deliverables includes this project charter writing and is the only task, along WP4, that is carried out alongside other tasks.
 
-
+\begin{sidewaysfigure}
+    \centering
+    \includegraphics[width=\textwidth]{Figures/GANTT_DIAGRAM_COLORED.png}
+    \caption{Gantt diagram of the project Real-Time Optimal Trajectory Generation for Fixed-Wing UAVs. Own source.}
+    \label{fig: Gantt}
+\end{sidewaysfigure}
