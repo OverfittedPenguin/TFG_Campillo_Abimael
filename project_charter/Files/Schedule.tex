@@ -26,48 +26,44 @@ For each task, the description includes the main object, the time estimation (Ti
     
     \item \textbf{1.2. Research gaps (3 h) [1.1]:} From the state-of-the-art and actual tools, the research gaps have to be identified in order to understand which are the main features the algorithm that is going to be developed has to include.
     
-    \item \textbf{1.3. Optimal control problem review (13.5 h) [--]:} Mathematical review and understand of the optimal control problem and the equations associated for a general formulation and the use of direct and indirect approaches for solving the problem. This task also includes the formulation of the equations in optimal control notation and general optimisation notation, which means that general optimisation problems have also to be reviewed and understood.
-    
-    \item \textbf{1.4. Gradient methods and adjoint problem review (13.5 h) [--]:} Mathematical review and understand of gradient methods applied for solving optimisation problems. Review of the adjoint problem and its application it is also included on this task.
-
+    \item \textbf{1.3. Flight mechanics equations review (13.5 h) [--]:} Mathematical review and understand of the flight mechanics equations regarding vertical plane restricted trajectories for an aircraft. 
+    \item \textbf{1.4. Optimisation solvers review (13.5 h) [--]:} Mathematical review and understand of the different optimisation methods applied for solving optimisation problems in the existing open-source algorithms. 
 \end{itemize}
 
 \subsection*{\gls{wp} 2. Benchmark problems.}
 \begin{itemize}
-    \item \textbf{2.1. Flight mechanics (12 h) [--]:} Review of the equations of motion for an aircraft point mass model with restricted motion to vertical or horizontal plane. Mathematical formulation of the equations of motion for three different benchmark cases: descent-cruise-ascent flight; flight between two points A and B in a vertical plane and; coordinated turn under wind field between point A and B.
+    \item \textbf{2.1. VP Flight mechanics (6 h) [--]:} Mathematical formulation of the equations of motion for the benchmark problems defined: .
+
+    \item \textbf{2.2. Implementation of aircraft dynamics and trims (14 h) [2.1]:} Implementation of the equations in a code program, including the trim calculation for a given flight phase.
     
-    \item \textbf{2.2. Implementation and validation of benchmark problems (30 h) [1.3 / 1.4 / 2.1]:} Implementation of the equations of motion for an aircraft point mass model with restricted motion in a code program for three different benchmark cases: descent-cruise-ascent flight; flight between two points A and B in a vertical plane and; coordinated turn under wind field between point A and B. All three cases have to be validated. 
+    \item \textbf{2.3. Implementation and validation of benchmark problems (30 h) [1.3 / 1.4 / 2.2]:} Implementation of the equations of motion for an aircraft point mass model with restricted motion in a code program for three different benchmark cases. All cases have to be validated. 
     
-    \item \textbf{2.3. Flight Plan Generator function (6 h) [2.2]:} Generation of a function that discretises the continuous trajectory into a set of waypoints, which converts the relative position into an absolute GPS position for a given initial point. The output of the function has to be in flight plan file format.
+    \item \textbf{2.4. Flight Plan Generator function (6 h) [2.3]:} Generation of a function that discretises the continuous trajectory into a set of waypoints, which converts the relative position into an absolute GPS position for a given initial point. The output of the function has to be in flight plan file format.
     
-    \item \textbf{2.4. \gls{qhil} verification for benchmark problems (12 h) [2.3]:} Planning and execution of verification tests under \gls{qhil} environment. This task may include planning, preparation, acceptance criteria definition and testing.
+    \item \textbf{2.5. \gls{qhil} verification for benchmark problems (12 h) [2.4]:} Planning and execution of verification tests under \gls{qhil} environment. This task may include planning, preparation, acceptance criteria definition and testing.
 
 \end{itemize}
 
 \subsection*{\gls{wp} 3. Water-drop manoeuvre.}
 \begin{itemize}
-    \item \textbf{3.1. Stakeholders requirements (2 h) [--]:} Identification of the requirements associated to the project of the company regarding the water-drop manoeuvre.
+        \item \textbf{3.1. Problem definition (10 h) [--]:} Definition of the water-drop manoeuvre including all the relevant phases of the manoeuvre, its trim conditions for each phase and the operational limits affecting each phase.
     
-    \item \textbf{3.2. Flight mechanics on the water-drop manoeuvre (8 h) [--]:} Review of the equations of motion for an aircraft point mass model with restricted motion to vertical plane. Mathematical formulation of the equations of motion for the water-drop manoeuvre.
+    \item \textbf{3.2. Constraints definition and application (16 h) [3.1]:} Definition of the constraints the code will handle \gls{dem}, \gls{nfz}s, wind conditions. 
     
-    \item \textbf{3.3. Constraints handling and definition (16 h) [--]:} Definition of the constraints the code will handle \gls{dem}, \gls{nfz}s, wind conditions and operational limits. Mathematical formulation inside the optimal control problem for all those constraints.
-    
-    \item \textbf{3.4. Implementation and validation of the solution (60 h) [3.1 / 3.2 / 3.3]:} Implementation of the equations of motion for an aircraft point mass model with restricted vertical plane motion in a code program for the water drop manoeuvre. Validation of the code using the water-drop manoeuvre itself or a benchmark problem from the previous \gls{wp}. 
+    \item \textbf{3.3. Implementation and validation of the solution (60 h) [3.1 / 3.2]:} Implementation of the equations of motion for an aircraft point mass model with restricted vertical plane motion in a code program for the water drop manoeuvre. Validation of the code using the water-drop manoeuvre itself or a benchmark problem from the previous \gls{wp}. 
 
-    \item \textbf{3.5. \gls{qhil} verification of the water-drop manoeuvre (12 h) [WP2 / 3.4]:} Planning and execution of verification tests under \gls{qhil} environment regarding the water-drop manoeuvre. This task may include planning, preparation, acceptance criteria definition and testing. 
+    \item \textbf{3.4. \gls{qhil} verification of the water-drop manoeuvre (12 h) [WP2 / 3.4]:} Planning and execution of verification tests under \gls{qhil} environment regarding the water-drop manoeuvre. This task may include planning, preparation, acceptance criteria definition and testing. 
 
-    \item \textbf{3.6. Code performance notes (8 h) [3.5]:}  Analysis of the code performance analysis. This task may include planning,definition of code performance criteria that has to be analysed and testing. 
+    \item \textbf{3.5. Code performance notes (8 h) [3.5]:}  Analysis of the code performance analysis. This task may include planning,definition of code performance criteria that has to be analysed and testing. 
 
 \end{itemize}
 \subsection*{\gls{wp} 4. GO / NO-GO logic.}
 \begin{itemize}
-    \item \textbf{4.1. Go / No-Go logic implementation (20 h) [3.5]:} Implementation of a function that logically accepts or deny a solution regarding constraints compliance.
+    \item \textbf{4.1. Go / No-Go logic implementation (20 h) [3.4]:} Implementation of a function that logically accepts or deny a solution regarding constraints compliance.
     
     \item \textbf{4.2. Representation function (4 h) [4.1]:} Implementation of a function that represents in a plot the vertical planes and its trajectories in different colours when the trajectory its feasible (Go) and not feasible (No-Go) for a given set of headings and and initial altitude or point.
     
-    \item \textbf{4.3. Optimal Trajectory Choice function (8 h) [4.1]:} Implementation of a function that selects the most optimal, but feasible, flight trajectory of a vertical plane or a combination of planes regarding the operational limits of the aircraft and an optimality criteria (e.g. minimum time, minimum fuel consumption, etc.).
-    
-    \item \textbf{4.4. Code performance notes about the logic (16 h) [4.2 / 4.3]:} Analysis of the code performance analysis for different criteria (e.g. different initial conditions, different optimality conditions, etc.). This task may include planning,definition of code performance criteria that has to be analysed and testing.  
+    \item \textbf{4.3. Code performance notes about the logic (16 h) [4.2]:} Analysis of the code performance analysis for different criteria (e.g. different initial conditions, different optimality conditions, etc.). This task may include planning,definition of code performance criteria that has to be analysed and testing.  
 
 \end{itemize}
 
@@ -86,7 +82,7 @@ The following page includes a landscape Gantt diagram, including all the tasks l
 
 \begin{sidewaysfigure}
     \centering
-    \includegraphics[width=\textwidth]{Figures/GANTT_DIAGRAM_COLORED.png}
+    \includegraphics[width=0.95\textwidth]{Figures/GANTT_DIAGRAM.png}
     \caption{Gantt diagram of the project Real-Time Optimal Trajectory Generation for Fixed-Wing UAVs. Own source.}
     \label{fig: Gantt}
 \end{sidewaysfigure}

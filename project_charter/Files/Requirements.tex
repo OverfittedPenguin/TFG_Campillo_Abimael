@@ -14,17 +14,16 @@ This section includes the basic requirements and constraints that have been cons
 
     \item \textbf{Numerics and Algorithmics requirements.}
     \begin{itemize}
-        \item \underline{REQ-NA-1:} The flight dynamics shall be modelled using a point-mass approximation for fixed-wing UAVs in 2D (vertical) or planar (horizontal) motion, when needed.
+        \item \underline{REQ-NA-1:} The flight dynamics shall be modelled using a point-mass approximation for fixed-wing UAVs in 2D vertical restricted motion, when needed.
         \item \underline{REQ-NA-2:} The integration scheme used for the numerical solution of the equations of motion shall be chosen based on its numerical stability, accuracy, and computational efficiency, ensuring suitability for real-time or near real-time implementation.
-        \item \underline{REQ-NA-3:} The optimization shall rely on gradient-based methods, using either finite-difference or adjoint-based gradient computation.
-        \item \underline{REQ-NA-4:} The algorithm shall include environmental and operational constraints, such as \gls{dem}, \gls{nfz}s, wind fields and the operational limits of the aircraft (e.g. maximum bank angle, maximum turn radius, load factors and flight envelope).
-        \item \underline{REQ-NA-5:} The output trajectories shall be discretized and converted into \gls{gps} waypoints expressed in latitude, longitude, and altitude coordinates, ensuring compatibility with any autopilot flight plan format.
-        \item \underline{REQ-NA-6:} The system shall include a GO/NO-GO logic to assess trajectory feasibility based on \gls{uav} dynamic limits.
+        \item \underline{REQ-NA-3:} The algorithm shall include environmental and operational constraints, such as \gls{dem}, \gls{nfz}s, wind fields and the operational limits of the aircraft (e.g. maximum bank angle, maximum turn radius, load factors and flight envelope).
+        \item \underline{REQ-NA-4:} The output trajectories shall be discretized and converted into \gls{gps} waypoints expressed in latitude, longitude, and altitude coordinates, ensuring compatibility with any autopilot flight plan format.
+        \item \underline{REQ-NA-5:} The system shall include a GO/NO-GO logic to assess trajectory feasibility based on \gls{uav} dynamic limits.
     \end{itemize}
 
     \item \textbf{Validation and Verification requirements.}
     \begin{itemize}
-        \item \underline{REQ-VV-1:} The algorithm shall be verified through numerical benchmark problems, including descent–cruise–ascent, A to B trajectory, and horizontal Zermelo navigation.
+        \item \underline{REQ-VV-1:} The algorithm shall be verified through numerical benchmark problems, including all the manoeuvres especified by \gls{wp}2.
         \item \underline{REQ-VV-2:} The computed trajectories shall be validated in a \gls{qhil} setup using a real autopilot.
         \item \underline{REQ-VV-3:} The validation and verification processes shall not involve real flight testing or live hardware execution.
         \item \underline{REQ-VV-4:} The performance and correctness of the algorithm shall be assessed against known analytical or reference results when possible.
@@ -37,7 +36,7 @@ This section includes the basic requirements and constraints that have been cons
         \item \underline{REQ-CC-3:} The code shall be modular and maintainable, allowing future optimization for embedded implementation, although such implementation is out of scope.
         \item \underline{REQ-CC-4:} Execution times and convergence behaviour shall be analysed to assess code performance.
     \end{itemize}
-
+\newpage
     \item \textbf{Study constraints.}
     \begin{itemize}
         \item \underline{REQ-SC-1:} The project scope is limited to firefighting missions using fixed-wing UAVs.
