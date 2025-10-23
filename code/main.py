@@ -64,25 +64,26 @@ g = 9.81            # gravitational acceleration (m/s^2)
 wind_speed = [0, 0] # wind speed vector (m/s)
 
 # Aircraft parameters (USER INPUTS)
-bem = 2800.0        # basic empty mass (kg)
-fm = 200.0          # fuel mass (kg)
-pm = 1000.0         # payload mass (kg)
-SFC = 1.75          # specific fuel consumption (kg/(k·Wh))
+bem = 20.0        # basic empty mass (kg)
+fm = 0.0          # fuel mass (kg)
+pm = 0.0        # payload mass (kg)
+SFC = 0.0          # specific fuel consumption (kg/(k·Wh))
 AR = 7.0            # aspect ratio
-S = 28.0            # wing area (m²)
-b = 14.0            # wingspan (m)  
-c = 2.0             # mean aerodynamic chord (m)
+S = 0.778            # wing area (m²)
+b = 2.33            # wingspan (m)  
+c = 0.33             # mean aerodynamic chord (m)
 e = 1.78*(1 - 0.045 * AR**0.68) - 0.64  # Oswald efficiency factor (Raymer's correlation,1999)
+print(e)
 K = 1 / (np.pi * AR * e)  # induced drag factor
 
-CGx = -1.500        # CG position from datum (horizontal, +body X) (m)
-CGz = -1.500        # CG position from datum (verticak, +body Z) (m)
-CPwx = -0.500       # CP wing position from datum (horizontal, +body X) (m)
-CPwz = -0.200       # CP wing position from datum (vertical, +body Z) (m)
+CGx = -0.114        # CG position from datum (horizontal, +body X) (m)
+CGz = -0.0019        # CG position from datum (verticak, +body Z) (m)
+CPwx = -0.07717       # CP wing position from datum (horizontal, +body X) (m)
+CPwz = -0.176       # CP wing position from datum (vertical, +body Z) (m)
 DeltaX_WG = CPwx - CGx
 DeltaZ_WG = CPwz - CGz
 
-Iyy = 2.33          # body Y inertia (kg·m^2)
+Iyy = 3.99          # body Y inertia (kg·m^2)
 
 # Aerodynamic coefficients
 if switch_flaps == "F0":
@@ -98,18 +99,20 @@ elif switch_flaps == "F40":
     CL_alpha = 6.303
     CD_0 = 0.112
 
-CL_de = 1.500
+CL_de = 0.6
 
 # Pitching moment coefficients
 Cm_0 = -0.079
 Cm_alpha = -1.430
-Cm_de = -2.200
+Cm_de = -2.160
 
 # Propulsion parameters
-Dp = 1.930         # Proppeler's diameter (m)
+Dp = 0.381         # Proppeler's diameter (m)
 nEng = 2.0         # Number of engines (-)
 CTx = 0.000        # CT position form datum (horizontal, +body X) (m)
-CTz = -1.500       # CT position from datum (vertical, +body Z) (m)
+CTz = -0.176      # CT position from datum (vertical, +body Z) (m)
+DeltaX_T = CTx - CGx
+DeltaZ_T = CTz - CGz
 eps0 = 0.0         # Thrust line angle respect to fuselage center line (deg) 
 
 # -------------------------
@@ -152,12 +155,12 @@ def eom_3dof(t, state, ctrls=None, trimpars=None):
     CD = CD_0 + K * CL**2
 
     # Propulsive model (placeholder values used if not calling real prop routine)
-    T, Cm_dt = 5700.0, -1.500
+    Tmax = 120.0
     Cm = Cm_0 + Cm_alpha * alpha + Cm_de * ctrls['elevator']
 
     # Propulsive force
-    U = ctrls['throttle'] * T
-    Fb_prop = np.array([U, 0.0])
+    T = ctrls['throttle'] * Tmax
+    Fb_prop = np.array([T, 0.0])
 
     # Rotation matrices
     Rsb = np.array([  # body to stability (2D)
@@ -177,20 +180,20 @@ def eom_3dof(t, state, ctrls=None, trimpars=None):
     Fb_aero = q_bar * S * Cb_aero
 
     # Gravity in inertial frame is downward -> [0, -mass*g]; transform to body
-    Fb_grav = Rhb.T @ np.array([0.0, -mass * g])
+    Fb_grav = Rhb.T @ np.array([0.0, mass * g])
 
     # Moments (scalar in 2D, pitching about Y)
     Mb_aero = q_bar * S * c * Cm
-    Mb_prop = Cm_dt * q_bar * S * c
+    Mb_prop =  -T*DeltaZ_T
     Mb_total = Mb_aero + Mb_prop
 
     # Total forces
     Fb_total = Fb_aero + Fb_prop + Fb_grav
 
     # Equations of motion
-    u_dot = Fb_total[0] / mass
-    w_dot = Fb_total[1] / mass
-    q_dot = Mb_total / Iyy
+    u_dot = Fb_total[0] / mass - w*q
+    w_dot = Fb_total[1] / mass + u*q
+    q_dot = Mb_total / Iyy 
 
     # Kinematics
     theta_dot = q - theta_dot_trim
@@ -258,7 +261,7 @@ def trim_residuals(trim_vars):
 # -----------------------------
 
 # Trim constraints:
-trimpars = np.array([46,                    # [m/s] V_trim (desired speed),  # maqueta 46 kts
+trimpars = np.array([40,                    # [m/s] V_trim (desired speed),  # maqueta 46 kts
                      np.deg2rad(0.0),       # [deg -> rad] gamma_trim (flight path angle, rate-of-climb), 
                      np.deg2rad(0.0)])      # [deg -> rad] theta_dot_trim (pitch angle speed, pull-up),
 
@@ -312,7 +315,7 @@ sol = solve_ivp(
     t_span=(0, 100),
     y0=state0,
     t_eval=np.linspace(0, 100, 1000),
-    method='RK45', # 'RK45' 'Radau' 'BDF'
+    method='BDF', # 'RK45' 'Radau' 'BDF'
 )
 
 # -----------------------------
@@ -343,25 +346,11 @@ plt.title("Angular Rates (degrees/s)")
 plt.legend()
 
 plt.subplot(2, 2, 4)
-plt.plot(x, z, label="POS")
+plt.plot(t, x, label="x")
+plt.plot(t, z, label="z")
 plt.title("Position (m)")
 plt.legend()
 plt.gca().invert_yaxis()
 
 plt.tight_layout()
-
-backend = mpl.get_backend().lower()
-if backend == "agg" or os.environ.get("DISPLAY", "") == "":
-    out_file = "simulation_plot.png"
-    plt.savefig(out_file, dpi=200)
-    print(f"Non-interactive backend or no DISPLAY — saved plot to: {out_file}")
-else:
-    try:
-        plt.show()
-    except Exception:
-        out_file = "simulation_plot.png"
-        plt.savefig(out_file, dpi=200)
-        print(f"Show() failed — saved plot to: {out_file}")
-
-plt.close()
-
+plt.show()
