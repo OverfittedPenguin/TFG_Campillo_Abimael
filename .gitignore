@@ -20,3 +20,4 @@
 
 # Python virtual environment
 code/venv/
+code/__pycache__

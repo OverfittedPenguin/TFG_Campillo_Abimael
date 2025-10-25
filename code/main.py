@@ -4,38 +4,28 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
 from scipy.optimize import root
+from aircraft import Aircraft
+from atmosphere import Atmos
 
-def geopotential_altitude(h_geometric):
-    # Convert geometric altitude to geopotential altitude (m)
-    Re = 6371000.0
-    return Re * h_geometric / (Re + h_geometric)
+# AIRCRAFT CONFIG FILE PATH
+aircraft_file = "configs/FlyoxI_VI.json"
 
-def isa_atmosphere(h_m):
-    """
-    Return (T, P, rho) at geometric altitude h_m (meters) using
-    the troposphere ISA (0–11 km).
-    """
-    # Clip to valid range for this use-case
-    h_m = float(np.clip(h_m, 0.0, 11000.0))
+# ATMOSPHERE CONFIG FILE PATH
+atmos_file = "configs/Atmos.json"
 
-    # Constants
-    g0 = 9.80665        # m/s^2
-    R = 287.053         # J/(kg K)
-    P0 = 101325.0       # Pa
-    Temp_0 = 288.15     # K
-    L = -0.0065         # K/m (troposphere lapse rate, negative)
+# Validate that file exists
+if not os.path.isfile(aircraft_file):
+    raise FileNotFoundError(f"Aircraft JSON file not found at: {aircraft_file}")
+# Validate that file exists
+if not os.path.isfile(aircraft_file):
+    raise FileNotFoundError(f"Aircraft JSON file not found at: {aircraft_file}")
 
-    # Use geopotential altitude for small precision improvement
-    h_geo = geopotential_altitude(h_m)
+# Load aircraft
+aircraft = Aircraft.from_json(aircraft_file)
+atmos = Atmos.from_json(atmos_file)
+print("AIRCRAFT LOADED:", aircraft.name)
+print("ATMOS CONDITIONS LOADED.")
 
-    Temp = Temp_0 + L * h_geo
-    P = P0 * (Temp / Temp_0) ** (-g0 / (R * L))
-    rho = P / (R * Temp)
-    return Temp, P, rho
-
-def isa_density(h_m):
-    """Return density (kg/m^3) at geometric altitude h_m (meters)."""
-    return isa_atmosphere(h_m)[2]
 
 def propulsive_forces_moments(rho, V, n, Dp, nEng, CTx, CTz, Coeffs_Ct, eps0, AoA):
     """Return thrust T (N) and pitching thrust coefficient (Cm_dt) for given density, speed, rpm,
