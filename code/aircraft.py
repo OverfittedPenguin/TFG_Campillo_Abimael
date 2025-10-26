@@ -10,6 +10,7 @@ class Aircraft:
         PM: float,
         SFC: float,
         AR: float,
+        S: float,
         b: float,
         c: float,
         e: float,
@@ -37,8 +38,9 @@ class Aircraft:
         self.BEM = BEM
         self.FM = FM
         self.PM = PM
-        self.SFC = SFC
+        self.SFC = SFC / (3600*1000)
         self.AR = AR
+        self.S = S
         self.b = b
         self.c = c
         self.e = e
@@ -72,8 +74,10 @@ class Aircraft:
         self.CL_CD_F0 = self.LIFT_DRAG_COEFFS[0]
         self.CL_CD_F15 = self.LIFT_DRAG_COEFFS[1]
         self.CL_CD_F40 = self.LIFT_DRAG_COEFFS[2]
-        self.CLde = self.ELEVATOR_COEFFS[0]
-        self.Cmde = self.ELEVATOR_COEFFS[1]
+        self.Cm_0 = self.MOMENT_COEFFS[0]
+        self.Cm_alpha = self.MOMENT_COEFFS[1]
+        self.CL_de = self.ELEVATOR_COEFFS[0]
+        self.Cm_de = self.ELEVATOR_COEFFS[1]
 
         # Optional SPECS. Flight phases constraints.
         self.CRUISE_SPECS = np.array(CRUISE_SPECS) if CRUISE_SPECS is not None else None
@@ -98,3 +102,22 @@ class Aircraft:
             raise KeyError(f"Missing essential keys in AIRCRAFT JSON: {missing}")
 
         return cls(**data)
+    
+    def PROPULSIVE_FORCES_MOMENTS(self, V: float, n: float, rho: float, sigma:float, AOA: float):
+        # Advance ratio computation for RPS.
+        n_RPS = n / 60.0
+        J = V / (n_RPS * self.Dp)
+        eps = np.deg2rad(self.EPS0) - AOA
+
+        # Ct and efficiency for computed J.
+        Ct = self.THRUST_COEFFS[0] + self.THRUST_COEFFS[1]*J + self.THRUST_COEFFS[2]*J**2 + self.THRUST_COEFFS[3]*J**3
+        eta = self.EFFICIENCY_COEFFS[0] + self.EFFICIENCY_COEFFS[1]*np.log(J)
+
+        # Thrust and longitudinal torque.
+        T = self.nENG * eta * rho * sigma * n_RPS**2 * self.Dp**4 * Ct
+        M_T = -T * self.DeltaX_T * np.sin(np.radians(eps)) - T * self.DeltaZ_T * np.cos(np.radians(eps))
+        
+        # Power computation.
+        Cp = Ct * J / eta
+        P = (rho * sigma * n_RPS**3 * self.Dp**5 * Cp)
+        return T,M_T,P
