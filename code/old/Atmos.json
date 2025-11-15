@@ -1,0 +1,9 @@
+{
+    "GRAVITY_ACC": 9.81,
+    "SL_PRESS": 101325.0,
+    "SL_TEMP": 15.0,
+    "SL_RHO": 1.225,
+    "GRADIENT": -0.0065,
+    "AIR_CONSTANT": 287.053,
+    "WIND_SPEED": [0.0,0.0]
+}

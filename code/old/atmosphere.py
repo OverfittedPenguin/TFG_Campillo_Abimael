@@ -48,5 +48,10 @@ class Atmos:
             T = self.T0 + 273.15 + self.L * h
             P = self.P0 * (T / (273.15 + self.T0)) ** (-self.g / (self.R * self.L))
             rho = P / (self.R * T)
-
-            return rho
+            if h <= 914.0:
+                # Not correction applied below 914m (3000ft)
+                sigma = 1.0
+            else:
+                sigma = rho / self.rho0
+                
+            return rho, sigma

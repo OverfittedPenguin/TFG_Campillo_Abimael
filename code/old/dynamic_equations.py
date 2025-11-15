@@ -19,33 +19,6 @@ class DynEqs:
         at = self.atmos
         ctrls = self.control
 
-        if PHASE == "CRUISE":
-            n_RPM = ac.CRUISE_SPECS[4]
-            FLAPS = ac.CRUISE_SPECS[3]
-        elif PHASE == "CLIMB":    
-            n_RPM = ac.CLIMB_SPECS[4]
-            FLAPS = ac.CLIMB_SPECS[3]
-        elif PHASE == "DESCENT":
-            n_RPM = ac.DESCENT_SPECS[4]
-            FLAPS = ac.DESCENT_SPECS[3]
-        else:
-            raise TypeError(f"Flight phase doesn't met expected types CRUISE, CLIMB or DESCENT.")
-
-        if FLAPS == 0.0:
-            ac.CL_0 = ac.CL_CD_F0[0]
-            ac.CL_alpha = ac.CL_CD_F0[1]
-            ac.CD_0 = ac.CL_CD_F0[2]
-        elif FLAPS == 15.0:
-            ac.CL_0 = ac.CL_CD_F15[0]
-            ac.CL_alpha = ac.CL_CD_F15[1]
-            ac.CD_0 = ac.CL_CD_F15[2]
-        elif FLAPS == 40.0:
-            ac.CL_0 = ac.CL_CD_F40[0]
-            ac.CL_alpha = ac.CL_CD_F40[1]
-            ac.CD_0 = ac.CL_CD_F40[2]
-        else:
-            raise ValueError(f"Flaps set doesn't met expected values F0, F15 or F40.")
-
         # Unpack state.
         u, w, q, theta, x, z = state
 

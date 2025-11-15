@@ -61,8 +61,6 @@ class Aircraft:
         self.nENG = nENG
         self.EPS0 = EPS0
         self.Iyy = Iyy
-        self.FLAPS = 0.0
-        self.RPM = 6000
 
         # Conversion to arrays.
         self.LIFT_DRAG_COEFFS = np.array(LIFT_DRAG_COEFFS)
@@ -105,23 +103,21 @@ class Aircraft:
 
         return cls(**data)
     
-    def PROPULSIVE_FORCES_MOMENTS(self, V: float, n: float, rho: float, AOA: float):
+    def PROPULSIVE_FORCES_MOMENTS(self, V: float, n: float, rho: float, sigma:float, AOA: float):
         # Advance ratio computation for RPS.
-        # n_RPS = n / 60.0
-        # J = V / (n_RPS * self.Dp)
-        # eps = np.deg2rad(self.EPS0) - AOA
+        n_RPS = n / 60.0
+        J = V / (n_RPS * self.Dp)
+        eps = np.deg2rad(self.EPS0) - AOA
 
         # Ct and efficiency for computed J.
-        # Ct = self.THRUST_COEFFS[0] + self.THRUST_COEFFS[1]*J + self.THRUST_COEFFS[2]*J**2 + self.THRUST_COEFFS[3]*J**3
-        # eta = self.EFFICIENCY_COEFFS[0] + self.EFFICIENCY_COEFFS[1]*np.log(J)
+        Ct = self.THRUST_COEFFS[0] + self.THRUST_COEFFS[1]*J + self.THRUST_COEFFS[2]*J**2 + self.THRUST_COEFFS[3]*J**3
+        eta = self.EFFICIENCY_COEFFS[0] + self.EFFICIENCY_COEFFS[1]*np.log(J)
 
         # Thrust and longitudinal torque.
-        # T = self.nENG * eta * rho * sigma * n_RPS**2 * self.Dp**4 * Ct
-        # M_T = -T * self.DeltaX_T * np.sin(np.radians(eps)) - T * self.DeltaZ_T * np.cos(np.radians(eps))
+        T = self.nENG * eta * rho * sigma * n_RPS**2 * self.Dp**4 * Ct
+        M_T = -T * self.DeltaX_T * np.sin(np.radians(eps)) - T * self.DeltaZ_T * np.cos(np.radians(eps))
         
         # Power computation.
-        # Cp = Ct * J / eta
-        # P = (rho * sigma * n_RPS**3 * self.Dp**5 * Cp)
-        T = 5700.0
-        M_T = 0.0
-        return T,M_T
+        Cp = Ct * J / eta
+        P = (rho * sigma * n_RPS**3 * self.Dp**5 * Cp)
+        return T,M_T,P
