@@ -133,9 +133,9 @@ class NLP_CRUISE:
         if w0 != 0:
             # Final state. Inequality constraints.
             for k in range(len(w0)):
-                g_0.append(w_0[k] - w0[k])
-                lbg_0.append(0)
-                ubg_0.append(1e20)
+                g_0.append(w0[k] - w_0[k])
+                lbg_0.append(-1e20)
+                ubg_0.append(0)
 
         # FINAL STATE CONSTRAINTS
         w_f = w[9*(N-1):9*N]
@@ -146,9 +146,9 @@ class NLP_CRUISE:
         if wf != 0:
             # Final state. Inequality constraints.
             for k in range(len(wf)):
-                g_f.append(w_f[k] - wf[k])
-                lbg_f.append(0)
-                ubg_f.append(1e20)
+                g_f.append(wf[k] - w_f[k])
+                lbg_f.append(-1e20)
+                ubg_f.append(0)
 
         return [g_0, g_f], [lbg_0, lbg_f], [ubg_0, ubg_f]
 
