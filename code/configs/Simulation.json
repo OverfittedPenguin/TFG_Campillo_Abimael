@@ -1,5 +1,5 @@
 {
-    "TIME_INCREMENT": 1.714,
+    "TIME_INCREMENT": 1.4,
     "END_TIME": 60.0,
     "WIND_SPEED": [0.0,0.0],
     "INITIAL_GUESS": [24.8, 2.5, 0.0, 0.08, 0.0, -50.0, 18.0, 0.7, -0.98],

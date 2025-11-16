@@ -135,7 +135,7 @@ class NLP_CRUISE:
             for k in range(len(w0)):
                 g_0.append(w_0[k] - w0[k])
                 lbg_0.append(0)
-                ubg_0.append(0)
+                ubg_0.append(1e20)
 
         # FINAL STATE CONSTRAINTS
         w_f = w[9*(N-1):9*N]
@@ -148,7 +148,7 @@ class NLP_CRUISE:
             for k in range(len(wf)):
                 g_f.append(w_f[k] - wf[k])
                 lbg_f.append(0)
-                ubg_f.append(0)
+                ubg_f.append(1e20)
 
         return [g_0, g_f], [lbg_0, lbg_f], [ubg_0, ubg_f]
 
@@ -234,8 +234,8 @@ class NLP_CRUISE:
             # Weights assignation for gamma, gamma dot and controls.
             wg = 1.0
             wg_dot = 0.1
-            wdt = 0.1
-            wde = 0.1
+            wdt = 0
+            wde = 0
 
             # Actual and next states and functions.
             wi = w[9*k:9*(k+1)]
