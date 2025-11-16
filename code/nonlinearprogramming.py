@@ -131,7 +131,7 @@ class NLP_CRUISE:
         ubg_0 = []
 
         if w0 != 0:
-            # Final state. Equality constraints.
+            # Final state. Inequality constraints.
             for k in range(len(w0)):
                 g_0.append(w_0[k] - w0[k])
                 lbg_0.append(0)
@@ -144,7 +144,7 @@ class NLP_CRUISE:
         ubg_f = []
 
         if wf != 0:
-            # Final state. Equality constraints.
+            # Final state. Inequality constraints.
             for k in range(len(wf)):
                 g_f.append(w_f[k] - wf[k])
                 lbg_f.append(0)
