@@ -1,9 +1,6 @@
 import numpy as np
 import os
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-from scipy.integrate import solve_ivp
-from scipy.optimize import root
+import casadi as ca
 from aircraft import Aircraft
 from atmosphere import Atmos
 from nonlinearprogramming import NLP_CRUISE
@@ -25,17 +22,27 @@ atmos = Atmos.from_json(atmos_file)
 print("AIRCRAFT LOADED:", aircraft.name)
 print("ATMOS CONDITIONS LOADED.")
 
+class sim:
+    def __init__(self):
+        self.Vtp = 25
+        self.w0 = 0
+        self.wf = 0
+ 
+sim = sim()
+
 nlp = NLP_CRUISE()
-w = NLP_CRUISE.STATES_CONTROL_VECTOR(nlp.x,nlp.u,2)
-print(w)
-w1 = w[:9]
-w2 = w[9:18]
-print(w1, w2)
-f1 = NLP_CRUISE.DYNAMIC_EQUATIONS(w1,aircraft,atmos)
-f2 = NLP_CRUISE.DYNAMIC_EQUATIONS(w2,aircraft,atmos)
-print(f1,f2)
-g, lbg, ubg = NLP_CRUISE.DYNAMIC_CONSTRAINTS(w1[:7],w2[:7],f1[:7],f2[:7],0.2)
-print(g, lbg, ubg)
-print(len(g))
-print(len(lbg))
-print(len(ubg))
+w, lbx, ubx, g, lbg, ubg = NLP_CRUISE.CONSTRAINTS_AND_BOUNDS(nlp.x,nlp.u,[1, 1, 1, 1, 1, 1, 1, 1, 1], [2, 2, 2, 2, 2, 2, 2, 2, 2], 0.2, 50, aircraft, atmos, sim)
+J = NLP_CRUISE.COST_FUCNTIONAL(w,0.2,50,aircraft,atmos)
+
+nlp = {"x": ca.vertcat(w), "f": J, "g": ca.vertcat(*g)}
+
+solver = ca.nlpsol("solver", "ipopt", nlp)
+
+sol = solver(
+    x0 = np.zeros(50*9),
+    lbx = lbx,
+    ubx = ubx,
+    lbg = lbg,
+    ubg = ubg
+)
+
