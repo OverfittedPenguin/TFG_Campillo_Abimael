@@ -25,7 +25,7 @@ class NLP_CRUISE:
         return w
     
     @staticmethod
-    def DYNAMIC_EQUATIONS(w,ac,at):
+    def DYNAMIC_EQUATIONS(w,ac,at,sim):
         # States and control retrieving.
         x1 = w[0]
         x2 = w[1]
@@ -37,37 +37,23 @@ class NLP_CRUISE:
         u1 = w[7]
         u2 = w[8]
 
-        if ac.FLAPS == 0.0:
-            ac.CL_0 = ac.CL_CD_F0[0]
-            ac.CL_alpha = ac.CL_CD_F0[1]
-            ac.CD_0 = ac.CL_CD_F0[2]
-        elif ac.FLAPS == 15.0:
-            ac.CL_0 = ac.CL_CD_F15[0]
-            ac.CL_alpha = ac.CL_CD_F15[1]
-            ac.CD_0 = ac.CL_CD_F15[2]
-        elif ac.FLAPS == 40.0:
-            ac.CL_0 = ac.CL_CD_F40[0]
-            ac.CL_alpha = ac.CL_CD_F40[1]
-            ac.CD_0 = ac.CL_CD_F40[2]
-        else:
-            raise ValueError(f"Flaps set doesn't met expected values F0, F15 or F40.")
-
         # Computation of atmosphere parameters,
         # aerodynamic velocity and dynamic pressure.
-        rho = at.ISA_RHO(x5)
-        ua, wa = x1 - at.Wind[0], x2 - at.Wind[1]
+        rho = at.ISA_RHO(-x6)
+        ua, wa = x1 - sim.Wind[0], x2 - sim.Wind[1]
         alpha = np.arctan2(wa, ua)
         V = np.sqrt(ua**2 + wa**2)
         q_bar = 0.5*rho*V**2
 
         # AERODYNAMIC COEFFICIENTS
-        CL = ac.CL_0 + ac.CL_alpha * alpha + ac.CL_de * u1
+        CL = ac.CL_0 + ac.CL_alpha * alpha + ac.CL_de * u2
         CD = ac.CD_0 + ac.K * CL**2
-        Cm = ac.Cm_0 + ac.Cm_alpha * alpha + ac.Cm_de * u1
+        Cm = ac.Cm_0 + ac.Cm_alpha * alpha + ac.Cm_de * u2
 
         # PROPULSIVE FORCE AND MOMENT
-        T_max,M_T = ac.PROPULSIVE_FORCES_MOMENTS(V,ac.RPM,rho,alpha)
+        T_max,M_T_max = ac.PROPULSIVE_FORCES_MOMENTS(V,ac.RPM,rho,alpha)
         T = u1 * T_max
+        M_T = u1 * M_T_max
         Fb_prop = np.array([T, 0.0])
 
         # Rotation matrices from body axes to local horizon axes.
@@ -121,7 +107,7 @@ class NLP_CRUISE:
     @staticmethod
     def PATH_CONSTRAINTS(wi,at,sim):
         # TARGET POINT VELOCITY CONSTRAINT
-        ua, wa = wi[0] - at.Wind[0], wi[1] - at.Wind[1]
+        ua, wa = wi[0] - sim.Wind[0], wi[1] - sim.Wind[1]
         g_path = []
         lbg_path = []
         ubg_path = []
@@ -137,15 +123,15 @@ class NLP_CRUISE:
         return g_path, lbg_path, ubg_path
     
     @staticmethod
-    def INITIAL_FINAL_CONSTRAINTS(w,w0,wf,N):
-        # INITIAL STATE CONTSRAINTS
+    def FINAL_CONSTRAINTS(w,w0,wf,N):
+        # INITIAL STATE CONSTRAINTS
         w_0 = w[:9]
         g_0 = []
         lbg_0 = []
         ubg_0 = []
-        
+
         if w0 != 0:
-            # Initial state. Equality constraints.
+            # Final state. Equality constraints.
             for k in range(len(w0)):
                 g_0.append(w_0[k] - w0[k])
                 lbg_0.append(0)
@@ -180,11 +166,19 @@ class NLP_CRUISE:
         return lbx, ubx     
 
     @staticmethod
-    def CONSTRAINTS_AND_BOUNDS(x,u,lb,ub,dT,N,ac,at,sim):
+    def CONSTRAINTS_AND_BOUNDS(x,u,ac,at,sim):
+        dT = sim.dT
+        N = sim.Nodes
+        lb = ac.lb
+        ub = ac.ub
 
         # STATE AND CONTROL VECTOR
         w = NLP_CRUISE.STATES_CONTROL_VECTOR(x,u,N)
+        w0 = []
+        for k in range(N):
+            w0.append(sim.w0[0:9])
         
+        w0 = sum(w0, [])
         # DYNAMIC COSNTRAINTS HANDLING
         g_dyn = []
         lbg_dyn = []
@@ -193,8 +187,8 @@ class NLP_CRUISE:
         for k in range(N-1):
             wi = w[9*k:9*(k+1)]
             wj = w[9*(k+1):9*(k+2)]
-            fi = NLP_CRUISE.DYNAMIC_EQUATIONS(wi,ac,at)
-            fj = NLP_CRUISE.DYNAMIC_EQUATIONS(wj,ac,at)
+            fi = NLP_CRUISE.DYNAMIC_EQUATIONS(wi,ac,at,sim)
+            fj = NLP_CRUISE.DYNAMIC_EQUATIONS(wj,ac,at,sim)
             g, lbg, ubg = NLP_CRUISE.DYNAMIC_CONSTRAINTS(wi[:7],wj[:7],fi[:7],fj[:7],dT)
             g_dyn.append(g)
             lbg_dyn.append(lbg)
@@ -213,7 +207,7 @@ class NLP_CRUISE:
             ubg_path.append(ubg)
 
         # INITIAL AND FINAL STATE CONSTRAINTS HANDLING
-        g_0f, lbg_0f, ubg_0f = NLP_CRUISE.INITIAL_FINAL_CONSTRAINTS(w,sim.w0,sim.wf,N)
+        g_0f, lbg_0f, ubg_0f = NLP_CRUISE.FINAL_CONSTRAINTS(w,sim.w0,sim.wf,N)
 
         # SIMPLE BOUNDS FOR STATES AND CONTROL
         lbx, ubx = NLP_CRUISE.SIMPLE_BOUNDS(lb,ub,N)
@@ -227,23 +221,27 @@ class NLP_CRUISE:
         lbg = sum(lbg, [])
         ubg = sum(ubg, [])
 
-        return w, lbx, ubx, g, lbg, ubg
+        return w0, w, lbx, ubx, g, lbg, ubg
     
     @staticmethod
-    def COST_FUCNTIONAL(w,dT,N,ac,at):
+    def COST_FUCNTIONAL(w,ac,at,sim):
 
         J = 0
+        dT = sim.dT
+        N = sim.Nodes
 
         for k in range(N-1):
-            # Weights assignation for gamma and gamma dot.
-            wg = 1
+            # Weights assignation for gamma, gamma dot and controls.
+            wg = 1.0
             wg_dot = 0.1
+            wdt = 0.1
+            wde = 0.1
 
             # Actual and next states and functions.
             wi = w[9*k:9*(k+1)]
             wj = w[9*(k+1):9*(k+2)]
-            fi = NLP_CRUISE.DYNAMIC_EQUATIONS(wi,ac,at)
-            fj = NLP_CRUISE.DYNAMIC_EQUATIONS(wj,ac,at)
+            fi = NLP_CRUISE.DYNAMIC_EQUATIONS(wi,ac,at,sim)
+            fj = NLP_CRUISE.DYNAMIC_EQUATIONS(wj,ac,at,sim)
 
             # Alpha computation and theta retrieving.
             ai = np.arctan2(wi[1],wi[0])
@@ -259,7 +257,7 @@ class NLP_CRUISE:
             gi_dot = wi[2] - (fi[1]*wi[0] - fi[0]*wi[1]) / (wi[0]**2 + wi[1]**2)
             gj_dot = wj[2] - (fj[1]*wj[0] - fj[0]*wj[1]) / (wj[0]**2 + wj[1]**2)
 
-            # COST FUCNTIONAL (Minimisation of gamma and gamma dot)
-            J += dT/2 * (wg*(gi**2 + gj**2) + wg_dot*(gi_dot**2 + gj_dot**2))
+            # COST FUCNTIONAL (Minimisation of gamma, gamma dot and controls)
+            J += dT/2 * (wg*(gi**2 + gj**2) + wg_dot*(gi_dot**2 + gj_dot**2) + wde*(wi[8]**2 + wj[8]**2) + wdt*(wi[7]**2 + wj[7]**2))
 
         return J

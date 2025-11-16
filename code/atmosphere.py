@@ -10,7 +10,6 @@ class Atmos:
             SL_RHO: float,
             GRADIENT: float,
             AIR_CONSTANT: float,
-            WIND_SPEED: float,
         ):
             # PARAMETERS
             self.g = GRAVITY_ACC
@@ -19,7 +18,6 @@ class Atmos:
             self.rho0 = SL_RHO
             self.L = GRADIENT
             self.R = AIR_CONSTANT
-            self.Wind = WIND_SPEED
             self.REarth = 6371000.0
     
     @classmethod
@@ -31,7 +29,7 @@ class Atmos:
         # ESSENTIAL KEYS
         essential_keys = [
             "GRAVITY_ACC", "SL_PRESS", "SL_TEMP", "SL_RHO", "GRADIENT",
-            "AIR_CONSTANT", "WIND_SPEED"
+            "AIR_CONSTANT"
         ]
         missing = [k for k in essential_keys if k not in data]
         if missing:
