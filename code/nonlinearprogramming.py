@@ -40,7 +40,7 @@ class NLP_CRUISE:
         # Computation of atmosphere parameters,
         # aerodynamic velocity and dynamic pressure.
         rho = at.ISA_RHO(-x6)
-        ua, wa = x1 - sim.Wind[0], x2 - sim.Wind[1]
+        ua, wa = x1 - sim.wind[0], x2 - sim.wind[1]
         alpha = np.arctan2(wa, ua)
         V = np.sqrt(ua**2 + wa**2)
         q_bar = 0.5*rho*V**2
@@ -107,7 +107,7 @@ class NLP_CRUISE:
     @staticmethod
     def PATH_CONSTRAINTS(wi,at,sim):
         # TARGET POINT VELOCITY CONSTRAINT
-        ua, wa = wi[0] - sim.Wind[0], wi[1] - sim.Wind[1]
+        ua, wa = wi[0] - sim.wind[0], wi[1] - sim.wind[1]
         g_path = []
         lbg_path = []
         ubg_path = []
@@ -168,7 +168,7 @@ class NLP_CRUISE:
     @staticmethod
     def CONSTRAINTS_AND_BOUNDS(x,u,ac,at,sim):
         dT = sim.dT
-        N = sim.Nodes
+        N = sim.N
         lb = ac.lb
         ub = ac.ub
 
@@ -228,12 +228,12 @@ class NLP_CRUISE:
 
         J = 0
         dT = sim.dT
-        N = sim.Nodes
+        N = sim.N
 
         for k in range(N-1):
             # Weights assignation for gamma, gamma dot and controls.
             wg = 1.0
-            wg_dot = 0.1
+            wg_dot = 1.0
             wdt = 0
             wde = 0
 
@@ -258,6 +258,6 @@ class NLP_CRUISE:
             gj_dot = wj[2] - (fj[1]*wj[0] - fj[0]*wj[1]) / (wj[0]**2 + wj[1]**2)
 
             # COST FUCNTIONAL (Minimisation of gamma, gamma dot and controls)
-            J += dT/2 * (wg*(gi**2 + gj**2) + wg_dot*(gi_dot**2 + gj_dot**2) + wde*(wi[8]**2 + wj[8]**2) + wdt*(wi[7]**2 + wj[7]**2))
+            J += dT/2 * (wg*(gi**2 + gj**2) / np.deg2rad(12.0)**2 + wg_dot*(gi_dot**2 + gj_dot**2) / 0.1256**2 + wde*(wi[8]**2 + wj[8]**2) + wdt*(wi[7]**2 + wj[7]**2))
 
         return J
