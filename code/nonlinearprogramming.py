@@ -123,19 +123,18 @@ class NLP_CRUISE:
         return g_path, lbg_path, ubg_path
     
     @staticmethod
-    def FINAL_CONSTRAINTS(w,w0,wf,N):
+    def INITIAL_AND_FINAL_CONSTRAINTS(w,w0,wf,N):
         # INITIAL STATE CONSTRAINTS
         w_0 = w[:9]
         g_0 = []
         lbg_0 = []
         ubg_0 = []
 
-        if w0 != 0:
-            # Final state. Inequality constraints.
-            for k in range(len(w0)):
-                g_0.append(w0[k] - w_0[k])
-                lbg_0.append(-1e20)
-                ubg_0.append(0)
+        # Initial state. Equality constraints.
+        for k in range(len(w0)):
+            g_0.append(w_0[k] - w0[k])
+            lbg_0.append(0)
+            ubg_0.append(0)
 
         # FINAL STATE CONSTRAINTS
         w_f = w[9*(N-1):9*N]
@@ -144,10 +143,10 @@ class NLP_CRUISE:
         ubg_f = []
 
         if wf != 0:
-            # Final state. Inequality constraints.
+            # Final state. Equality constraints.
             for k in range(len(wf)):
-                g_f.append(wf[k] - w_f[k])
-                lbg_f.append(-1e20)
+                g_f.append(w_f[k] - wf[k])
+                lbg_f.append(0)
                 ubg_f.append(0)
 
         return [g_0, g_f], [lbg_0, lbg_f], [ubg_0, ubg_f]
@@ -207,7 +206,7 @@ class NLP_CRUISE:
             ubg_path.append(ubg)
 
         # INITIAL AND FINAL STATE CONSTRAINTS HANDLING
-        g_0f, lbg_0f, ubg_0f = NLP_CRUISE.FINAL_CONSTRAINTS(w,sim.w0,sim.wf,N)
+        g_0f, lbg_0f, ubg_0f = NLP_CRUISE.INITIAL_AND_FINAL_CONSTRAINTS(w,sim.w0,sim.wf,N)
 
         # SIMPLE BOUNDS FOR STATES AND CONTROL
         lbx, ubx = NLP_CRUISE.SIMPLE_BOUNDS(lb,ub,N)
@@ -233,9 +232,10 @@ class NLP_CRUISE:
         for k in range(N-1):
             # Weights assignation for gamma, gamma dot and controls.
             wg = 1.0
-            wg_dot = 1.0
-            wdt = 0
-            wde = 0
+            wg_dot = 0.15
+            wdt = 0.05
+            wde = 0.15      
+            de_max = ac.ub[8]
 
             # Actual and next states and functions.
             wi = w[9*k:9*(k+1)]
@@ -258,6 +258,5 @@ class NLP_CRUISE:
             gj_dot = wj[2] - (fj[1]*wj[0] - fj[0]*wj[1]) / (wj[0]**2 + wj[1]**2)
 
             # COST FUCNTIONAL (Minimisation of gamma, gamma dot and controls)
-            J += dT/2 * (wg*(gi**2 + gj**2) / np.deg2rad(12.0)**2 + wg_dot*(gi_dot**2 + gj_dot**2) / 0.1256**2 + wde*(wi[8]**2 + wj[8]**2) + wdt*(wi[7]**2 + wj[7]**2))
-
+            J += dT/2 * (wg*(gi**2 + gj**2) / np.deg2rad(12.0)**2 + wg_dot*(gi_dot**2 + gj_dot**2) / 0.1256**2) + wde*(wj[8] - wi[8])**2 / (sim.dT*de_max**2) + wdt*(wj[7] - wi[7])**2 / sim.dT
         return J
