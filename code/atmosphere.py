@@ -8,7 +8,7 @@ class Atmos:
             SL_PRESS: float,
             SL_TEMP: float,
             SL_RHO: float,
-            GRADIENT: float,
+            ATMOS_GRADIENT: float,
             AIR_CONSTANT: float,
         ):
             # PARAMETERS
@@ -16,7 +16,7 @@ class Atmos:
             self.P0 = SL_PRESS
             self.T0 = SL_TEMP
             self.rho0 = SL_RHO
-            self.L = GRADIENT
+            self.L = ATMOS_GRADIENT
             self.R = AIR_CONSTANT
             self.REarth = 6371000.0
     
@@ -28,7 +28,7 @@ class Atmos:
         
         # ESSENTIAL KEYS
         essential_keys = [
-            "GRAVITY_ACC", "SL_PRESS", "SL_TEMP", "SL_RHO", "GRADIENT",
+            "GRAVITY_ACC", "SL_PRESS", "SL_TEMP", "SL_RHO", "ATMOS_GRADIENT",
             "AIR_CONSTANT"
         ]
         missing = [k for k in essential_keys if k not in data]
@@ -38,11 +38,10 @@ class Atmos:
         return cls(**data)
     
     def ISA_RHO(self, h: float):
-            
             # Geopotential altitude correction.
             h = self.REarth * h / (self.REarth + h)
 
-            # Computation of density and its correction factor.
+            # Computation of air density.
             T = self.T0 + 273.15 + self.L * h
             P = self.P0 * (T / (273.15 + self.T0)) ** (-self.g / (self.R * self.L))
             rho = P / (self.R * T)

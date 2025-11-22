@@ -37,7 +37,7 @@ class Aircraft:
         self.BEM = BEM
         self.FM = FM
         self.PM = PM
-        self.SFC = SFC / (3600*1000)
+        self.SFC = SFC / 1000
         self.AR = AR
         self.S = S
         self.b = b
@@ -73,7 +73,7 @@ class Aircraft:
         self.ub = self.BOUNDS[1]
 
         # Extracting aerodynamic force and moments coefficients for 
-        # the differents flap configurations and for the elevator.
+        # different flap configurations and for the elevator.
         self.CL_CD_F0 = self.LIFT_DRAG_COEFFS[0]
         self.CL_CD_F15 = self.LIFT_DRAG_COEFFS[1]
         self.CL_CD_F40 = self.LIFT_DRAG_COEFFS[2]
@@ -86,7 +86,7 @@ class Aircraft:
         self.FLAPS = self.MISSION_SPECS[0]
         self.RPM = self.MISSION_SPECS[1]
 
-        # Aerodynamic coefficients eventually used.
+        # Aerodynamic coefficients that are going to be used.
         if self.FLAPS == 0.0:
             self.CL_0 = self.CL_CD_F0[0]
             self.CL_alpha = self.CL_CD_F0[1]

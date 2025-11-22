@@ -81,7 +81,7 @@ sol = solver(
 
 # RECONSTRUCTION OF STATE VECTOR THROUGH TIME
 x = sol['x'].full().flatten()
-t = np.linspace(0.0, sim.tF, sim.Nodes)
+t = np.linspace(0.0, sim.tF, sim.N)
 
 x1 = []
 x2 = []
@@ -93,7 +93,7 @@ x7 = []
 u1 = []
 u2 = []
 
-for k in range(sim.Nodes):
+for k in range(sim.N):
     idx = 9*k
     x1.append(x[idx])
     x2.append(x[idx + 1])
@@ -117,7 +117,7 @@ u1 = np.array(u1)
 u2 = np.array(u2)
 
 # Calcular alpha
-alpha = np.arctan2(x2 - sim.Wind[1], x1 - sim.Wind[0])
+alpha = np.arctan2(x2 - sim.wind[1], x1 - sim.wind[0])
 
 # PLOTS
 plt.plot(t,x1)
