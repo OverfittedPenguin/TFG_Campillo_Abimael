@@ -1,12 +1,12 @@
 import numpy as np
 import os
 import casadi as ca
-import matplotlib as mpl
-import matplotlib.pyplot as plt
 from aircraft import Aircraft
 from simulation import Sim
 from atmosphere import Atmos
 from nonlinearprogramming import NLP_CRUISE
+from plotterfunction import Plotter
+
 
 ###########################################################
 ##                  USER CONFIGURATION                   ##
@@ -75,6 +75,10 @@ sol = solver(
     ubg = ubg
 )
 
+# Retrieving of iterations values and objective value.
+iters = solver.stats()['iter_count']
+obj = solver.stats()['iterations']['obj']
+
 ###########################################################
 ##                     POSTPROCESS                       ##
 ###########################################################
@@ -105,7 +109,7 @@ for k in range(sim.N):
     u1.append(x[idx + 7])
     u2.append(x[idx + 8])
 
-# Convertir a numpy arrays
+# Arrays conversion.
 x1 = np.array(x1)
 x2 = np.array(x2)
 x3 = np.array(x3)
@@ -116,34 +120,62 @@ x7 = np.array(x7)
 u1 = np.array(u1)
 u2 = np.array(u2)
 
-# Calcular alpha
+# FORCES RECOSNTRUCTION
+Fxb_A = []
+Fzb_A = []
+Fxb_T = []
+Fxb_W = []
+Fzb_W = []
+for k in range(len(x1)):
+    # Computation of atmosphere parameters,
+    # aerodynamic velocity and dynamic pressure.
+    rho = atmos.ISA_RHO(-x6[k])
+    ua, wa = x1[k] - sim.wind[0], x2[k] - sim.wind[1]
+    alpha = np.arctan2(wa, ua)
+    V = np.sqrt(ua**2 + wa**2)
+    q_bar = 0.5*rho*V**2
+
+    # AERODYNAMIC COEFFICIENTS AND FORCES
+    CL = aircraft.CL_0 + aircraft.CL_alpha * alpha + aircraft.CL_de * u2[k]
+    CD = aircraft.CD_0 + aircraft.K * CL**2
+    Rsb = np.array([
+        [np.cos(alpha), np.sin(alpha)],
+        [-np.sin(alpha), np.cos(alpha)]
+    ])
+    Cb_aero = Rsb.T @ np.array([-CD, -CL])
+    Fb_aero = q_bar * aircraft.S * Cb_aero
+    Fxb_A.append(Fb_aero[0])
+    Fzb_A.append(Fb_aero[1])
+
+    # PROPULSIVE FORCE
+    T_max,M_T_max = aircraft.PROPULSIVE_FORCES_MOMENTS(V,aircraft.RPM,rho,alpha)
+    Fxb_T.append(u1[k] * T_max)
+
+    # WEIGHT
+    Rhb = np.array([
+        [np.cos(x4[k]), np.sin(x4[k])],
+        [-np.sin(x4[k]), np.cos(x4[k])]
+    ])
+    Fb_grav = Rhb.T @ np.array([0.0, x7[k] * atmos.g])
+    Fxb_W.append(Fb_grav[0])
+    Fzb_W.append(Fb_grav[1])
+
+
+Fxb = [a + b for a,b in zip(Fxb_A,Fxb_W)]
+
+# AoA RECONSTRUCTION
 alpha = np.arctan2(x2 - sim.wind[1], x1 - sim.wind[0])
 
 # PLOTS
-plt.plot(t,x1)
-plt.plot(t,x2)
-plt.show()
+path = "/home/abimael_campillo/Desktop/TFG_Campillo_Abimael/code/images/benchmark"
+Plotter.GENERATE_PLOT(t,np.column_stack((x1, x2)),["u","w"],["Time [s]", "Velocity [m/s]","Body velocities through time","VEL.png"],path)
+Plotter.GENERATE_PLOT(t,np.column_stack((x4, alpha)),[r"$\theta$",r"$\alpha$"],["Time [s]", "Angles [rad]","Pitch and AoA through time","ANGLES.png"],path)
+Plotter.GENERATE_PLOT(t,x7,"Mass",["Time [s]", "Mass [kg]","Aircraft's mass through time","MASS.png"],path) 
+Plotter.GENERATE_PLOT(t,np.column_stack((Fxb, Fxb_T)),["Aerodynamic + Weight", "Thrust"],["Time [s]", "Forces [N]","Body x-axis forces through time","FORCES_Xb.png"],path)
+Plotter.GENERATE_PLOT(t,np.column_stack((Fzb_A, Fzb_W)),["Aerodynamic", "Weight"],["Time [s]", "Forces [N]","Body z-axis forces through time","FORCES_Zb.png"],path)  
+Plotter.GENERATE_PLOT(t,u1,r"$\delta_T$",["Time [s]", "TPS [-]","Throttle position through time","CONTROL_dT.png"],path)
+Plotter.GENERATE_PLOT(t,u2,r"$\delta_e$",["Time [s]", "Elevator [rad]","Elevator deflection through time","CONTROL_de.png"],path)
+Plotter.GENERATE_PLOT(x5,-x6,"Trajectory",["Horizontal distance [m]", "Altitude AGL [m]","Aircraft's trajectory","TRAJECTORY.png"],path)
+Plotter.GENERATE_PLOT(np.linspace(0,iters+1,iters+1),np.array(obj),"Objective cost",["Iterations [-]", "Cost objective [-]", "Cost evolution through solver iterations", "COST.png"], path)
 
-plt.plot(t,x3)
-plt.show()
 
-plt.plot(t,x4)
-plt.plot(t,alpha)
-plt.show()
-
-plt.plot(t,x5)
-plt.plot(t,-x6)
-plt.show()
-
-plt.plot(t,x7)
-plt.show()
-
-plt.plot(t,u1)
-plt.show()
-
-plt.plot(t,u2)
-plt.show()
-
-plt.plot(x5,-x6)
-
-print(x1[sim.N-1])
