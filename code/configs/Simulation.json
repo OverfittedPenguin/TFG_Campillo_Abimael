@@ -1,7 +1,7 @@
 {
     "END_TIME": 50.0,
     "N": 100,
-    "INITIAL_STATE": [25.0, 2.0, 0.0, 0.075, 0.0, -50.0, 20.0, 1.0, -0.1],
+    "INITIAL_STATE": [25.0, 2.0, 0.0, 0.08, 0.0, -50.0, 20.0, 1.0, -0.065],
     "END_TIME_CONSTRAINTS": 0.0,
     "ADDITIONAL_CONSTRAINTS": [25.0],
     "WIND_SPEED": [0.0,0.0],
