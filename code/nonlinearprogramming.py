@@ -231,11 +231,12 @@ class NLP_CRUISE:
 
         for k in range(N-1):
             # Weights assignation for gamma, gamma dot and controls.
-            wg = 1.0
-            wg_dot = 0.15
-            wdt = 0.05
-            wde = 0.15      
-            de_max = ac.ub[8]
+            wg = 0.75
+            wh = 0.50
+            wg_dot = 0.75
+            wdt = 0.25
+            wde = 0.10   
+            de_max = np.deg2rad(12.0)
 
             # Actual and next states and functions.
             wi = w[9*k:9*(k+1)]
@@ -257,6 +258,11 @@ class NLP_CRUISE:
             gi_dot = wi[2] - (fi[1]*wi[0] - fi[0]*wi[1]) / (wi[0]**2 + wi[1]**2)
             gj_dot = wj[2] - (fj[1]*wj[0] - fj[0]*wj[1]) / (wj[0]**2 + wj[1]**2)
 
+            # Altitude computation.
+            hi = -wi[5]
+            hj = -wj[5]
+            href = -sim.w0[5]
+
             # COST FUCNTIONAL (Minimisation of gamma, gamma dot and controls)
-            J += dT/2 * (wg*(gi**2 + gj**2) / np.deg2rad(12.0)**2 + wg_dot*(gi_dot**2 + gj_dot**2) / 0.1256**2) + wde*(wj[8] - wi[8])**2 / (sim.dT*de_max**2) + wdt*(wj[7] - wi[7])**2 / sim.dT
-        return J
+            J += dT/2 * (wg*(gi**2 + gj**2) / np.deg2rad(12.0)**2 + wg_dot*(gi_dot**2 + gj_dot**2) / 0.1256**2  + wh*((hi - href)**2 / href**2 + (hj - href)**2 / href**2)) + wde*(wj[8] - wi[8])**2 / (sim.dT*de_max**2) + wdt*(wj[7] - wi[7])**2 / sim.dT 
+        return J 

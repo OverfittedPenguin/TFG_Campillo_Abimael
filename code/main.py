@@ -145,3 +145,5 @@ plt.plot(t,u2)
 plt.show()
 
 plt.plot(x5,-x6)
+
+print(x1[sim.N-1])
