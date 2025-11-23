@@ -34,5 +34,6 @@ class Plotter:
 
         # Save to indicated path.
         plt.savefig(os.path.join(path, titles[3]))
+        plt.close()
 
         
