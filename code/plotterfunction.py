@@ -4,12 +4,13 @@ import os
 
 class Plotter:
     def GENERATE_PLOT(x,y,varsname,titles,path):
-        # Create figure and assign size.
+        # Create figure and assign its size.
         plt.figure(figsize=(9,6))
 
         # Define greyscale colours and linestyles.
         linestyles = ['-', '--', '-.']    
         colors = [(0,0,0), (0.25,0.25,0.25), (0.64,0.64,0.64)]
+
         if y.ndim == 1:
             # Unique y set of vars.
             vars = 1
@@ -30,6 +31,8 @@ class Plotter:
         plt.minorticks_on()
         plt.grid(which='minor', linestyle=':', linewidth=0.5, color='gray', alpha=0.5)
         plt.tight_layout()
+
+        # Save to indicated path.
         plt.savefig(os.path.join(path, titles[3]))
 
         

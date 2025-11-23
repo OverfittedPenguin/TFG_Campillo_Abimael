@@ -73,7 +73,7 @@ class Aircraft:
         self.ub = self.BOUNDS[1]
 
         # Extracting aerodynamic force and moments coefficients for 
-        # different flap configurations and for the elevator.
+        # different flap configurations and for elevator contribution.
         self.CL_CD_F0 = self.LIFT_DRAG_COEFFS[0]
         self.CL_CD_F15 = self.LIFT_DRAG_COEFFS[1]
         self.CL_CD_F40 = self.LIFT_DRAG_COEFFS[2]
@@ -122,7 +122,7 @@ class Aircraft:
         return cls(**data)
     
     def PROPULSIVE_FORCES_MOMENTS(self, V: float, n: float, rho: float, AOA: float):
-        # Advance ratio computation for RPS.
+        # Advance ratio computation using RPS.
         n_RPS = n / 60.0
         J = V / (n_RPS * self.Dp)
         eps = np.deg2rad(self.EPS0) - AOA

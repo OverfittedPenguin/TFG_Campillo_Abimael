@@ -9,8 +9,8 @@ class Sim:
             END_TIME: float,
             N: list,
             INITIAL_STATE: list,
-            ADDITIONAL_CONSTRAINTS: list,
             END_TIME_CONSTRAINTS: list,
+            ADDITIONAL_CONSTRAINTS: list,
             WIND_SPEED: list,
             AIRCRAFT_FILE: str
         ):
@@ -20,10 +20,8 @@ class Sim:
             self.dT = self.tF / N
     
             self.w0 = INITIAL_STATE
-
             self.CONSTRAINTS = np.array(ADDITIONAL_CONSTRAINTS)
             self.Vtp = self.CONSTRAINTS[0]
-
             self.wf = END_TIME_CONSTRAINTS
 
             self.wind = WIND_SPEED

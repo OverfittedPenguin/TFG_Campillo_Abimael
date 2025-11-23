@@ -28,8 +28,8 @@ class Atmos:
         
         # ESSENTIAL KEYS
         essential_keys = [
-            "GRAVITY_ACC", "SL_PRESS", "SL_TEMP", "SL_RHO", "ATMOS_GRADIENT",
-            "AIR_CONSTANT"
+            "GRAVITY_ACC", "SL_PRESS", "SL_TEMP", 
+            "SL_RHO", "ATMOS_GRADIENT", "AIR_CONSTANT"
         ]
         missing = [k for k in essential_keys if k not in data]
         if missing:
@@ -41,7 +41,7 @@ class Atmos:
             # Geopotential altitude correction.
             h = self.REarth * h / (self.REarth + h)
 
-            # Computation of air density.
+            # Computation of air's density.
             T = self.T0 + 273.15 + self.L * h
             P = self.P0 * (T / (273.15 + self.T0)) ** (-self.g / (self.R * self.L))
             rho = P / (self.R * T)

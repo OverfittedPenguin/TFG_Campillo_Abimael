@@ -85,9 +85,11 @@ time = np.round(solver.stats()['t_wall_total'],3)
 ###########################################################
 
 # RECONSTRUCTION OF STATE VECTOR THROUGH TIME
+# Retrieving of states values and time array generation.
 x = sol['x'].full().flatten()
 t = np.linspace(0.0, sim.tF, sim.N)
 
+# States and controls storage vectors.
 x1 = []
 x2 = []
 x3 = []
@@ -99,6 +101,9 @@ u1 = []
 u2 = []
 
 for k in range(sim.N):
+    # For each variable, the current value is retrived and 
+    # appended into the respecive storage array.
+
     idx = 9*k
     x1.append(x[idx])
     x2.append(x[idx + 1])
@@ -127,6 +132,7 @@ Fzb_A = []
 Fxb_T = []
 Fxb_W = []
 Fzb_W = []
+
 for k in range(len(x1)):
     # Computation of atmosphere parameters,
     # aerodynamic velocity and dynamic pressure.
@@ -161,6 +167,7 @@ for k in range(len(x1)):
     Fxb_W.append(Fb_grav[0])
     Fzb_W.append(Fb_grav[1])
 
+# Computation of negative Fxb.
 Fxb = [a + b for a,b in zip(Fxb_A,Fxb_W)]
 
 # AoA RECONSTRUCTION

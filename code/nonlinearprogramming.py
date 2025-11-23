@@ -85,7 +85,7 @@ class NLP_CRUISE:
         thetak = x3
         mk = -ac.SFC
 
-        # Kinematics. Inertial velocities computation.
+        # KINEMATICS. Inertial velocities computation.
         inertial_vel = Rhb @ np.array([x1, x2])
         xk, zk = inertial_vel
 
@@ -112,12 +112,12 @@ class NLP_CRUISE:
         lbg_path = []
         ubg_path = []
 
-        # Path constraints. Inqueality constraints.
+        # Path constraints. Inequality constraints.
         g_path.append(0.9*sim.Vtp - np.sqrt(ua**2 + wa**2))
-        lbg_path.append(-1e20) # Negative infinity.
+        lbg_path.append(-1e20)
         ubg_path.append(0)
         g_path.append(np.sqrt(ua**2 + wa**2) - 1.1*sim.Vtp)
-        lbg_path.append(-1e20) # Negative infinity.
+        lbg_path.append(-1e20)
         ubg_path.append(0)
 
         return g_path, lbg_path, ubg_path
@@ -156,7 +156,7 @@ class NLP_CRUISE:
         lbx = []
         ubx = []
 
-        # Iteration to asign simple bound to each state and control variable.
+        # Iteration to asign simple bounds to each state and control variable.
         for k in range(N):
             for j in range(9):
                 lbx.append(lb[j])
@@ -166,18 +166,22 @@ class NLP_CRUISE:
 
     @staticmethod
     def CONSTRAINTS_AND_BOUNDS(x,u,ac,at,sim):
+        # Time step, number of nodes and state bounds.
         dT = sim.dT
         N = sim.N
         lb = ac.lb
         ub = ac.ub
 
-        # STATE AND CONTROL VECTOR
+        # STATE AND CONTROL VECTORS
         w = NLP_CRUISE.STATES_CONTROL_VECTOR(x,u,N)
+
+        # INITIAL STATE AND CONTROL VECTOR
         w0 = []
         for k in range(N):
             w0.append(sim.w0[0:9])
         
         w0 = sum(w0, [])
+
         # DYNAMIC COSNTRAINTS HANDLING
         g_dyn = []
         lbg_dyn = []
@@ -224,7 +228,8 @@ class NLP_CRUISE:
     
     @staticmethod
     def COST_FUCNTIONAL(w,ac,at,sim):
-
+        # Cost initialisation, time step and number
+        # of nodes.
         J = 0
         dT = sim.dT
         N = sim.N
@@ -236,7 +241,12 @@ class NLP_CRUISE:
             wg_dot = 0.75
             wdt = 0.25
             wde = 0.10   
+
+            # Normalisation vars.
+            g_max = np.deg2rad(12.0)
+            g_dot_max = g_max / sim.dT
             de_max = np.deg2rad(12.0)
+            href = -sim.w0[5]
 
             # Actual and next states and functions.
             wi = w[9*k:9*(k+1)]
@@ -261,8 +271,7 @@ class NLP_CRUISE:
             # Altitude computation.
             hi = -wi[5]
             hj = -wj[5]
-            href = -sim.w0[5]
 
             # COST FUCNTIONAL (Minimisation of gamma, gamma dot and controls)
-            J += dT/2 * (wg*(gi**2 + gj**2) / np.deg2rad(12.0)**2 + wg_dot*(gi_dot**2 + gj_dot**2) / 0.1256**2  + wh*((hi - href)**2 / href**2 + (hj - href)**2 / href**2)) + wde*(wj[8] - wi[8])**2 / (sim.dT*de_max**2) + wdt*(wj[7] - wi[7])**2 / sim.dT 
+            J += dT/2 * (wg*(gi**2 + gj**2) / g_max**2 + wg_dot*(gi_dot**2 + gj_dot**2) / g_dot_max**2  + wh*((hi - href)**2 / href**2 + (hj - href)**2 / href**2)) + wde*(wj[8] - wi[8])**2 / (sim.dT*de_max**2) + wdt*(wj[7] - wi[7])**2 / sim.dT 
         return J 
