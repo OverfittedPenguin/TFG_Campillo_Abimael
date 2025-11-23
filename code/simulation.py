@@ -19,14 +19,36 @@ class Sim:
             self.N = np.array(N)
             self.dT = self.tF / N
     
-            self.w0 = INITIAL_STATE
+            self.x0_USER = np.array(INITIAL_STATE)
+            self.x0 = np.zeros(11)
+            self.w0 = 0.0
             self.CONSTRAINTS = np.array(ADDITIONAL_CONSTRAINTS)
             self.Vtp = self.CONSTRAINTS[0]
             self.wf = END_TIME_CONSTRAINTS
 
-            self.wind = WIND_SPEED
+            self.wind = np.array(WIND_SPEED)
 
             self.Aircraft_file = AIRCRAFT_FILE
+
+            # INITIAL STATE COMPUTATIONS
+            # Re-arranging of initial altitude AGL.
+            self.x0[6] = self.x0_USER[2] 
+
+            # Initial aerodynamic velocity.
+            ua, wa = self.x0_USER[0] - self.wind[0], self.x0_USER[1] - self.wind[1]
+            self.x0[2] = self.x0_USER[1]
+            self.x0[1] = self.x0_USER[0]
+            self.x0[0] = np.sqrt(ua**2 + wa**2)
+
+            # Initial position. Always zero.
+            self.x0[5] = 0.0
+
+            # Initial pitch rate. Always zero.
+            self.x0[3] = 0.0
+
+            # Initial pitch. Equal to initial AoA.
+            self.x0[4] = np.arctan2(wa,ua)
+
     
     @classmethod
     def from_json(cls, filepath: str) -> "Sim":

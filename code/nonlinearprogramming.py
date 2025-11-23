@@ -1,5 +1,6 @@
 import casadi as ca
 import numpy as np
+from scipy.optimize import fsolve
 
 class NLP_CRUISE:
     def __init__(self):
@@ -24,6 +25,28 @@ class NLP_CRUISE:
             w = ca.vertcat(w, xk, uk)
         return w
     
+    @staticmethod 
+    def TRIM_CONTROLS(x0,ac,at,sim):
+
+        def EOM(u):
+            # EQUATIONS OF MOTION
+            u1, u2 = u
+            w = np.hstack([x0, u1, u2])  
+            uk, wk, _, _, _, _, _ = NLP_CRUISE.DYNAMIC_EQUATIONS(w,ac,at,sim)
+            return [uk, wk]
+
+        # INITIAL GUESS
+        u_initial = np.array([1.0, -0.065])
+
+        # SOLVE TRIM CONTROLS
+        u_trim,_,flag,_ = fsolve(EOM, u_initial, full_output=True)
+        
+        if flag != 1:
+            print("Warning: Trim controls did not converge.")
+
+        dt_trim, de_trim = u_trim
+        return dt_trim, de_trim
+        
     @staticmethod
     def DYNAMIC_EQUATIONS(w,ac,at,sim):
         # States and control retrieving.
@@ -118,7 +141,20 @@ class NLP_CRUISE:
         ubg_path.append(0)
         g_path.append(np.sqrt(ua**2 + wa**2) - 1.1*sim.Vtp)
         lbg_path.append(-1e20)
+        ubg_path.append(0)   
+
+        # TARGET ALTITUDE CONSTRAINT
+        href_l = -sim.w0[5] - 2.50
+        href_u = -sim.w0[5] + 2.50
+        hi = -wi[5]
+
+        # Path constraints. Inequality constraints.
+        g_path.append(href_l - hi)
+        lbg_path.append(-1e20)
         ubg_path.append(0)
+        g_path.append(hi - href_u)
+        lbg_path.append(-1e20)
+        ubg_path.append(0)   
 
         return g_path, lbg_path, ubg_path
     
@@ -179,8 +215,8 @@ class NLP_CRUISE:
         w0 = []
         for k in range(N):
             w0.append(sim.w0[0:9])
-        
-        w0 = sum(w0, [])
+
+        w0 = np.concatenate(w0)
 
         # DYNAMIC COSNTRAINTS HANDLING
         g_dyn = []
@@ -236,9 +272,9 @@ class NLP_CRUISE:
 
         for k in range(N-1):
             # Weights assignation for gamma, gamma dot and controls.
-            wg = 0.75
-            wh = 0.50
-            wg_dot = 0.75
+            wg = 0.80
+            wh = 0.80
+            wg_dot = 0.50
             wdt = 0.25
             wde = 0.10   
 
