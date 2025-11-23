@@ -78,6 +78,7 @@ sol = solver(
 # Retrieving of iterations values and objective value.
 iters = solver.stats()['iter_count']
 obj = solver.stats()['iterations']['obj']
+time = np.round(solver.stats()['t_wall_total'],3)
 
 ###########################################################
 ##                     POSTPROCESS                       ##
@@ -160,7 +161,6 @@ for k in range(len(x1)):
     Fxb_W.append(Fb_grav[0])
     Fzb_W.append(Fb_grav[1])
 
-
 Fxb = [a + b for a,b in zip(Fxb_A,Fxb_W)]
 
 # AoA RECONSTRUCTION
@@ -176,6 +176,6 @@ Plotter.GENERATE_PLOT(t,np.column_stack((Fzb_A, Fzb_W)),["Aerodynamic", "Weight"
 Plotter.GENERATE_PLOT(t,u1,r"$\delta_T$",["Time [s]", "TPS [-]","Throttle position through time","CONTROL_dT.png"],path)
 Plotter.GENERATE_PLOT(t,u2,r"$\delta_e$",["Time [s]", "Elevator [rad]","Elevator deflection through time","CONTROL_de.png"],path)
 Plotter.GENERATE_PLOT(x5,-x6,"Trajectory",["Horizontal distance [m]", "Altitude AGL [m]","Aircraft's trajectory","TRAJECTORY.png"],path)
-Plotter.GENERATE_PLOT(np.linspace(0,iters+1,iters+1),np.array(obj),"Objective cost",["Iterations [-]", "Cost objective [-]", "Cost evolution through solver iterations", "COST.png"], path)
+Plotter.GENERATE_PLOT(np.linspace(1,iters+1,iters+1),np.array(obj),"Objective cost",["Iterations [-]", "Cost objective [-]", "Cost evolution. Total computation time: " f"{time} s", "COST.png"], path)
 
 
