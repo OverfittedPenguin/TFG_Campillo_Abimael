@@ -1,181 +1,188 @@
 import numpy as np
 import os
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-from scipy.integrate import solve_ivp
-from scipy.optimize import root
+import casadi as ca
 from aircraft import Aircraft
+from simulation import Sim
 from atmosphere import Atmos
-from dynamic_equations import DynEqs
+from nonlinearprogramming import NLP_CRUISE
+from plotterfunction import Plotter
 
-# AIRCRAFT CONFIG FILE PATH
-aircraft_file = "configs/FlyoxI_VI.json"
+
+###########################################################
+##                  USER CONFIGURATION                   ##
+###########################################################
+
+# SIMULATION CONFIG FILE PATH
+simulation_file = "configs/Simulation.json"
 
 # ATMOSPHERE CONFIG FILE PATH
 atmos_file = "configs/Atmos.json"
 
-# Validate that files exist.
-if not os.path.isfile(aircraft_file):
-    raise FileNotFoundError(f"Aircraft JSON file not found at: {aircraft_file}")
+###########################################################
+##                  PREPROCESS OF FILES                  ##
+###########################################################
+
+if not os.path.isfile(simulation_file):
+    raise FileNotFoundError(f"Simulation JSON file not found at: {simulation_file}")
 if not os.path.isfile(atmos_file):
     raise FileNotFoundError(f"Atmosphere JSON file not found at: {atmos_file}")
 
-# Load aircraftparameters and atmosphere conditions.
-aircraft = Aircraft.from_json(aircraft_file)
+sim = Sim.from_json(simulation_file)
 atmos = Atmos.from_json(atmos_file)
+
+# AIRCRAFT CONFIG FILE PATH
+aircraft_file = sim.Aircraft_file
+
+# Validate that files exist.
+if not os.path.isfile(aircraft_file):
+    raise FileNotFoundError(f"Aircraft JSON file not found at: {aircraft_file}")
+
+aircraft = Aircraft.from_json(aircraft_file)
+
 print("AIRCRAFT LOADED:", aircraft.name)
 print("ATMOS CONDITIONS LOADED.")
+print("SIMULATION CONDITIONS LOADED: dT=",sim.dT,"tF=", sim.tF)
 
-# Initial state: [u, w, q, theta, x, z].
-state0 = np.array([22.5, 0.0, 0.0, 0.0, 0.0, -500.0])
+###########################################################
+##          PROBLEM DEFINITION AND SOLUTION              ##
+###########################################################
 
-# Define flight phases.
-phases = [
-    ("DESCENT", 240, ctrls := {"elevator": -0.0686, "throttle": 0.35}), # descent for 80 seconds
-    ("CRUISE", 120,ctrls := {"elevator": -0.058, "throttle": 0.67}), # cruise for 100 seconds
-    ("CLIMB", 180, ctrls := {"elevator": -0.08, "throttle": 1.0}),   # climb for 60 seconds
-]
+# PREPROCESS
 
-# Storage for concatenated results.
-t_total = []
-X_total = []
-ctrls_T_total = []
+# CRUISE SUBPROBLEM DEFINITION. Cruise flight trajectory
+# defined as a NLP problem.
+nlp = NLP_CRUISE()
+w0, w, lbx, ubx, g, lbg, ubg = NLP_CRUISE.CONSTRAINTS_AND_BOUNDS(nlp.x,nlp.u,aircraft,atmos,sim)
+J = NLP_CRUISE.COST_FUCNTIONAL(w,aircraft,atmos,sim)
 
-# Initial state.
-current_state = state0
-t_start = 0.0
+# Redefining vectors as stipulated by CASADi dictionary.
+w0 = ca.vertcat(w0)
+w = ca.vertcat(w)
+g = ca.vertcat(*g)
 
-for phase_name,duration,ctrls in phases:
-    t_span = (t_start, t_start + duration)
-    t_eval = np.linspace(t_span[0], t_span[1], int(duration*100)+1)
-    ctrls_T = np.ones(t_eval.size)*ctrls['throttle']
-    dyn = DynEqs(aircraft, atmos,ctrls)
-    sol = solve_ivp(
-        lambda t, y: dyn.EOM_3DOF(t, y, phase_name),
-        t_span,
-        current_state,
-        method='Radau',
-        t_eval=t_eval,
-        rtol=1e-6,
-        atol=1e-9
-    )
+# SOLVER
 
-    # Append results.
-    t_total.append(sol.t)
-    X_total.append(sol.y.T)
-    ctrls_T_total.append(ctrls_T)
+# Configuration of the NLP and the solver.
+nlp = {"x": w, "f": J, "g": g}
+solver = ca.nlpsol("solver", "ipopt", nlp)
 
-    # Update initial state for next phase.
-    current_state = sol.y[:, -1]
-    t_start += duration
+# TRAJECTORIES. SOLUTION
+sol = solver(
+    x0 = w0,
+    lbx = lbx,
+    ubx = ubx,
+    lbg = lbg,
+    ubg = ubg
+)
 
-# Concatenate arrays.
-t_total = np.concatenate(t_total)
-X_total = np.concatenate(X_total)
-ctrls_T_total = np.concatenate(ctrls_T_total)
+# Retrieving of iterations values and objective value.
+iters = solver.stats()['iter_count']
+obj = solver.stats()['iterations']['obj']
+time = np.round(solver.stats()['t_wall_total'],3)
 
-# RETRIEVE CONTROL VARIABLES
-alpha = np.arctan2(X_total[:,1], X_total[:,0])
-V = np.sqrt(X_total[:,0]**2 + X_total[:,1]**2)
-T = np.zeros(alpha.size)
-m = np.zeros(alpha.size)
+###########################################################
+##                     POSTPROCESS                       ##
+###########################################################
 
-for i in range(alpha.size):
-    rho, sigma = atmos.ISA_RHO(-X_total[i,5])
-    T_max,_,P = aircraft.PROPULSIVE_FORCES_MOMENTS(V[i],6000.0,rho,sigma,alpha[i])
-    T[i] = T_max
-    m[i] = aircraft.BEM + aircraft.FM * (1 - aircraft.SFC * P * t_total[i]) + aircraft.PM
+# RECONSTRUCTION OF STATE VECTOR THROUGH TIME
+# Retrieving of states values and time array generation.
+x = sol['x'].full().flatten()
+t = np.linspace(0.0, sim.tF, sim.N)
 
-T = T*ctrls_T_total
+# States and controls storage vectors.
+x1 = []
+x2 = []
+x3 = []
+x4 = []
+x5 = []
+x6 = []
+x7 = []
+u1 = []
+u2 = []
+
+for k in range(sim.N):
+    # For each variable, the current value is retrived and 
+    # appended into the respecive storage array.
+
+    idx = 9*k
+    x1.append(x[idx])
+    x2.append(x[idx + 1])
+    x3.append(x[idx + 2])
+    x4.append(x[idx + 3])
+    x5.append(x[idx + 4])
+    x6.append(x[idx + 5])
+    x7.append(x[idx + 6])
+    u1.append(x[idx + 7])
+    u2.append(x[idx + 8])
+
+# Arrays conversion.
+x1 = np.array(x1)
+x2 = np.array(x2)
+x3 = np.array(x3)
+x4 = np.array(x4)
+x5 = np.array(x5)
+x6 = np.array(x6)
+x7 = np.array(x7)
+u1 = np.array(u1)
+u2 = np.array(u2)
+
+# FORCES RECOSNTRUCTION
+Fxb_A = []
+Fzb_A = []
+Fxb_T = []
+Fxb_W = []
+Fzb_W = []
+
+for k in range(len(x1)):
+    # Computation of atmosphere parameters,
+    # aerodynamic velocity and dynamic pressure.
+    rho = atmos.ISA_RHO(-x6[k])
+    ua, wa = x1[k] - sim.wind[0], x2[k] - sim.wind[1]
+    alpha = np.arctan2(wa, ua)
+    V = np.sqrt(ua**2 + wa**2)
+    q_bar = 0.5*rho*V**2
+
+    # AERODYNAMIC COEFFICIENTS AND FORCES
+    CL = aircraft.CL_0 + aircraft.CL_alpha * alpha + aircraft.CL_de * u2[k]
+    CD = aircraft.CD_0 + aircraft.K * CL**2
+    Rsb = np.array([
+        [np.cos(alpha), np.sin(alpha)],
+        [-np.sin(alpha), np.cos(alpha)]
+    ])
+    Cb_aero = Rsb.T @ np.array([-CD, -CL])
+    Fb_aero = q_bar * aircraft.S * Cb_aero
+    Fxb_A.append(Fb_aero[0])
+    Fzb_A.append(Fb_aero[1])
+
+    # PROPULSIVE FORCE
+    T_max,M_T_max = aircraft.PROPULSIVE_FORCES_MOMENTS(V,aircraft.RPM,rho,alpha)
+    Fxb_T.append(u1[k] * T_max)
+
+    # WEIGHT
+    Rhb = np.array([
+        [np.cos(x4[k]), np.sin(x4[k])],
+        [-np.sin(x4[k]), np.cos(x4[k])]
+    ])
+    Fb_grav = Rhb.T @ np.array([0.0, x7[k] * atmos.g])
+    Fxb_W.append(Fb_grav[0])
+    Fzb_W.append(Fb_grav[1])
+
+# Computation of negative Fxb.
+Fxb = [a + b for a,b in zip(Fxb_A,Fxb_W)]
+
+# AoA RECONSTRUCTION
+alpha = np.arctan2(x2 - sim.wind[1], x1 - sim.wind[0])
 
 # PLOTS
-#ALTITUDE AND HORIZONTAL DISTANCE
-fig, ax1 = plt.subplots(figsize=(8, 5))
-ax1.plot(
-    t_total, X_total[:, 4],
-    color='0.6',
-    label='Horizontal dist.',
-    linestyle='--',
-    linewidth=2
-)
-ax1.set_xlabel('Time [s]',  color='0', fontstyle='italic', fontsize=12)
-ax1.set_ylabel('Horizontal distance [m]', color='0', fontstyle='italic', fontsize=12)
-ax1.tick_params(axis='y', labelcolor='0')
-ax2 = ax1.twinx()
-ax2.plot(
-    t_total, -X_total[:, 5],
-    color='0.25',
-    label='Altitude',
-    linestyle='-',
-    linewidth=2
-)
-ax2.set_ylabel('Altitude [m]', color='0', fontstyle='italic', fontsize=12)
-ax2.tick_params(axis='y', labelcolor='0')
-ax1.set_title('Altitude and distance through time',
-              fontstyle='italic', fontsize=14, fontweight='bold',loc='left')
-ax1.grid(True)
-lines_1, labels_1 = ax1.get_legend_handles_labels()
-lines_2, labels_2 = ax2.get_legend_handles_labels()
-ax2.legend(lines_1 + lines_2, labels_1 + labels_2,
-           loc='upper right', fontsize=12, fancybox=True, framealpha=1, facecolor='white')
-fig.tight_layout()
+path = "/home/abimael_campillo/Desktop/TFG_Campillo_Abimael/code/images/benchmark"
+Plotter.GENERATE_PLOT(t,np.column_stack((x1, x2)),["u","w"],["Time [s]", "Velocity [m/s]","Body velocities through time","VEL.png"],path)
+Plotter.GENERATE_PLOT(t,np.column_stack((x4, alpha)),[r"$\theta$",r"$\alpha$"],["Time [s]", "Angles [rad]","Pitch and AoA through time","ANGLES.png"],path)
+Plotter.GENERATE_PLOT(t,x7,"Mass",["Time [s]", "Mass [kg]","Aircraft's mass through time","MASS.png"],path) 
+Plotter.GENERATE_PLOT(t,np.column_stack((Fxb, Fxb_T)),["Aerodynamic + Weight", "Thrust"],["Time [s]", "Forces [N]","Body x-axis forces through time","FORCES_Xb.png"],path)
+Plotter.GENERATE_PLOT(t,np.column_stack((Fzb_A, Fzb_W)),["Aerodynamic", "Weight"],["Time [s]", "Forces [N]","Body z-axis forces through time","FORCES_Zb.png"],path)  
+Plotter.GENERATE_PLOT(t,u1,r"$\delta_T$",["Time [s]", "TPS [-]","Throttle position through time","CONTROL_dT.png"],path)
+Plotter.GENERATE_PLOT(t,u2,r"$\delta_e$",["Time [s]", "Elevator [rad]","Elevator deflection through time","CONTROL_de.png"],path)
+Plotter.GENERATE_PLOT(x5,-x6,"Trajectory",["Horizontal distance [m]", "Altitude AGL [m]","Aircraft's trajectory","TRAJECTORY.png"],path)
+Plotter.GENERATE_PLOT(np.linspace(1,iters+1,iters+1),np.array(obj),"Objective cost",["Iterations [-]", "Cost objective [-]", "Cost evolution. Total computation time: " f"{time} s", "COST.png"], path)
 
-# PITCH AND AOA
-fig2, ax3 = plt.subplots(figsize=(8, 5))
-ax3.plot(
-    t_total, X_total[:, 3],
-    color='0.6',
-    label='Pitch',
-    linestyle='-',
-    linewidth=2
-)
-ax3.plot(
-    t_total, alpha,
-    color='0.25',
-    label='AoA',
-    linestyle='-',
-    linewidth=2
-)
-ax3.set_xlabel('Time [s]',  color='0', fontstyle='italic', fontsize=12)
-ax3.set_ylabel('Angles [rad]', color='0', fontstyle='italic', fontsize=12)
-ax3.tick_params(axis='y', labelcolor='0')
-ax3.set_title('Pitch and AoA through time',
-              fontstyle='italic', fontsize=14, fontweight='bold',loc='left')
-ax3.grid(True)
-lines_1, labels_1 = ax3.get_legend_handles_labels()
-ax3.legend(lines_1, labels_1,
-           loc='upper right', fontsize=12, fancybox=True, framealpha=1, facecolor='white')
-fig2.tight_layout()
 
-# MASS AND THRUST
-fig3, ax4 = plt.subplots(figsize=(8, 5))
-ax4.plot(
-    t_total, T,
-    color='0.6',
-    label='Thrust',
-    linestyle='-',
-    linewidth=2
-)
-ax4.set_xlabel('Time [s]',  color='0', fontstyle='italic', fontsize=12)
-ax4.set_ylabel('Thrust [N]', color='0', fontstyle='italic', fontsize=12)
-ax4.tick_params(axis='y', labelcolor='0')
-ax4.grid(True)
-ax5 = ax4.twinx()
-ax5.plot(
-    t_total, m,
-    color='0.25',
-    label='Mass',
-    linestyle='--',
-    linewidth=2
-)
-ax5.set_ylabel('Mass [kg]', color='0', fontstyle='italic', fontsize=12)
-ax5.tick_params(axis='y', labelcolor='0')
-ax4.set_title('Thrust and mass through time',
-              fontstyle='italic', fontsize=14, fontweight='bold',loc='left')
-ax5.grid(True)
-lines_1, labels_1 = ax4.get_legend_handles_labels()
-lines_2, labels_2 = ax5.get_legend_handles_labels()
-ax5.legend(lines_1 + lines_2, labels_1 + labels_2,
-           loc='upper right', fontsize=12, fancybox=True, framealpha=1, facecolor='white')
-fig3.tight_layout()
-plt.show()

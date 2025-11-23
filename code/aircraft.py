@@ -4,7 +4,7 @@ import json
 class Aircraft:
     def __init__(
         self,
-        name: str,
+        NAME: str,
         BEM: float,
         FM: float,
         PM: float,
@@ -29,16 +29,15 @@ class Aircraft:
         ELEVATOR_COEFFS: list,
         THRUST_COEFFS: list,
         EFFICIENCY_COEFFS: list,
-        CRUISE_SPECS=None,
-        CLIMB_SPECS=None,
-        DESCENT_SPECS=None
+        OPERATIONAL_LIMITS: list,
+        MISSION_SPECS: list,
     ):
         # CORE PARAMETERS
-        self.name = name
+        self.name = NAME
         self.BEM = BEM
         self.FM = FM
         self.PM = PM
-        self.SFC = SFC / (3600*1000)
+        self.SFC = SFC / 1000
         self.AR = AR
         self.S = S
         self.b = b
@@ -68,9 +67,13 @@ class Aircraft:
         self.ELEVATOR_COEFFS = np.array(ELEVATOR_COEFFS)
         self.THRUST_COEFFS = np.array(THRUST_COEFFS)
         self.EFFICIENCY_COEFFS = np.array(EFFICIENCY_COEFFS)
+        self.MISSION_SPECS = np.array(MISSION_SPECS)
+        self.BOUNDS = np.array(OPERATIONAL_LIMITS)
+        self.lb = self.BOUNDS[0]
+        self.ub = self.BOUNDS[1]
 
         # Extracting aerodynamic force and moments coefficients for 
-        # the differents flap configurations and for the elevator.
+        # different flap configurations and for elevator contribution.
         self.CL_CD_F0 = self.LIFT_DRAG_COEFFS[0]
         self.CL_CD_F15 = self.LIFT_DRAG_COEFFS[1]
         self.CL_CD_F40 = self.LIFT_DRAG_COEFFS[2]
@@ -79,10 +82,25 @@ class Aircraft:
         self.CL_de = self.ELEVATOR_COEFFS[0]
         self.Cm_de = self.ELEVATOR_COEFFS[1]
 
-        # Optional SPECS. Flight phases constraints.
-        self.CRUISE_SPECS = np.array(CRUISE_SPECS) if CRUISE_SPECS is not None else None
-        self.CLIMB_SPECS = np.array(CLIMB_SPECS) if CLIMB_SPECS is not None else None
-        self.DESCENT_SPECS = np.array(DESCENT_SPECS) if DESCENT_SPECS is not None else None
+        # Extracting operational limits and mission specs.
+        self.FLAPS = self.MISSION_SPECS[0]
+        self.RPM = self.MISSION_SPECS[1]
+
+        # Aerodynamic coefficients that are going to be used.
+        if self.FLAPS == 0.0:
+            self.CL_0 = self.CL_CD_F0[0]
+            self.CL_alpha = self.CL_CD_F0[1]
+            self.CD_0 = self.CL_CD_F0[2]
+        elif self.FLAPS == 15.0:
+            self.CL_0 = self.CL_CD_F15[0]
+            self.CL_alpha = self.CL_CD_F15[1]
+            self.CD_0 = self.CL_CD_F15[2]
+        elif self.FLAPS == 40.0:
+            self.CL_0 = self.CL_CD_F40[0]
+            self.CL_alpha = self.CL_CD_F40[1]
+            self.CD_0 = self.CL_CD_F40[2]
+        else:
+            raise ValueError(f"Flaps set doesn't met expected values F0, F15 or F40.")
     
     @classmethod
     def from_json(cls, filepath: str) -> "Aircraft":
@@ -92,10 +110,10 @@ class Aircraft:
         
         # ESSENTIAL KEYS
         essential_keys = [
-            "name","BEM","FM","PM","SFC","AR","b","c","e",
+            "NAME","BEM","FM","PM","SFC","AR","b","c","e",
             "CGx","CGz","CPwx","CPwz","CTx","CTz","Dp","nENG",
             "EPS0","Iyy","LIFT_DRAG_COEFFS","MOMENT_COEFFS",
-            "ELEVATOR_COEFFS","THRUST_COEFFS","EFFICIENCY_COEFFS"
+            "ELEVATOR_COEFFS","THRUST_COEFFS","EFFICIENCY_COEFFS", "OPERATIONAL_LIMITS", "MISSION_SPECS"
         ]
         missing = [k for k in essential_keys if k not in data]
         if missing:
@@ -103,8 +121,8 @@ class Aircraft:
 
         return cls(**data)
     
-    def PROPULSIVE_FORCES_MOMENTS(self, V: float, n: float, rho: float, sigma:float, AOA: float):
-        # Advance ratio computation for RPS.
+    def PROPULSIVE_FORCES_MOMENTS(self, V: float, n: float, rho: float, AOA: float):
+        # Advance ratio computation using RPS.
         n_RPS = n / 60.0
         J = V / (n_RPS * self.Dp)
         eps = np.deg2rad(self.EPS0) - AOA
@@ -114,10 +132,7 @@ class Aircraft:
         eta = self.EFFICIENCY_COEFFS[0] + self.EFFICIENCY_COEFFS[1]*np.log(J)
 
         # Thrust and longitudinal torque.
-        T = self.nENG * eta * rho * sigma * n_RPS**2 * self.Dp**4 * Ct
-        M_T = -T * self.DeltaX_T * np.sin(np.radians(eps)) - T * self.DeltaZ_T * np.cos(np.radians(eps))
-        
-        # Power computation.
-        Cp = Ct * J / eta
-        P = (rho * sigma * n_RPS**3 * self.Dp**5 * Cp)
-        return T,M_T,P
+        T = self.nENG * eta * rho * n_RPS**2 * self.Dp**4 * Ct
+        M_T = -T * self.DeltaX_T * np.sin(eps) - T * self.DeltaZ_T * np.cos(eps)
+  
+        return T,M_T
