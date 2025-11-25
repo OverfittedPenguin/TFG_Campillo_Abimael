@@ -1,4 +1,5 @@
 import numpy as np
+import casadi as ca
 import json
 
 class Aircraft:
@@ -121,7 +122,7 @@ class Aircraft:
 
         return cls(**data)
     
-    def PROPULSIVE_FORCES_MOMENTS(self, V: float, n: float, rho: float, AOA: float):
+    def PROPULSIVE_FORCES_MOMENTS(self, V, n: float, rho, AOA):
         # Advance ratio computation using RPS.
         n_RPS = n / 60.0
         J = V / (n_RPS * self.Dp)
@@ -129,10 +130,10 @@ class Aircraft:
 
         # Ct and efficiency for computed J.
         Ct = self.THRUST_COEFFS[0] + self.THRUST_COEFFS[1]*J + self.THRUST_COEFFS[2]*J**2 + self.THRUST_COEFFS[3]*J**3
-        eta = self.EFFICIENCY_COEFFS[0] + self.EFFICIENCY_COEFFS[1]*np.log(J)
+        eta = self.EFFICIENCY_COEFFS[0] + self.EFFICIENCY_COEFFS[1]*ca.log(J)
 
         # Thrust and longitudinal torque.
         T = self.nENG * eta * rho * n_RPS**2 * self.Dp**4 * Ct
-        M_T = -T * self.DeltaX_T * np.sin(eps) - T * self.DeltaZ_T * np.cos(eps)
+        M_T = -T * self.DeltaX_T * ca.sin(eps) - T * self.DeltaZ_T * ca.cos(eps)
   
         return T,M_T

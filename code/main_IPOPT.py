@@ -6,7 +6,7 @@ from simulation import Sim
 from atmosphere import Atmos
 from nonlinearprogramming import NLP_CRUISE
 from plotterfunction import Plotter
-
+import matplotlib.pyplot as plt
 
 ###########################################################
 ##                  USER CONFIGURATION                   ##
@@ -52,12 +52,9 @@ sim.x0[8] = atmos.ISA_RHO(-sim.x0[6])
 
 # Computation of trim conditions for controls at initial state.
 x0 = sim.x0[1:8]
-dt0, de0 = NLP_CRUISE.TRIM_CONTROLS(x0,aircraft,atmos,sim)
-dt0, de0 = np.round(dt0,3), np.round(de0,3)
-print("INITIAL CONTROLS: dt = " f"{dt0} de = {de0}")
 
 # Initial state vector
-sim.w0 = np.concatenate((sim.x0[1:8], [dt0, de0]))
+sim.w0 = ca.vertcat(x0, [1.0, 0.0])
 
 ###########################################################
 ##          PROBLEM DEFINITION AND SOLUTION              ##
@@ -74,7 +71,6 @@ J = NLP_CRUISE.COST_FUCNTIONAL(w,aircraft,atmos,sim)
 # Redefining vectors as stipulated by CASADi dictionary.
 w = ca.vertcat(w)
 g = ca.vertcat(*g)
-
 
 # SOLVER
 # Configuration of the NLP and the solver.
@@ -199,5 +195,3 @@ Plotter.GENERATE_PLOT(t,u1,r"$\delta_T$",["Time [s]", "TPS [-]","Throttle positi
 Plotter.GENERATE_PLOT(t,u2,r"$\delta_e$",["Time [s]", "Elevator [rad]","Elevator deflection through time","CONTROL_de.png"],path)
 Plotter.GENERATE_PLOT(x5,-x6,"Trajectory",["Horizontal distance [m]", "Altitude AGL [m]","Aircraft's trajectory","TRAJECTORY.png"],path)
 Plotter.GENERATE_PLOT(np.linspace(1,iters+1,len(obj)),np.array(obj),"Objective cost",["Iterations [-]", "Cost objective [-]", "Cost evolution. Total computation time: " f"{time} s", "COST.png"], path)
-
-

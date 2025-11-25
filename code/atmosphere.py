@@ -37,7 +37,7 @@ class Atmos:
 
         return cls(**data)
     
-    def ISA_RHO(self, h: float):
+    def ISA_RHO(self, h):
             # Geopotential altitude correction.
             h = self.REarth * h / (self.REarth + h)
 
