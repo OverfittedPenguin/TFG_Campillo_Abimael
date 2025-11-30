@@ -191,16 +191,16 @@ class NLP_CRUISE:
         ubg_path = []
 
         # Path constraints. Inequality constraints.
-        g_path.append(0.9*sim.Vtp - ca.sqrt(ua**2 + wa**2))
+        g_path.append(0.95*sim.Vtp - ca.sqrt(ua**2 + wa**2))
         lbg_path.append(-1e20)
         ubg_path.append(0)
-        g_path.append(ca.sqrt(ua**2 + wa**2) - 1.1*sim.Vtp)
+        g_path.append(ca.sqrt(ua**2 + wa**2) - 1.05*sim.Vtp)
         lbg_path.append(-1e20)
         ubg_path.append(0)   
 
         # TARGET ALTITUDE CONSTRAINT
-        href_l = -sim.w0[5] - 3.0
-        href_u = -sim.w0[5] + 3.0
+        href_l = -sim.w0[5] - 2.5
+        href_u = -sim.w0[5] + 2.5
         hi = -wi[5]
 
         # Path constraints. Inequality constraints.
@@ -269,26 +269,16 @@ class NLP_CRUISE:
         # Computation of trim condition.
         w0_trim_node = NLP_CRUISE.COMPUTE_TRIM(ac,at,sim)
         sim.w0 = w0_trim_node[:9]
-        print(sim.w0)
         
         # Reconstruction of full initial guess
         # as planar functions.
         w0_ls = []
-        w0_ls.append(w0_trim_node[0])
-        w0_ls.append(w0_trim_node[1])
-        w0_ls.append(w0_trim_node[2])
-        w0_ls.append(w0_trim_node[3])
-        w0_ls.append(w0_trim_node[4])
-        w0_ls.append(w0_trim_node[5])
-        w0_ls.append(w0_trim_node[6])
-        w0_ls.append(w0_trim_node[7])
-        w0_ls.append(w0_trim_node[8])
-        for k in range(1,N):
+        for k in range(N):
             w0_ls.append(w0_trim_node[0])
             w0_ls.append(w0_trim_node[1])
             w0_ls.append(w0_trim_node[2])
             w0_ls.append(w0_trim_node[3])
-            w0_ls.append(w0_ls[idx+4] + w0_trim_node[0]*np.cos(w0_trim_node[3])*dT)
+            w0_ls.append(w0_trim_node[0]*np.cos(w0_trim_node[3])*dT*k)
             w0_ls.append(w0_trim_node[5])
             w0_ls.append(w0_trim_node[6])
             w0_ls.append(w0_trim_node[7])
@@ -350,7 +340,7 @@ class NLP_CRUISE:
             # Weights assignation for gamma, gamma dot and controls.
             wg = 0.45
             wh = 0.45
-            wg_dot = 0.6
+            wg_dot = 0.60
             wdt = 0.60
             wde = 0.75
 
@@ -385,5 +375,5 @@ class NLP_CRUISE:
             hj = -wj[5]
 
             # COST FUCNTIONAL (Minimisation of gamma, gamma dot and controls)
-            J += dT/2 * (wg*(gi**2 + gj**2) / g_max**2 + wg_dot*(gi_dot**2 + gj_dot**2) / g_dot_max**2  + wh*((hi - href)**2 / href**2 + (hj - href)**2 / href**2)) + wde*ca.sumsqr((wj[8] - wi[8]) / (sim.dT*de_max)) + wdt*ca.sumsqr((wj[7] - wi[7]) / sim.dT)
+            J += dT/2 * (wg*(gi**2 + gj**2) / g_max**2 + wg_dot*(gi_dot**2 + gj_dot**2) / g_dot_max**2  + wh*((hi - href)**2 / href**2 + (hj - href)**2 / href**2)) + wde*(wj[8] - wi[8])**2 / (sim.dT*de_max**2) + wdt*(wj[7] - wi[7])**2 / sim.dT
         return J
