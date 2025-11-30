@@ -271,8 +271,8 @@ class NLP_CRUISE:
         sim.w0 = w0_trim_node[:9]
         print(sim.w0)
         
-        # Reconstruction of full initial guess.
-        # Planar function.
+        # Reconstruction of full initial guess
+        # as planar functions.
         w0_ls = []
         w0_ls.append(w0_trim_node[0])
         w0_ls.append(w0_trim_node[1])
