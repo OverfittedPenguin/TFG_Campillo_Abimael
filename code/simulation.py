@@ -12,6 +12,7 @@ class Sim:
             END_TIME_CONSTRAINTS: list,
             ADDITIONAL_CONSTRAINTS: list,
             WIND_SPEED: list,
+            CRUISE_WEIGHTS:list,
             AIRCRAFT_FILE: str
         ):
             # PARAMETERS
@@ -27,6 +28,7 @@ class Sim:
             self.wf = END_TIME_CONSTRAINTS
 
             self.wind = np.array(WIND_SPEED)
+            self.cruise_wg = np.array(CRUISE_WEIGHTS)
 
             self.Aircraft_file = AIRCRAFT_FILE
 
@@ -47,7 +49,7 @@ class Sim:
             self.x0[3] = 0.0
 
             # Initial pitch. Equal to initial AoA.
-            self.x0[4] = np.arctan2(wa,ua)
+            self.x0[4] = np.abs(np.arctan2(wa,ua))
 
     
     @classmethod
@@ -60,7 +62,7 @@ class Sim:
         essential_keys = [
             "END_TIME", "N", "INITIAL_STATE", 
             "END_TIME_CONSTRAINTS", "ADDITIONAL_CONSTRAINTS",
-            "WIND_SPEED", "AIRCRAFT_FILE"
+            "WIND_SPEED", "CRUISE_WEIGHTS", "AIRCRAFT_FILE"
         ]
         missing = [k for k in essential_keys if k not in data]
         if missing:
