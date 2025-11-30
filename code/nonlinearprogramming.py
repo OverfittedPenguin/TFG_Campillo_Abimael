@@ -203,7 +203,6 @@ class NLP_CRUISE:
         g_dyn = []
         lbg_dyn = []
         ubg_dyn = []
-
         for k in range(N-1):
             wi = w[9*k:9*(k+1)]
             wj = w[9*(k+1):9*(k+2)]
@@ -250,14 +249,13 @@ class NLP_CRUISE:
         J = 0
         dT = sim.dT
         N = sim.N
-
         for k in range(N-1):
             # Weights assignation for gamma, gamma dot and controls.
-            wg = 0.0
-            wh = 1.0
-            wg_dot = 0.0
-            wdt = 0.0
-            wde = 0.0
+            wg = 0.45
+            wh = 0.45
+            wg_dot = 0.6
+            wdt = 0.60
+            wde = 0.75
 
             # Normalisation vars.
             g_max = np.deg2rad(12.0)
@@ -290,5 +288,5 @@ class NLP_CRUISE:
             hj = -wj[5]
 
             # COST FUCNTIONAL (Minimisation of gamma, gamma dot and controls)
-            J += dT/2 * (wg*(gi**2 + gj**2) / g_max**2 + wg_dot*(gi_dot**2 + gj_dot**2) / g_dot_max**2  + wh*((hi - href)**2 / href**2 + (hj - href)**2 / href**2)) + wde*(wj[8] - wi[8])**2 / (sim.dT*de_max)**2 + wdt*(wj[7] - wi[7])**2 / sim.dT**2 
+            J += dT/2 * (wg*(gi**2 + gj**2) / g_max**2 + wg_dot*(gi_dot**2 + gj_dot**2) / g_dot_max**2  + wh*((hi - href)**2 / href**2 + (hj - href)**2 / href**2)) + wde*(wj[8] - wi[8])**2 / (sim.dT*de_max)**2 + wdt*(wj[7] - wi[7])**2 / sim.dT**2
         return J 
