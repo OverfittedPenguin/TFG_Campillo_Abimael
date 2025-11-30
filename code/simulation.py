@@ -47,7 +47,7 @@ class Sim:
             self.x0[3] = 0.0
 
             # Initial pitch. Equal to initial AoA.
-            self.x0[4] = np.arctan2(wa,ua)
+            self.x0[4] = np.abs(np.arctan2(wa,ua))
 
     
     @classmethod

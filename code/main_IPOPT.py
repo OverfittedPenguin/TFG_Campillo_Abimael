@@ -50,7 +50,7 @@ sim.x0[7] = aircraft.BEM + aircraft.FM + aircraft.PM
 x0 = sim.x0[1:8]
 
 # Initial state vector
-sim.w0 = ca.vertcat(x0, [0.837, -0.0742])
+sim.w0 = x0
 
 ###########################################################
 ##          PROBLEM DEFINITION AND SOLUTION              ##
