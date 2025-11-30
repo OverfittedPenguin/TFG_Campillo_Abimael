@@ -1,6 +1,5 @@
 import casadi as ca
 import numpy as np
-from scipy.optimize import fsolve
 
 class NLP_CRUISE:
     def __init__(self):
@@ -24,28 +23,6 @@ class NLP_CRUISE:
             uk = ca.MX.sym(f"u{k}", nu)
             w = ca.vertcat(w, xk, uk)
         return w
-    
-    @staticmethod 
-    def TRIM_CONTROLS(x0,ac,at,sim):
-
-        def EOM(u):
-            # EQUATIONS OF MOTION
-            u1, u2 = u
-            w = np.hstack([x0, u1, u2])  
-            uk, wk, _, _, _, _, _ = NLP_CRUISE.DYNAMIC_EQUATIONS(w,ac,at,sim)
-            return [uk, wk]
-
-        # INITIAL GUESS
-        u_initial = np.array([1.0, -0.065])
-
-        # SOLVE TRIM CONTROLS
-        u_trim,_,flag,_ = fsolve(EOM, u_initial, full_output=True)
-        
-        if flag != 1:
-            print("Warning: Trim controls did not converge.")
-
-        dt_trim, de_trim = u_trim
-        return dt_trim, de_trim
         
     @staticmethod
     def DYNAMIC_EQUATIONS(w,ac,at,sim):
@@ -140,10 +117,10 @@ class NLP_CRUISE:
         ubg_path = []
 
         # Path constraints. Inequality constraints.
-        g_path.append(0.9*sim.Vtp - ca.sqrt(ua**2 + wa**2))
+        g_path.append(0.95*sim.Vtp - ca.sqrt(ua**2 + wa**2))
         lbg_path.append(-1e20)
         ubg_path.append(0)
-        g_path.append(ca.sqrt(ua**2 + wa**2) - 1.1*sim.Vtp)
+        g_path.append(ca.sqrt(ua**2 + wa**2) - 1.05*sim.Vtp)
         lbg_path.append(-1e20)
         ubg_path.append(0)   
 
@@ -276,11 +253,11 @@ class NLP_CRUISE:
 
         for k in range(N-1):
             # Weights assignation for gamma, gamma dot and controls.
-            wg = 0.10
-            wh = 0.10
-            wg_dot = 0.2
-            wdt = 0.25
-            wde = 0.25
+            wg = 0.0
+            wh = 1.0
+            wg_dot = 0.0
+            wdt = 0.0
+            wde = 0.0
 
             # Normalisation vars.
             g_max = np.deg2rad(12.0)

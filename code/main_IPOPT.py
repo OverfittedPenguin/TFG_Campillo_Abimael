@@ -6,7 +6,6 @@ from simulation import Sim
 from atmosphere import Atmos
 from nonlinearprogramming import NLP_CRUISE
 from plotterfunction import Plotter
-import matplotlib.pyplot as plt
 
 ###########################################################
 ##                  USER CONFIGURATION                   ##
@@ -47,14 +46,11 @@ print("SIMULATION CONDITIONS LOADED: dT=",sim.dT,"tF=", sim.tF)
 # Initial mass.
 sim.x0[7] = aircraft.BEM + aircraft.FM + aircraft.PM
 
-# Initial rho.
-sim.x0[8] = atmos.ISA_RHO(-sim.x0[6])
-
 # Computation of trim conditions for controls at initial state.
 x0 = sim.x0[1:8]
 
 # Initial state vector
-sim.w0 = ca.vertcat(x0, [1.0, 0.0])
+sim.w0 = ca.vertcat(x0, [0.75, 0.05])
 
 ###########################################################
 ##          PROBLEM DEFINITION AND SOLUTION              ##
@@ -87,9 +83,9 @@ sol = solver(
 )
 
 # Retrieving of iterations values and objective value.
-iters = solver.stats()['iter_count']
-obj = solver.stats()['iterations']['obj']
-time = np.round(solver.stats()['t_proc_total'],3)
+#iters = solver.stats()['iter_count']
+#obj = solver.stats()['iterations']['obj']
+#time = np.round(solver.stats()['t_proc_total'],3)
 
 ###########################################################
 ##                     POSTPROCESS                       ##
@@ -185,7 +181,9 @@ Fxb = [a + b for a,b in zip(Fxb_A,Fxb_W)]
 alpha = np.arctan2(x2 - sim.wind[1], x1 - sim.wind[0])
 
 # PLOTS
-path = "/home/abimael_campillo/Desktop/TFG_Campillo_Abimael/code/images/benchmark"
+
+path = os.path.join(os.getcwd(), "images", "benchmark")
+os.makedirs(path, exist_ok=True)
 Plotter.GENERATE_PLOT(t,np.column_stack((x1, x2)),["u","w"],["Time [s]", "Velocity [m/s]","Body velocities through time","VEL.png"],path)
 Plotter.GENERATE_PLOT(t,np.column_stack((x4, alpha)),[r"$\theta$",r"$\alpha$"],["Time [s]", "Angles [rad]","Pitch and AoA through time","ANGLES.png"],path)
 Plotter.GENERATE_PLOT(t,x7,"Mass",["Time [s]", "Mass [kg]","Aircraft's mass through time","MASS.png"],path) 
@@ -194,4 +192,4 @@ Plotter.GENERATE_PLOT(t,np.column_stack((Fzb_A, Fzb_W)),["Aerodynamic", "Weight"
 Plotter.GENERATE_PLOT(t,u1,r"$\delta_T$",["Time [s]", "TPS [-]","Throttle position through time","CONTROL_dT.png"],path)
 Plotter.GENERATE_PLOT(t,u2,r"$\delta_e$",["Time [s]", "Elevator [rad]","Elevator deflection through time","CONTROL_de.png"],path)
 Plotter.GENERATE_PLOT(x5,-x6,"Trajectory",["Horizontal distance [m]", "Altitude AGL [m]","Aircraft's trajectory","TRAJECTORY.png"],path)
-Plotter.GENERATE_PLOT(np.linspace(1,iters+1,len(obj)),np.array(obj),"Objective cost",["Iterations [-]", "Cost objective [-]", "Cost evolution. Total computation time: " f"{time} s", "COST.png"], path)
+#Plotter.GENERATE_PLOT(np.linspace(1,iters+1,len(obj)),np.array(obj),"Objective cost",["Iterations [-]", "Cost objective [-]", "Cost evolution. Total computation time: " f"{time} s", "COST.png"], path)
