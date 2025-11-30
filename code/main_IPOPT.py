@@ -6,6 +6,7 @@ from simulation import Sim
 from atmosphere import Atmos
 from nonlinearprogramming import NLP_CRUISE
 from plotterfunction import Plotter
+import matplotlib.pyplot as plt
 
 ###########################################################
 ##                  USER CONFIGURATION                   ##
@@ -106,6 +107,8 @@ x6 = []
 x7 = []
 u1 = []
 u2 = []
+u1_0 = []
+u2_0 = []
 
 for k in range(sim.N):
     # For each variable, the current value is retrived and 
@@ -121,6 +124,8 @@ for k in range(sim.N):
     x7.append(x[idx + 6])
     u1.append(x[idx + 7])
     u2.append(x[idx + 8])
+    u1_0.append(w0[idx + 7])
+    u2_0.append(w0[idx + 8])
 
 # Arrays conversion.
 x1 = np.array(x1)
@@ -189,7 +194,7 @@ Plotter.GENERATE_PLOT(t,np.column_stack((x4, alpha)),[r"$\theta$",r"$\alpha$"],[
 Plotter.GENERATE_PLOT(t,x7,"Mass",["Time [s]", "Mass [kg]","Aircraft's mass through time","MASS.png"],path) 
 Plotter.GENERATE_PLOT(t,np.column_stack((Fxb, Fxb_T)),["Aerodynamic + Weight", "Thrust"],["Time [s]", "Forces [N]","Body x-axis forces through time","FORCES_Xb.png"],path)
 Plotter.GENERATE_PLOT(t,np.column_stack((Fzb_A, Fzb_W)),["Aerodynamic", "Weight"],["Time [s]", "Forces [N]","Body z-axis forces through time","FORCES_Zb.png"],path)  
-Plotter.GENERATE_PLOT(t,u1,r"$\delta_T$",["Time [s]", "TPS [-]","Throttle position through time","CONTROL_dT.png"],path)
-Plotter.GENERATE_PLOT(t,u2,r"$\delta_e$",["Time [s]", "Elevator [rad]","Elevator deflection through time","CONTROL_de.png"],path)
+Plotter.GENERATE_PLOT(t,np.column_stack((u1, u1_0)),[r"$\delta_T$", r"$\delta_T init.$"],["Time [s]", "TPS [-]","Throttle position through time","CONTROL_dT.png"],path)
+Plotter.GENERATE_PLOT(t,np.column_stack((u2, u2_0)),[r"$\delta_e$", r"$\delta_e init.$"],["Time [s]", "Elevator [rad]","Elevator deflection through time","CONTROL_de.png"],path)
 Plotter.GENERATE_PLOT(x5,-x6,"Trajectory",["Horizontal distance [m]", "Altitude AGL [m]","Aircraft's trajectory","TRAJECTORY.png"],path)
 Plotter.GENERATE_PLOT(np.linspace(1,iters+1,len(obj)),np.array(obj),"Objective cost",["Iterations [-]", "Cost objective [-]", "Cost evolution. Total computation time: " f"{time} s", "COST.png"], path)
