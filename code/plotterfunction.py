@@ -142,7 +142,7 @@ class Plotter:
         axs[0,1].legend(fontsize=10, prop={'family': 'serif'}, loc="upper left", bbox_to_anchor=(1.02,1))
 
         # MASS
-        axs[1,0].plot(t,x7,label=r"m",color=colors_hex[0],linestyle="--",linewidth=1.5)
+        axs[1,0].plot(t,x7,label=r"m",color=colors_hex[0],linestyle="-",linewidth=1.5)
 
         # Bounds.
         m_max = np.ones(len(x7))*ac.ub[6]
@@ -204,7 +204,7 @@ class Plotter:
         # Titles, grid and legend.
         axs[0].set_xlabel("Time [s]",fontsize = 14,fontstyle='italic',fontfamily='serif')
         axs[0].set_ylabel("TPS - throttle position sensor [-]",fontsize = 14, fontstyle='italic', fontfamily='serif')
-        axs[0].set_title("Throttle control through time",fontsize = 16, fontweight='bold', fontfamily='serif', loc="left")
+        axs[0].set_title("TPS through time",fontsize = 16, fontweight='bold', fontfamily='serif', loc="left")
         axs[0].minorticks_on()
         axs[0].grid(which='minor', linestyle=':', linewidth=0.75, color='gray', alpha=0.75)
         axs[0].legend(fontsize=10, prop={'family': 'serif'}, loc="upper left", bbox_to_anchor=(1.02,1))
@@ -222,7 +222,7 @@ class Plotter:
         # Titles, grid and legend.
         axs[1].set_xlabel("Time [s]",fontsize = 14,fontstyle='italic',fontfamily='serif')
         axs[1].set_ylabel(r"$\delta_e$ - elevator deflection [rad]",fontsize = 14, fontstyle='italic', fontfamily='serif')
-        axs[1].set_title("Elevator deflection through time",fontsize = 16, fontweight='bold', fontfamily='serif', loc="left")
+        axs[1].set_title(r"$\delta_e$ through time",fontsize = 16, fontweight='bold', fontfamily='serif', loc="left")
         axs[1].minorticks_on()
         axs[1].grid(which='minor', linestyle=':', linewidth=0.75, color='gray', alpha=0.75)
         axs[1].legend(fontsize=10, prop={'family': 'serif'}, loc="upper left", bbox_to_anchor=(1.02,1))

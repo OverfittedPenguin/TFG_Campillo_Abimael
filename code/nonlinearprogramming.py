@@ -40,9 +40,6 @@ class NLP_CRUISE:
         # Calm wind atmosphere conditions.
         rho = at.ISA_RHO(h) 
         q_bar = 0.5 * rho * V**2
-        
-        # Horizontal flight implies null flight path angle.
-        theta_sym = alpha_sym 
 
         # AERODYNAMIC COEFFICIENTS
         CL = ac.CL_0 + ac.CL_alpha * alpha_sym + ac.CL_de * de_sym
@@ -216,7 +213,7 @@ class NLP_CRUISE:
     @staticmethod
     def INITIAL_AND_FINAL_CONSTRAINTS(w,w0,wf,N):
         # INITIAL STATE CONSTRAINTS
-        w_0 = w[:9]
+        w_0 = w[:7]
         g_0 = []
         lbg_0 = []
         ubg_0 = []
@@ -338,11 +335,11 @@ class NLP_CRUISE:
         N = sim.N
         for k in range(N-1):
             # Weights assignation for gamma, gamma dot and controls.
-            wg = 0.45
-            wh = 0.45
-            wg_dot = 0.60
-            wdt = 0.60
-            wde = 0.75
+            wg = sim.cruise_wg[0]
+            wh = sim.cruise_wg[1]
+            wg_dot = sim.cruise_wg[2]
+            wdt = sim.cruise_wg[3]
+            wde = sim.cruise_wg[4]
 
             # Normalisation vars.
             g_max = np.deg2rad(12.0)
