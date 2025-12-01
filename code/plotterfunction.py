@@ -30,8 +30,8 @@ class Plotter:
         g = []
 
         for k in range(sim.N):
-            # For each variable, the current value is retrived and 
-            # appended into the respecive storage array.
+            # For each variable, the current value is retrieved and 
+            # appended into the respective storage array.
             idx = 9*k
             x0_1.append(x0[idx])
             x0_2.append(x0[idx + 1])
@@ -169,7 +169,7 @@ class Plotter:
 
         # Titles, grid and legend.
         axs[1,1].set_xlabel("Horizontal distance [m]",fontsize = 14,fontstyle='italic',fontfamily='serif')
-        axs[1,1].set_ylabel("Altitude AGL [m]",fontsize = 14, fontstyle='italic', fontfamily='serif')
+        axs[1,1].set_ylabel("Altitude ASL [m]",fontsize = 14, fontstyle='italic', fontfamily='serif')
         axs[1,1].set_title("UAV trajectory",fontsize = 16, fontweight='bold', fontfamily='serif', loc="left")
         axs[1,1].minorticks_on()
         axs[1,1].grid(which='minor', linestyle=':', linewidth=0.75, color='gray', alpha=0.75)
