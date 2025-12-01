@@ -115,7 +115,7 @@ class NLP_CRUISE:
         wa = x2 - sim.wind[1]
         alpha = ca.atan2(wa, ua)
         V = ca.sqrt(ua**2 + wa**2)
-        q_bar = 0.5*rho*V**2
+        q_bar = 0.5 * rho * V**2
 
         # AERODYNAMIC COEFFICIENTS
         CL = ac.CL_0 + ac.CL_alpha * alpha + ac.CL_de * u2
@@ -128,7 +128,7 @@ class NLP_CRUISE:
         M_T = u1 * M_T_max
         Fb_prop = ca.vertcat(T, 0.0)
 
-        # Rotation matrices from body axes to wind axes and local horizon axes.
+        # Rotation matrices from body axes to wind axes and to local horizon axes.
         Rsb = ca.vertcat(
             ca.horzcat(ca.cos(alpha), ca.sin(alpha)),
             ca.horzcat(-ca.sin(alpha), ca.cos(alpha))
@@ -212,7 +212,7 @@ class NLP_CRUISE:
     
     @staticmethod
     def INITIAL_AND_FINAL_CONSTRAINTS(w,w0,wf,N):
-        # INITIAL STATE CONSTRAINTS
+        # INITIAL STATE CONSTRAINTS. Controls freed.
         w_0 = w[:7]
         g_0 = []
         lbg_0 = []
@@ -224,8 +224,8 @@ class NLP_CRUISE:
             lbg_0.append(0)
             ubg_0.append(0)
 
-        # FINAL STATE CONSTRAINTS
-        w_f = w[9*(N-1):9*N]
+        # FINAL STATE CONSTRAINTS. Controls freed.
+        w_f = w[7*(N-1):7*N]
         g_f = []
         lbg_f = []
         ubg_f = []
@@ -275,7 +275,7 @@ class NLP_CRUISE:
             w0_ls.append(w0_trim_node[1])
             w0_ls.append(w0_trim_node[2])
             w0_ls.append(w0_trim_node[3])
-            w0_ls.append(w0_trim_node[0]*np.cos(w0_trim_node[3])*dT*k)
+            w0_ls.append(w0_trim_node[0] * np.cos(w0_trim_node[3]) * dT * k)
             w0_ls.append(w0_trim_node[5])
             w0_ls.append(w0_trim_node[6])
             w0_ls.append(w0_trim_node[7])
