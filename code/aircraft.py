@@ -114,7 +114,8 @@ class Aircraft:
             "NAME","BEM","FM","PM","SFC","AR","b","c","e",
             "CGx","CGz","CPwx","CPwz","CTx","CTz","Dp","nENG",
             "EPS0","Iyy","LIFT_DRAG_COEFFS","MOMENT_COEFFS",
-            "ELEVATOR_COEFFS","THRUST_COEFFS","EFFICIENCY_COEFFS", "OPERATIONAL_LIMITS", "MISSION_SPECS"
+            "ELEVATOR_COEFFS","THRUST_COEFFS","EFFICIENCY_COEFFS", 
+            "OPERATIONAL_LIMITS", "MISSION_SPECS"
         ]
         missing = [k for k in essential_keys if k not in data]
         if missing:
@@ -127,7 +128,7 @@ class Aircraft:
         n_RPS = n / 60.0
         J = V / (n_RPS * self.Dp)
         eps = np.deg2rad(self.EPS0) - AOA
-
+        
         # Ct and efficiency for computed J.
         Ct = self.THRUST_COEFFS[0] + self.THRUST_COEFFS[1]*J + self.THRUST_COEFFS[2]*J**2 + self.THRUST_COEFFS[3]*J**3
         eta = self.EFFICIENCY_COEFFS[0] + self.EFFICIENCY_COEFFS[1]*ca.log(J)
