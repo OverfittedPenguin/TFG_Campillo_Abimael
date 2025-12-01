@@ -8,7 +8,7 @@ from nonlinearprogramming import NLP_CRUISE
 from plotterfunction import Plotter
 
 ###########################################################
-##                  USER CONFIGURATION                   ##
+##                 USER CONFIGURATION                    ##
 ###########################################################
 
 # SIMULATION CONFIG FILE PATH
@@ -18,7 +18,7 @@ simulation_file = "configs/Simulation.json"
 atmos_file = "configs/Atmos.json"
 
 ###########################################################
-##              PREPROCESS OF FILES AND VARS             ##
+##            PREPROCESS OF FILES AND VARS               ##
 ###########################################################
 
 if not os.path.isfile(simulation_file):
