@@ -73,6 +73,26 @@ class Plotter:
         u1 = np.array(u1)
         u2 = np.array(u2)
 
+                # Arrays conversion.
+        x0_1 = np.squeeze(x0_1)
+        x0_2 = np.squeeze(x0_2)
+        x0_3 = np.squeeze(x0_3)
+        x0_4 = np.squeeze(x0_4)
+        x0_5 = np.squeeze(x0_5)
+        x0_6 = np.squeeze(x0_6)
+        x0_7 = np.squeeze(x0_7)
+        u0_1 = np.squeeze(u0_1)
+        u0_2 = np.squeeze(u0_2)
+        x1 = np.squeeze(x1)
+        x2 = np.squeeze(x2)
+        x3 = np.squeeze(x3)
+        x4 = np.squeeze(x4)
+        x5 = np.squeeze(x5)
+        x6 = np.squeeze(x6)
+        x7 = np.squeeze(x7)
+        u1 = np.squeeze(u1)
+        u2 = np.squeeze(u2)
+
         for k in range(len(x1)):
             # Computation of aerodynamic velocity, angle of attack
             # and flight path angle.

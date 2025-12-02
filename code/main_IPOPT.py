@@ -40,7 +40,7 @@ aircraft = Aircraft.from_json(aircraft_file)
 
 print("AIRCRAFT LOADED:", aircraft.name)
 print("ATMOS CONDITIONS LOADED.")
-print("SIMULATION CONDITIONS LOADED: dT=",sim.dT,"tF=", sim.tF)
+print("SIMULATION CONDITIONS LOADED: dT=",sim.dT,"tF=", sim.tp)
 
 # INITIAL STATE COMPUTATIONS
 # Initial mass.
@@ -61,19 +61,24 @@ sim.w0 = x0
 # CRUISE SUBPROBLEM DEFINITION. Cruise flight trajectory
 # defined as a NLP problem.
 nlp = NLP_CRUISE()
-w0, w, lbx, ubx, g, lbg, ubg = NLP_CRUISE.CONSTRAINTS_AND_BOUNDS(nlp.x,nlp.u,aircraft,atmos,sim)
+w0, w, lbx, ubx, g, lbg, ubg = NLP_CRUISE.CONSTRAINTS_AND_BOUNDS(nlp.x,nlp.u,nlp.utf,aircraft,atmos,sim)
 J = NLP_CRUISE.COST_FUCNTIONAL(w,aircraft,atmos,sim)
 
 # Redefining vectors as stipulated by CASADi dictionary.
 w = ca.vertcat(w)
+w0 = ca.vertcat(w0)
 g = ca.vertcat(*g)
+lbg = ca.vertcat(*lbg)
+ubg = ca.vertcat(*ubg)
+lbx = ca.vertcat(*lbx)
+ubx = ca.vertcat(*ubx)
 
 # SOLVER
 # Configuration of the NLP and the solver.
 opts = {}
-opts['ipopt.max_iter'] = 1000
-opts['ipopt.tol'] = 1e-6
-opts['ipopt.acceptable_tol'] = 1e-3
+opts['ipopt.max_iter'] = 3000
+opts['ipopt.tol'] = 1e-12
+opts['ipopt.acceptable_tol'] = 1e-12
 nlp = {"x": w, "f": J, "g": g}
 solver = ca.nlpsol("solver", "ipopt", nlp)
 
@@ -98,10 +103,12 @@ time = np.round(solver.stats()['t_proc_total'],3)
 # RECONSTRUCTION OF STATE VECTOR THROUGH TIME
 # Retrieving of states values and time array generation.
 x = sol['x'].full().flatten()
-t = np.linspace(0.0, sim.tF, sim.N)
+tF = x[9*sim.N]
+x = x[:9*sim.N]
+t = np.linspace(0.0, tF, sim.N)
 
 # PLOTS
-path = os.path.join(os.getcwd(), "images", "benchmark")
+path = os.path.join(os.getcwd(), "images", "cruise_tf")
 os.makedirs(path, exist_ok=True)
 Plotter.GENERATE_RESULTS_PLOT(t,x,w0,aircraft,sim,path)
 Plotter.GENERATE_COST_PLOT(np.linspace(0,iters,len(obj)),np.array(obj),time,path)

@@ -6,15 +6,18 @@ class NLP_CRUISE:
         # DEFINE STATE AND CONTROLS
         # 7 states [u,w,q,theta,x,z,m].
         # 2 controls [dt,de].
+        # 1 end time [tF]
         self.x = ca.MX.sym("x", 7)   
         self.u = ca.MX.sym("u", 2) 
+        self.utf = ca.MX.sym("utF", 1)
 
     @staticmethod
-    def STATES_CONTROL_VECTOR(x, u, N):
+    def STATES_CONTROL_VECTOR(x, u, utf, N):
         # Retrieving number of states and controls vectors.
         # Empty states an controls vector for NLP.
         nx = x.size1()
         nu = u.size1()
+        nutf = utf.size1()
         w = ca.MX()
 
         # Stack symbolic vectors for N nodes.
@@ -22,6 +25,9 @@ class NLP_CRUISE:
             xk = ca.MX.sym(f"x{k}", nx)
             uk = ca.MX.sym(f"u{k}", nu)
             w = ca.vertcat(w, xk, uk)
+        utf = ca.MX.sym(f"u_tF", nutf)
+        w = ca.vertcat(w,utf)
+
         return w
     
     @staticmethod
@@ -62,15 +68,15 @@ class NLP_CRUISE:
         My = M_aero + M_prop
 
         # State boundaries.
-        lbx = [np.deg2rad(-5), 0.0, np.deg2rad(-20)] # Límites: alpha, dt, de
-        ubx = [np.deg2rad(15), 1.0, np.deg2rad(20)] 
+        lbx = [ac.lb[3], ac.lb[7], ac.lb[8]]
+        ubx = [ac.ub[3], ac.ub[7], ac.ub[8]] 
 
         # NLP PROBLEM DEFINITION
         f = ca.sumsqr(ca.vertcat(Fx, Fz, My))
         opts = {}
         opts['ipopt.max_iter'] = 1000
-        opts['ipopt.tol'] = 1e-6
-        opts['ipopt.acceptable_tol'] = 1e-3
+        opts['ipopt.tol'] = 1e-12
+        opts['ipopt.acceptable_tol'] = 1e-12
         nlp = {'x': y, 'f': f}
         solver = ca.nlpsol('trim_solver_nlp', 'ipopt', nlp, opts)
 
@@ -94,7 +100,7 @@ class NLP_CRUISE:
         w = V * np.sin(alpha_trim)
         
         w0_state = np.array([u, w, 0.0, alpha_trim, 0.0, -h, m])
-        w0_control = [dt_trim, de_trim]
+        w0_control = [dt_trim, de_trim, sim.tp]
         w0 = ca.vertcat(w0_state, w0_control)
         
         return w0
@@ -170,45 +176,59 @@ class NLP_CRUISE:
         return [uk,wk,qk,thetak,xk,zk,mk]
     
     @staticmethod
-    def DYNAMIC_CONSTRAINTS(wi,wj,fi,fj,dT):
+    def DYNAMIC_CONSTRAINTS(wi,wj,fi,fj,dT,tF):
         g_dyn = []
         lbg_dyn = []
         ubg_dyn = []
         for k in range(wi.size1()):
             # Dynamic constraints. Equality constraints.
-            g_dyn.append(wj[k] - wi[k] - dT/2 * (fi[k] + fj[k]))
+            g_dyn.append(wj[k] - wi[k] - dT/2 * tF * (fi[k] + fj[k]))
             lbg_dyn.append(0)
             ubg_dyn.append(0)
 
         return g_dyn, lbg_dyn, ubg_dyn
     
     @staticmethod
-    def PATH_CONSTRAINTS(wi,sim):
-        # TARGET POINT VELOCITY CONSTRAINT
-        ua = wi[0] - sim.wind[0]
-        wa = wi[1] - sim.wind[1]
+    def PATH_CONSTRAINTS(w,sim,N):
         g_path = []
         lbg_path = []
         ubg_path = []
 
-        # Path constraints. Inequality constraints.
-        g_path.append(0.95*sim.Vtp - ca.sqrt(ua**2 + wa**2))
+        for k in range(N-1):
+            wi = w[9*k:9*(k+1)]
+            # TARGET POINT VELOCITY CONSTRAINT
+            ua = wi[0] - sim.wind[0]
+            wa = wi[1] - sim.wind[1]
+
+            # Path constraints. Inequality constraints.
+            g_path.append(0.95*sim.Vtp - ca.sqrt(ua**2 + wa**2))
+            lbg_path.append(-1e20)
+            ubg_path.append(0)
+            g_path.append(ca.sqrt(ua**2 + wa**2) - 1.05*sim.Vtp)
+            lbg_path.append(-1e20)
+            ubg_path.append(0)   
+
+            # TARGET ALTITUDE CONSTRAINT
+            href_l = -sim.w0[5] - 2.5
+            href_u = -sim.w0[5] + 2.5
+            hi = -wi[5]
+
+            # Path constraints. Inequality constraints.
+            g_path.append(href_l - hi)
+            lbg_path.append(-1e20)
+            ubg_path.append(0)
+            g_path.append(hi - href_u)
+            lbg_path.append(-1e20)
+            ubg_path.append(0)   
+
+        # END TIME CONSTRAINT
+        x0 = w[4]
+        xf = w[9*N-5]
+
+        g_path.append(0.1*sim.Vtp*sim.tp*0.5 - xf + x0)
         lbg_path.append(-1e20)
         ubg_path.append(0)
-        g_path.append(ca.sqrt(ua**2 + wa**2) - 1.05*sim.Vtp)
-        lbg_path.append(-1e20)
-        ubg_path.append(0)   
-
-        # TARGET ALTITUDE CONSTRAINT
-        href_l = -sim.w0[5] - 2.5
-        href_u = -sim.w0[5] + 2.5
-        hi = -wi[5]
-
-        # Path constraints. Inequality constraints.
-        g_path.append(href_l - hi)
-        lbg_path.append(-1e20)
-        ubg_path.append(0)
-        g_path.append(hi - href_u)
+        g_path.append(xf - x0 - 1.9*sim.Vtp*sim.tp*0.5)
         lbg_path.append(-1e20)
         ubg_path.append(0)   
 
@@ -233,7 +253,6 @@ class NLP_CRUISE:
         g_f = []
         lbg_f = []
         ubg_f = []
-
         if wf != 0:
             # Final state. Equality constraints.
             for k in range(w_f.size1()):
@@ -241,10 +260,10 @@ class NLP_CRUISE:
                 lbg_f.append(0)
                 ubg_f.append(0)
 
-        return [g_0, g_f], [lbg_0, lbg_f], [ubg_0, ubg_f]
+        return g_0, g_f, lbg_0, lbg_f, ubg_0, ubg_f
 
     @staticmethod
-    def SIMPLE_BOUNDS(lb,ub,N):
+    def SIMPLE_BOUNDS(lb,ub,sim,N):
         lbx = []
         ubx = []
 
@@ -253,11 +272,13 @@ class NLP_CRUISE:
             for j in range(9):
                 lbx.append(lb[j])
                 ubx.append(ub[j])
+        lbx.append(0)
+        ubx.append(sim.tp)
 
         return lbx, ubx     
 
     @staticmethod
-    def CONSTRAINTS_AND_BOUNDS(x,u,ac,at,sim):
+    def CONSTRAINTS_AND_BOUNDS(x,u,utf,ac,at,sim):
         # Time step, number of nodes and state bounds.
         dT = sim.dT
         N = sim.N
@@ -265,7 +286,8 @@ class NLP_CRUISE:
         ub = ac.ub
 
         # STATE AND CONTROL VECTORS
-        w = NLP_CRUISE.STATES_CONTROL_VECTOR(x,u,N)
+        w = NLP_CRUISE.STATES_CONTROL_VECTOR(x,u,utf,N)
+        tF = w[9*N]
 
         # Computation of trim condition.
         w0_trim_node = NLP_CRUISE.COMPUTE_TRIM(ac,at,sim)
@@ -284,7 +306,7 @@ class NLP_CRUISE:
             w0_ls.append(w0_trim_node[6])
             w0_ls.append(w0_trim_node[7])
             w0_ls.append(w0_trim_node[8])
-    
+        w0_ls.append(ca.DM(sim.tp))
         w0 = np.concatenate(w0_ls)
 
         # DYNAMIC COSNTRAINTS HANDLING
@@ -296,37 +318,25 @@ class NLP_CRUISE:
             wj = w[9*(k+1):9*(k+2)]
             fi = NLP_CRUISE.DYNAMIC_EQUATIONS(wi,ac,at,sim)
             fj = NLP_CRUISE.DYNAMIC_EQUATIONS(wj,ac,at,sim)
-            g, lbg, ubg = NLP_CRUISE.DYNAMIC_CONSTRAINTS(wi[:7],wj[:7],fi[:7],fj[:7],dT)
+            g, lbg, ubg = NLP_CRUISE.DYNAMIC_CONSTRAINTS(wi[:7],wj[:7],fi[:7],fj[:7],dT,tF)
             g_dyn.append(g)
             lbg_dyn.append(lbg)
             ubg_dyn.append(ubg)
+        g_dyn = sum(g_dyn,[])
 
         # PATH CONSTRAINTS HANDLING
-        g_path = []
-        lbg_path = []
-        ubg_path = []
-
-        for k in range(N-1):
-            wi = w[9*k:9*(k+1)]
-            g, lbg, ubg = NLP_CRUISE.PATH_CONSTRAINTS(wi,sim)
-            g_path.append(g)
-            lbg_path.append(lbg)
-            ubg_path.append(ubg)
+        g_path, lbg_path, ubg_path = NLP_CRUISE.PATH_CONSTRAINTS(w,sim,N)
 
         # INITIAL AND FINAL STATE CONSTRAINTS HANDLING
-        g_0f, lbg_0f, ubg_0f = NLP_CRUISE.INITIAL_AND_FINAL_CONSTRAINTS(w,sim.w0,sim.wf,N)
+        g_0, g_f, lbg_0, lbg_f, ubg_0, ubg_f = NLP_CRUISE.INITIAL_AND_FINAL_CONSTRAINTS(w,sim.w0,sim.wf,N)
 
         # SIMPLE BOUNDS FOR STATES AND CONTROL
-        lbx, ubx = NLP_CRUISE.SIMPLE_BOUNDS(lb,ub,N)
+        lbx, ubx = NLP_CRUISE.SIMPLE_BOUNDS(lb,ub,sim,N)
 
         # Construction of final vectors.
-        g = g_dyn + g_path + g_0f
-        lbg = lbg_dyn + lbg_path + lbg_0f
-        ubg = ubg_dyn + ubg_path + ubg_0f
-
-        g = sum(g, [])
-        lbg = sum(lbg, [])
-        ubg = sum(ubg, [])
+        g = g_dyn + g_path + g_0 + g_f
+        lbg = lbg_dyn + lbg_path + lbg_0 + lbg_f
+        ubg = ubg_dyn + ubg_path + ubg_0 + ubg_f
 
         return w0, w, lbx, ubx, g, lbg, ubg
     
@@ -337,6 +347,7 @@ class NLP_CRUISE:
         J = 0
         dT = sim.dT
         N = sim.N
+        tF = w[9*N]
         for k in range(N-1):
             # Weights assignation for gamma, gamma dot and controls.
             wg = sim.cruise_wg[0]
@@ -377,4 +388,5 @@ class NLP_CRUISE:
 
             # COST FUCNTIONAL (Minimisation of gamma, gamma dot and controls)
             J += dT/2 * (wg*(gi**2 + gj**2) / g_max**2 + wg_dot*(gi_dot**2 + gj_dot**2) / g_dot_max**2  + wh*((hi - href)**2 / href**2 + (hj - href)**2 / href**2)) + wde*(wj[8] - wi[8])**2 / (sim.dT*de_max**2) + wdt*(wj[7] - wi[7])**2 / sim.dT
+        J += tF
         return J

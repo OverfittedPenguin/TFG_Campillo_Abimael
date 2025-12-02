@@ -6,8 +6,7 @@ aircraft = ()
 class Sim:
     def __init__(
             self,
-            END_TIME: float,
-            N: list,
+            DT: float,
             INITIAL_STATE: list,
             END_TIME_CONSTRAINTS: list,
             ADDITIONAL_CONSTRAINTS: list,
@@ -15,20 +14,23 @@ class Sim:
             CRUISE_WEIGHTS:list,
             AIRCRAFT_FILE: str
         ):
-            # PARAMETERS
-            self.tF = END_TIME
-            self.N = np.array(N)
-            self.dT = self.tF / N
-    
+            # PARAMETERS  
+            self.dT = DT  
+            self.N = int(1 / self.dT)
+
             self.x0_USER = np.array(INITIAL_STATE)
             self.x0 = np.zeros(11)
             self.w0 = 0.0
-            self.CONSTRAINTS = np.array(ADDITIONAL_CONSTRAINTS)
-            self.Vtp = self.CONSTRAINTS[0]
+
             self.wf = END_TIME_CONSTRAINTS
 
-            self.wind = np.array(WIND_SPEED)
+            self.CONSTRAINTS = np.array(ADDITIONAL_CONSTRAINTS)
+            self.Vtp = self.CONSTRAINTS[0]
+            self.tp = float(self.CONSTRAINTS[1])
+
             self.cruise_wg = np.array(CRUISE_WEIGHTS)
+
+            self.wind = np.array(WIND_SPEED)
 
             self.Aircraft_file = AIRCRAFT_FILE
 
@@ -60,7 +62,7 @@ class Sim:
         
         # ESSENTIAL KEYS
         essential_keys = [
-            "END_TIME", "N", "INITIAL_STATE", 
+            "DT", "INITIAL_STATE", 
             "END_TIME_CONSTRAINTS", "ADDITIONAL_CONSTRAINTS",
             "WIND_SPEED", "CRUISE_WEIGHTS", "AIRCRAFT_FILE"
         ]
