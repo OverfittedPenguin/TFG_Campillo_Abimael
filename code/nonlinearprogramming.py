@@ -225,10 +225,10 @@ class NLP_CRUISE:
         x0 = w[4]
         xf = w[9*N-5]
 
-        g_path.append(0.1*sim.Vtp*sim.tp*0.5 - xf + x0)
+        g_path.append(0.75*sim.Vtp*sim.tp*0.5 - xf + x0)
         lbg_path.append(-1e20)
         ubg_path.append(0)
-        g_path.append(xf - x0 - 1.9*sim.Vtp*sim.tp*0.5)
+        g_path.append(xf - x0 - 1.25*sim.Vtp*sim.tp*0.5)
         lbg_path.append(-1e20)
         ubg_path.append(0)   
 
