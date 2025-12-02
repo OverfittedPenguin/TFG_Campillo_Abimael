@@ -117,7 +117,7 @@ plt.subplots_adjust(
     )
 
 h = tF[1] / N
-plt.semilogx(h,obj[:,1],label="Cost J",linestyle="-",linewidth=1.5)
+plt.scatter(h,obj[:,1],label="Cost J",linestyle="-",linewidth=1.5)
 
 # Titles, grid and legend.
 plt.xlabel(r"$\hslash [s]$",fontsize = 14,fontstyle='italic',fontfamily='serif')
@@ -142,7 +142,7 @@ plt.subplots_adjust(
 
 for k in range(len(tF)):
     h = tF[k] / N
-    plt.semilogx(h,obj[:,k],label=rf"$t_f$: {tF[k]}s",linestyle="-",linewidth=1.5)
+    plt.scatter(h,obj[:,k],label=rf"$t_f$: {tF[k]}s",linestyle="-",linewidth=1.5)
 
 # Titles, grid and legend.
 plt.xlabel(r"$\hslash [s]$",fontsize = 14,fontstyle='italic',fontfamily='serif')
