@@ -70,6 +70,10 @@ g = ca.vertcat(*g)
 
 # SOLVER
 # Configuration of the NLP and the solver.
+opts = {}
+opts['ipopt.max_iter'] = 1000
+opts['ipopt.tol'] = 1e-6
+opts['ipopt.acceptable_tol'] = 1e-3
 nlp = {"x": w, "f": J, "g": g}
 solver = ca.nlpsol("solver", "ipopt", nlp)
 

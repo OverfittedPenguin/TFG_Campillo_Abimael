@@ -39,59 +39,67 @@ if not os.path.isfile(aircraft_file):
 aircraft = Aircraft.from_json(aircraft_file)
 
 # N, number of nodes. tF, end time.
-N = np.linspace(25,500)
+N = np.linspace(25,500,5)
 N = N.astype(int)
 
-sim.tF = 60.0
+tF = [10.0, 30.0, 60.0]
 
 ###########################################################
 ##          PROBLEM DEFINITION AND SOLUTION              ##
 ###########################################################
 
 # OBJECTIVE STORAGE
-obj =[]
+obj = np.zeros((len(N),len(tF)))
 
-for k in range(len(N)):
-    # Initial states.
-    # Initial mass.
-    sim.x0[7] = aircraft.BEM + aircraft.FM + aircraft.PM
+for j in range(len(tF)):
+    # Final time computation.
+    sim.tF = tF[j] 
 
-    # Computation of trim conditions for controls at initial state.
-    x0 = sim.x0[1:8]
+    for k in range(len(N)):
+        # Initial states.
+        # Initial mass.
+        sim.x0[7] = aircraft.BEM + aircraft.FM + aircraft.PM
 
-    # Initial state vector
-    sim.w0 = x0
+        # Computation of trim conditions for controls at initial state.
+        x0 = sim.x0[1:8]
 
-    # Time-step assignation.
-    sim.N = N[k]
-    sim.dT = sim.tF / sim.N
+        # Initial state vector
+        sim.w0 = x0
 
-    # CRUISE SUBPROBLEM DEFINITION. Cruise flight trajectory
-    # defined as a NLP problem.
-    nlp = NLP_CRUISE()
-    w0, w, lbx, ubx, g, lbg, ubg = NLP_CRUISE.CONSTRAINTS_AND_BOUNDS(nlp.x,nlp.u,aircraft,atmos,sim)
-    J = NLP_CRUISE.COST_FUCNTIONAL(w,aircraft,atmos,sim)
+        # Time-step assignation.
+        sim.N = N[k]
+        sim.dT = sim.tF / sim.N
 
-    # Redefining vectors as stipulated by CASADi dictionary.
-    w = ca.vertcat(w)
-    g = ca.vertcat(*g)
+        # CRUISE SUBPROBLEM DEFINITION. Cruise flight trajectory
+        # defined as a NLP problem.
+        nlp = NLP_CRUISE()
+        w0, w, lbx, ubx, g, lbg, ubg = NLP_CRUISE.CONSTRAINTS_AND_BOUNDS(nlp.x,nlp.u,aircraft,atmos,sim)
+        J = NLP_CRUISE.COST_FUCNTIONAL(w,aircraft,atmos,sim)
 
-    # SOLVER
-    # Configuration of the NLP and the solver.
-    nlp = {"x": w, "f": J, "g": g}
-    solver = ca.nlpsol("solver", "ipopt", nlp)
+        # Redefining vectors as stipulated by CASADi dictionary.
+        w = ca.vertcat(w)
+        g = ca.vertcat(*g)
 
-    # TRAJECTORIES. SOLUTION
-    sol = solver(
-        x0 = w0,
-        lbx = lbx,
-        ubx = ubx,
-        lbg = lbg,
-        ubg = ubg
-    )
+        # SOLVER
+        # Configuration of the NLP and the solver.
+        opts = {}
+        opts['ipopt.max_iter'] = 1000
+        opts['ipopt.tol'] = 1e-6
+        opts['ipopt.acceptable_tol'] = 1e-3
+        nlp = {"x": w, "f": J, "g": g}
+        solver = ca.nlpsol("solver","ipopt",nlp,opts)
+
+        # TRAJECTORIES. SOLUTION
+        sol = solver(
+            x0 = w0,
+            lbx = lbx,
+            ubx = ubx,
+            lbg = lbg,
+            ubg = ubg
+        )
 
     # Retrieving of iterations values and objective value.
-    obj.append(solver.stats()['iterations']['obj'][-1])
+    obj[k,j] = solver.stats()['iterations']['obj'][-1]
 
 ###########################################################
 ##                     POSTPROCESS                       ##
@@ -100,6 +108,7 @@ for k in range(len(N)):
 # PLOTS
 path = os.path.join(os.getcwd(), "images", "convergence")
 os.makedirs(path, exist_ok=True)
+
 
 plt.figure(figsize=(12,8))
 plt.subplots_adjust(
@@ -110,15 +119,17 @@ plt.subplots_adjust(
     )
 
 # Cost plot.
-plt.scatter(N,obj,label="Final cost J",color='#004D99',linestyle="-",linewidth=1.5)
+for k in range(len(tF)):
+    h = tF[k] / N
+    plt.semilogx(h,obj[:,k],label=rf"$t_f$: {tF[k]}s",linestyle="-",linewidth=1.5)
 
 # Titles, grid and legend.
-plt.xlabel("Nº of nodes [-]",fontsize = 14,fontstyle='italic',fontfamily='serif')
+plt.xlabel(r"$\hslash [s]$",fontsize = 14,fontstyle='italic',fontfamily='serif')
 plt.ylabel("Final cost objective [-]",fontsize = 14, fontstyle='italic', fontfamily='serif')
 plt.title(f"Final objective evolution per time-step size",fontsize = 16, fontweight='bold', fontfamily='serif', loc="left")
 plt.minorticks_on()
 plt.grid(which='minor', linestyle=':', linewidth=0.75, color='gray', alpha=0.75)
 plt.legend(fontsize=10, prop={'family': 'serif'}, loc="upper left", bbox_to_anchor=(1.02,1))
-plt.savefig(os.path.join(path, "COST_vs_N.svg"))
+plt.savefig(os.path.join(path, "COST_vs_h.svg"))
 plt.show()
 

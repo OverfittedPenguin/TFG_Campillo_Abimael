@@ -1,5 +1,5 @@
 {
-    "END_TIME": 120.0,
+    "END_TIME": 60.0,
     "N": 300,
     "INITIAL_STATE": [30.0, 2.5, -75.0],
     "END_TIME_CONSTRAINTS": 0.0,
