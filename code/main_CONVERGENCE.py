@@ -39,7 +39,7 @@ if not os.path.isfile(aircraft_file):
 aircraft = Aircraft.from_json(aircraft_file)
 
 # N, number of nodes. tF, end time.
-N = np.linspace(25,500,5)
+N = np.linspace(25,500)
 N = N.astype(int)
 
 tF = [10.0, 30.0, 60.0]
@@ -108,8 +108,6 @@ for j in range(len(tF)):
 # PLOTS
 path = os.path.join(os.getcwd(), "images", "convergence")
 os.makedirs(path, exist_ok=True)
-
-
 plt.figure(figsize=(12,8))
 plt.subplots_adjust(
     left=0.10, 
@@ -118,7 +116,30 @@ plt.subplots_adjust(
     top=0.85
     )
 
-# Cost plot.
+h = tF[1] / N
+plt.semilogx(h,obj[:,1],label="Cost J",linestyle="-",linewidth=1.5)
+
+# Titles, grid and legend.
+plt.xlabel(r"$\hslash [s]$",fontsize = 14,fontstyle='italic',fontfamily='serif')
+plt.ylabel("Final cost objective [-]",fontsize = 14, fontstyle='italic', fontfamily='serif')
+plt.title(f"Cost evolution for different values of time-step",fontsize = 16, fontweight='bold', fontfamily='serif', loc="left")
+plt.minorticks_on()
+plt.grid(which='minor', linestyle=':', linewidth=0.75, color='gray', alpha=0.75)
+plt.legend(fontsize=10, prop={'family': 'serif'}, loc="upper left", bbox_to_anchor=(1.02,1))
+plt.savefig(os.path.join(path, "COST_h.svg"))
+plt.show()
+
+
+
+# PLOT 2: CONVERGENCE STUDY FOR DIFFERENT END TIME.
+plt.figure(figsize=(12,8))
+plt.subplots_adjust(
+    left=0.10, 
+    bottom=0.20, 
+    right=0.85, 
+    top=0.85
+    )
+
 for k in range(len(tF)):
     h = tF[k] / N
     plt.semilogx(h,obj[:,k],label=rf"$t_f$: {tF[k]}s",linestyle="-",linewidth=1.5)
@@ -126,10 +147,10 @@ for k in range(len(tF)):
 # Titles, grid and legend.
 plt.xlabel(r"$\hslash [s]$",fontsize = 14,fontstyle='italic',fontfamily='serif')
 plt.ylabel("Final cost objective [-]",fontsize = 14, fontstyle='italic', fontfamily='serif')
-plt.title(f"Final objective evolution per time-step size",fontsize = 16, fontweight='bold', fontfamily='serif', loc="left")
+plt.title(f"Cost evolution for different values of time-step and end time",fontsize = 16, fontweight='bold', fontfamily='serif', loc="left")
 plt.minorticks_on()
 plt.grid(which='minor', linestyle=':', linewidth=0.75, color='gray', alpha=0.75)
 plt.legend(fontsize=10, prop={'family': 'serif'}, loc="upper left", bbox_to_anchor=(1.02,1))
-plt.savefig(os.path.join(path, "COST_vs_h.svg"))
+plt.savefig(os.path.join(path, "COSTS_tF.svg"))
 plt.show()
 
