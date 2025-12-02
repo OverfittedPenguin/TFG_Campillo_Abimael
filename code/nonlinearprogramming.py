@@ -67,12 +67,12 @@ class NLP_CRUISE:
 
         # NLP PROBLEM DEFINITION
         f = ca.sumsqr(ca.vertcat(Fx, Fz, My))
-        nlp = {'x': y, 'f': f}
         opts = {}
         opts['ipopt.max_iter'] = 1000
         opts['ipopt.tol'] = 1e-6
         opts['ipopt.acceptable_tol'] = 1e-3
-        solver = ca.nlpsol('trim_solver_nlp', 'ipopt', nlp)
+        nlp = {'x': y, 'f': f}
+        solver = ca.nlpsol('trim_solver_nlp', 'ipopt', nlp, opts)
 
         # INITIAL GUESS
         y0 = np.array([np.deg2rad(2.0), 0.5, 0.0]) 
