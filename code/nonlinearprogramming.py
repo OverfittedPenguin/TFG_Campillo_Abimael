@@ -100,7 +100,7 @@ class NLP_CRUISE:
         w = V * np.sin(alpha_trim)
         
         w0_state = np.array([u, w, 0.0, alpha_trim, 0.0, -h, m])
-        w0_control = [dt_trim, de_trim, sim.tp]
+        w0_control = [0.5, 0.05, sim.t0]
         w0 = ca.vertcat(w0_state, w0_control)
         
         return w0
@@ -201,10 +201,10 @@ class NLP_CRUISE:
             wa = wi[1] - sim.wind[1]
 
             # Path constraints. Inequality constraints.
-            g_path.append(0.95*sim.Vtp - ca.sqrt(ua**2 + wa**2))
+            g_path.append(0.9*sim.Vtp - ca.sqrt(ua**2 + wa**2))
             lbg_path.append(-1e20)
             ubg_path.append(0)
-            g_path.append(ca.sqrt(ua**2 + wa**2) - 1.05*sim.Vtp)
+            g_path.append(ca.sqrt(ua**2 + wa**2) - 1.1*sim.Vtp)
             lbg_path.append(-1e20)
             ubg_path.append(0)   
 
@@ -225,10 +225,10 @@ class NLP_CRUISE:
         x0 = w[4]
         xf = w[9*N-5]
 
-        g_path.append(0.75*sim.Vtp*sim.tp*0.5 - xf + x0)
+        g_path.append(sim.Vtp*sim.t_lb - xf + x0)
         lbg_path.append(-1e20)
         ubg_path.append(0)
-        g_path.append(xf - x0 - 1.25*sim.Vtp*sim.tp*0.5)
+        g_path.append(xf - x0 - sim.Vtp*sim.t_ub)
         lbg_path.append(-1e20)
         ubg_path.append(0)   
 
@@ -272,8 +272,8 @@ class NLP_CRUISE:
             for j in range(9):
                 lbx.append(lb[j])
                 ubx.append(ub[j])
-        lbx.append(0)
-        ubx.append(sim.tp)
+        lbx.append(sim.t_lb)
+        ubx.append(sim.t_ub)
 
         return lbx, ubx     
 
@@ -306,7 +306,7 @@ class NLP_CRUISE:
             w0_ls.append(w0_trim_node[6])
             w0_ls.append(w0_trim_node[7])
             w0_ls.append(w0_trim_node[8])
-        w0_ls.append(ca.DM(sim.tp))
+        w0_ls.append(ca.DM(sim.t0))
         w0 = np.concatenate(w0_ls)
 
         # DYNAMIC COSNTRAINTS HANDLING

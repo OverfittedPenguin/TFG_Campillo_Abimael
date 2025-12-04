@@ -1,9 +1,10 @@
 {
-    "DT": 0.1,
-    "INITIAL_STATE": [30.0,2.5,-75.0],
+    "DT": 0.005,
+    "INITIAL_STATE": [25.0,2.5,-50.0,81.0],
     "END_TIME_CONSTRAINTS": 0.0,
-    "ADDITIONAL_CONSTRAINTS": [20.0,80.0],
+    "ADDITIONAL_CONSTRAINTS": [22.0],
+    "ADDITIONAL_BOUNDS": [45.0,100.0],
     "WIND_SPEED": [0.0,0.0],
-    "CRUISE_WEIGHTS":[0.50,0.25,0.60,0.60,0.80],
+    "CRUISE_WEIGHTS":[0.25,0.25,0.60,0.90,0.90],
     "AIRCRAFT_FILE": "configs/FlyoxI_VI.json"
 }

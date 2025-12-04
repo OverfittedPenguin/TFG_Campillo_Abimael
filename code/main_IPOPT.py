@@ -40,7 +40,7 @@ aircraft = Aircraft.from_json(aircraft_file)
 
 print("AIRCRAFT LOADED:", aircraft.name)
 print("ATMOS CONDITIONS LOADED.")
-print("SIMULATION CONDITIONS LOADED: dT=",sim.dT,"tF=", sim.tp)
+print("SIMULATION CONDITIONS LOADED: dT=",sim.dT)
 
 # INITIAL STATE COMPUTATIONS
 # Initial mass.

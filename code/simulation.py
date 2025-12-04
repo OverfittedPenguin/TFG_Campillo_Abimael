@@ -10,6 +10,7 @@ class Sim:
             INITIAL_STATE: list,
             END_TIME_CONSTRAINTS: list,
             ADDITIONAL_CONSTRAINTS: list,
+            ADDITIONAL_BOUNDS: list,
             WIND_SPEED: list,
             CRUISE_WEIGHTS:list,
             AIRCRAFT_FILE: str
@@ -19,14 +20,18 @@ class Sim:
             self.N = int(1 / self.dT)
 
             self.x0_USER = np.array(INITIAL_STATE)
+            self.t0 = float(self.x0_USER[3])
             self.x0 = np.zeros(11)
             self.w0 = 0.0
 
             self.wf = END_TIME_CONSTRAINTS
 
             self.CONSTRAINTS = np.array(ADDITIONAL_CONSTRAINTS)
+            self.BOUNDS = np.array(ADDITIONAL_BOUNDS)
             self.Vtp = self.CONSTRAINTS[0]
-            self.tp = float(self.CONSTRAINTS[1])
+            self.t_lb = self.BOUNDS[0]
+            self.t_ub = self.BOUNDS[1]
+            
 
             self.cruise_wg = np.array(CRUISE_WEIGHTS)
 
@@ -62,8 +67,8 @@ class Sim:
         
         # ESSENTIAL KEYS
         essential_keys = [
-            "DT", "INITIAL_STATE", 
-            "END_TIME_CONSTRAINTS", "ADDITIONAL_CONSTRAINTS",
+            "DT", "INITIAL_STATE", "END_TIME_CONSTRAINTS",
+            "ADDITIONAL_CONSTRAINTS", "ADDITIONAL_BOUNDS",
             "WIND_SPEED", "CRUISE_WEIGHTS", "AIRCRAFT_FILE"
         ]
         missing = [k for k in essential_keys if k not in data]
