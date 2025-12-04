@@ -1,6 +1,7 @@
 import casadi as ca
 import numpy as np
 
+
 class NLP_CRUISE:
     def __init__(self):
         # DEFINE STATE AND CONTROLS
@@ -166,8 +167,8 @@ class NLP_CRUISE:
         wk = Fb_total[1] / x7 + x1 * x3
         qk = Mb_total / Iyy
         thetak = x3
-        mk = -ac.SFC
-
+        mk = ca.if_else(x7 > (ac.BEM + ac.PM),-ac.SFC,0.0)
+        
         # KINEMATICS. Inertial velocities computation.
         inertial_vel = ca.mtimes(Rhb, ca.vertcat(x1, x2))
         xk = inertial_vel[0]
