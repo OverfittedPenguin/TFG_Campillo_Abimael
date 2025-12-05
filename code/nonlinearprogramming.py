@@ -135,6 +135,8 @@ class NLP_CRUISE:
 
         # PROPULSIVE FORCE AND MOMENT
         T_max,M_T_max = ac.PROPULSIVE_FORCES_MOMENTS(V,ac.RPM,rho,alpha)
+        T_max = ca.if_else(x7 > (ac.BEM + ac.PM),T_max,0.0)
+        M_T_max = ca.if_else(x7 > (ac.BEM + ac.PM),M_T_max,0.0)
         T = u1 * T_max
         M_T = u1 * M_T_max
         Fb_prop = ca.vertcat(T, 0.0)
@@ -318,7 +320,7 @@ class NLP_CRUISE:
             wi = w[9*k:9*(k+1)]
             wj = w[9*(k+1):9*(k+2)]
             fi = NLP_CRUISE.DYNAMIC_EQUATIONS(wi,ac,at,sim)
-            fj = NLP_CRUISE.DYNAMIC_EQUATIONS(wj,ac,at,sim)
+            fj = NLP_CRUISE.DYNAMIC_EQUATIONS(wj,ac,at,sim)               
             g, lbg, ubg = NLP_CRUISE.DYNAMIC_CONSTRAINTS(wi[:7],wj[:7],fi[:7],fj[:7],dT,tF)
             g_dyn.append(g)
             lbg_dyn.append(lbg)
