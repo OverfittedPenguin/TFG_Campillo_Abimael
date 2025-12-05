@@ -169,7 +169,7 @@ class NLP_CRUISE:
         wk = Fb_total[1] / x7 + x1 * x3
         qk = Mb_total / Iyy
         thetak = x3
-        mk = ca.if_else(x7 > (ac.BEM + ac.PM),-ac.SFC,0.0)
+        mk = ca.if_else(x7 > (ac.BEM + ac.PM),-ac.SFC,0.0) + ca.if_else(ca.logic_and(x5 > (sim.Vtp*1.5),x5 <= (sim.Vtp*(1.5 + 1.0))),-ac.PM,0.0)
         
         # KINEMATICS. Inertial velocities computation.
         inertial_vel = ca.mtimes(Rhb, ca.vertcat(x1, x2))
