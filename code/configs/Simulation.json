@@ -1,6 +1,6 @@
 {
     "DT": 0.005,
-    "INITIAL_STATE": [25.00,45.00],
+    "INITIAL_STATE": [25.00,0.12,45.00],
     "END_STATE": 0.00,
     "WIND_SPEED": [0.00,0.00],
     "TARGET_POINT": [500.00, 500.00, 0.50, 22.00],
