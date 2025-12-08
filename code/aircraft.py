@@ -7,6 +7,7 @@ class Aircraft:
         self,
         NAME: str,
         BEM: float,
+        MTOM: float,
         FM: float,
         PM: float,
         SFC: float,
@@ -36,6 +37,7 @@ class Aircraft:
         # CORE PARAMETERS
         self.name = NAME
         self.BEM = BEM
+        self.MTOM = MTOM
         self.FM = FM
         self.PM = PM
         self.SFC = SFC / 1000
@@ -70,8 +72,33 @@ class Aircraft:
         self.EFFICIENCY_COEFFS = np.array(EFFICIENCY_COEFFS)
         self.MISSION_SPECS = np.array(MISSION_SPECS)
         self.BOUNDS = np.array(OPERATIONAL_LIMITS)
-        self.lb = self.BOUNDS[0]
-        self.ub = self.BOUNDS[1]
+        self.lb_USER = self.BOUNDS[0]
+        self.ub_USER = self.BOUNDS[1]
+
+        # BOUNDS
+        self.lb = np.zeros(9)
+        self.ub = np.zeros(9)
+
+        # Computation of maximum and minimum body velocities.
+        umax, wmax = self.ub_USER[0] / np.cos(self.ub_USER[1]), self.ub_USER[0] / np.sin(self.ub_USER[1])
+        umin, wmin = np.min(abs(self.lb_USER[0] / np.cos(self.lb_USER[1])),0.0), self.lb_USER[0] / np.sin(self.lb_USER[1])
+        self.lb[0], self.lb[1] = umin, wmin
+        self.ub[0], self.ub[1] = umax, wmax
+
+        # Pitch rate and pitch bounds.
+        self.lb[2], self.lb[3] = 0.0, self.lb_USER[1]
+        self.ub[2], self.ub[3] = 0.0, self.ub_USER[1]
+
+        # Distance and altitude bounds.
+        self.lb[4], self.lb[5] = self.lb_USER[2], self.lb_USER[3]
+        self.ub[4], self.ub[5] = self.ub_USER[2], self.ub_USER[3]
+
+        # Mass bounds.
+        self.lb[6], self.ub[6] = self.BEM, self.MTOM
+
+        # Control bounds.
+        self.lb[7], self.lb[8] = self.lb_USER[4], self.lb_USER[4]
+        self.ub[7], self.ub[8] = self.ub_USER[4], self.ub_USER[4]
 
         # Extracting aerodynamic force and moments coefficients for 
         # different flap configurations and for elevator contribution.
@@ -111,7 +138,7 @@ class Aircraft:
         
         # ESSENTIAL KEYS
         essential_keys = [
-            "NAME","BEM","FM","PM","SFC","AR","b","c","e",
+            "NAME","BEM","MTOM","FM","PM","SFC","AR","b","c","e",
             "CGx","CGz","CPwx","CPwz","CTx","CTz","Dp","nENG",
             "EPS0","Iyy","LIFT_DRAG_COEFFS","MOMENT_COEFFS",
             "ELEVATOR_COEFFS","THRUST_COEFFS","EFFICIENCY_COEFFS", 

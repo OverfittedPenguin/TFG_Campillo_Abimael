@@ -23,7 +23,7 @@ class Sim:
 
             self.x0_USER = np.array(INITIAL_STATE)
             self.V0 = float(self.x0_USER[0])
-            self.theta0 = float(self.x0_USER[1])
+            self.th0 = float(self.x0_USER[1])
             self.t0 = float(self.x0_USER[2])
             self.x0 = np.zeros(8)
             self.w0 = 0.0
@@ -32,25 +32,25 @@ class Sim:
 
             self.wind = np.array(WIND_SPEED)
 
-            self.target = np.array(TARGET_POINT)
-            self.R_entry = float(self.target[0])
-            self.R_exit = float(self.target[1])
-            self.f_tp = float(self.target[2])
-            self.Vtp = float(self.target[3])
+            self.TARGET = np.array(TARGET_POINT)
+            self.R_entry = float(self.TARGET[0])
+            self.R_exit = float(self.TARGET[1])
+            self.f_tp = float(self.TARGET[2])
+            self.Vtp = float(self.TARGET[3])
 
-            self.bounds = np.array(MISSION_BOUNDS)
-            self.lb = self.bounds[0]
-            self.ub = self.bounds[1]
+            self.BOUNDS = np.array(MISSION_BOUNDS)
+            self.lb = self.BOUNDS[0]
+            self.ub = self.BOUNDS[1]
             
-            self.stg1_wg = np.array(STG1_WEIGHTS)
-            self.stg2_wg = np.array(STG2_WEIGHTS)
-            self.stg3_wg = np.array(STG3_WEIGHTS)
+            self.STG1_wg = np.array(STG1_WEIGHTS)
+            self.STG2_wg = np.array(STG2_WEIGHTS)
+            self.STG3_wg = np.array(STG3_WEIGHTS)
 
-            self.Aircraft_file = AIRCRAFT_FILE
+            self.AIRCRAFT_FILE = AIRCRAFT_FILE
 
             # INITIAL STATE COMPUTATIONS
             # Body velocities. Aerodynamic velocity.
-            u, w = self.V0 / np.cos(self.theta0), self.V0 / np.sin(self.theta0)
+            u, w = self.V0 / np.cos(self.th0), self.V0 / np.sin(self.th0)
             ua, wa = u - self.wind[0], w - self.wind[1]
             V = np.sqrt(ua**2 + wa**2)
             self.x0[0] = V
@@ -61,7 +61,7 @@ class Sim:
             self.x0[3] = 0.0
 
             # Pitch. User input.
-            self.x0[4] = self.theta0
+            self.x0[4] = self.th0
 
             # Initial distance and altitude. Zero and target point altitude (altitude ub, cruise altitude).
             self.x0[5] = 0.0
