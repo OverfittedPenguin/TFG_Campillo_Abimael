@@ -81,7 +81,7 @@ class Aircraft:
 
         # Computation of maximum and minimum body velocities.
         umax, wmax = self.ub_USER[0] / np.cos(self.ub_USER[1]), self.ub_USER[0] / np.sin(self.ub_USER[1])
-        umin, wmin = np.min(abs(self.lb_USER[0] / np.cos(self.lb_USER[1])),0.0), self.lb_USER[0] / np.sin(self.lb_USER[1])
+        umin, wmin = 0.0, self.lb_USER[0] / np.sin(self.lb_USER[1])
         self.lb[0], self.lb[1] = umin, wmin
         self.ub[0], self.ub[1] = umax, wmax
 
@@ -97,8 +97,8 @@ class Aircraft:
         self.lb[6], self.ub[6] = self.BEM, self.MTOM
 
         # Control bounds.
-        self.lb[7], self.lb[8] = self.lb_USER[4], self.lb_USER[4]
-        self.ub[7], self.ub[8] = self.ub_USER[4], self.ub_USER[4]
+        self.lb[7], self.lb[8] = self.lb_USER[4], self.lb_USER[5]
+        self.ub[7], self.ub[8] = self.ub_USER[4], self.ub_USER[5]
 
         # Extracting aerodynamic force and moments coefficients for 
         # different flap configurations and for elevator contribution.

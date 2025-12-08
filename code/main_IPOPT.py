@@ -4,7 +4,7 @@ import casadi as ca
 from aircraft import Aircraft
 from simulation import Sim
 from atmosphere import Atmos
-from nonlinearprogramming import NLP_CRUISE
+from nonlinearprogramming import NLP_STG2
 from plotterfunction import Plotter
 
 ###########################################################
@@ -30,7 +30,7 @@ sim = Sim.from_json(simulation_file)
 atmos = Atmos.from_json(atmos_file)
 
 # AIRCRAFT CONFIG FILE PATH
-aircraft_file = sim.Aircraft_file
+aircraft_file = sim.AIRCRAFT_FILE
 
 # Validate that files exist.
 if not os.path.isfile(aircraft_file):
@@ -40,7 +40,6 @@ aircraft = Aircraft.from_json(aircraft_file)
 
 print("AIRCRAFT LOADED:", aircraft.name)
 print("ATMOS CONDITIONS LOADED.")
-print("SIMULATION CONDITIONS LOADED: dT=",sim.dT)
 
 # INITIAL STATE COMPUTATIONS
 # Initial mass.
@@ -60,9 +59,9 @@ sim.w0 = x0
 
 # CRUISE SUBPROBLEM DEFINITION. Cruise flight trajectory
 # defined as a NLP problem.
-nlp = NLP_CRUISE()
-w0, w, lbx, ubx, g, lbg, ubg = NLP_CRUISE.CONSTRAINTS_AND_BOUNDS(nlp.x,nlp.u,nlp.utf,aircraft,atmos,sim)
-J = NLP_CRUISE.COST_FUCNTIONAL(w,aircraft,atmos,sim)
+nlp = NLP_STG2()
+w0, w, lbx, ubx, g, lbg, ubg = NLP_STG2.CONSTRAINTS_AND_BOUNDS(nlp.x,nlp.u,nlp.utf,aircraft,atmos,sim)
+J = NLP_STG2.COST_FUCNTIONAL(w,aircraft,atmos,sim)
 
 # Redefining vectors as stipulated by CASADi dictionary.
 w = ca.vertcat(w)

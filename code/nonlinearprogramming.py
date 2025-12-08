@@ -2,7 +2,7 @@ import casadi as ca
 import numpy as np
 
 
-class NLP_CRUISE:
+class NLP_STG2:
     def __init__(self):
         # DEFINE STATE AND CONTROLS
         # 7 states [u,w,q,theta,x,z,m].
@@ -169,7 +169,8 @@ class NLP_CRUISE:
         wk = Fb_total[1] / x7 + x1 * x3
         qk = Mb_total / Iyy
         thetak = x3
-        mk = ca.if_else(x7 > (ac.BEM + ac.PM),-ac.SFC,0.0) + ca.if_else(ca.logic_and(x5 > (sim.Vtp*1.5),x5 <= (sim.Vtp*(1.5 + 1.0))),-ac.PM,0.0)
+        mk = ca.if_else(x7 > (ac.BEM + ac.PM),-ac.SFC,0.0) # SFC.
+        mk += ca.if_else(ca.logic_and(x5 > (sim.Vtp*1.5),x5 <= (sim.Vtp*(1.5 + 1.0))),-ac.PM,0.0) # Mass discharge.
         
         # KINEMATICS. Inertial velocities computation.
         inertial_vel = ca.mtimes(Rhb, ca.vertcat(x1, x2))
@@ -212,8 +213,8 @@ class NLP_CRUISE:
             ubg_path.append(0)   
 
             # TARGET ALTITUDE CONSTRAINT
-            href_l = -sim.w0[5] - 2.5
-            href_u = -sim.w0[5] + 2.5
+            href_l = -sim.ub[3] - 2.5
+            href_u = -sim.ub[3] + 2.5
             hi = -wi[5]
 
             # Path constraints. Inequality constraints.
@@ -228,10 +229,10 @@ class NLP_CRUISE:
         x0 = w[4]
         xf = w[9*N-5]
 
-        g_path.append(sim.Vtp*sim.t_lb - xf + x0)
+        g_path.append(sim.Vtp*sim.lb[0] - xf + x0)
         lbg_path.append(-1e20)
         ubg_path.append(0)
-        g_path.append(xf - x0 - sim.Vtp*sim.t_ub)
+        g_path.append(xf - x0 - sim.Vtp*sim.ub[0])
         lbg_path.append(-1e20)
         ubg_path.append(0)   
 
@@ -275,8 +276,8 @@ class NLP_CRUISE:
             for j in range(9):
                 lbx.append(lb[j])
                 ubx.append(ub[j])
-        lbx.append(sim.t_lb)
-        ubx.append(sim.t_ub)
+        lbx.append(sim.lb[0])
+        ubx.append(sim.ub[0])
 
         return lbx, ubx     
 
@@ -289,11 +290,11 @@ class NLP_CRUISE:
         ub = ac.ub
 
         # STATE AND CONTROL VECTORS
-        w = NLP_CRUISE.STATES_CONTROL_VECTOR(x,u,utf,N)
+        w = NLP_STG2.STATES_CONTROL_VECTOR(x,u,utf,N)
         tF = w[9*N]
 
         # Computation of trim condition.
-        w0_trim_node = NLP_CRUISE.COMPUTE_TRIM(ac,at,sim)
+        w0_trim_node = NLP_STG2.COMPUTE_TRIM(ac,at,sim)
         sim.w0 = w0_trim_node[:9]
         
         # Reconstruction of full initial guess
@@ -319,22 +320,22 @@ class NLP_CRUISE:
         for k in range(N-1):
             wi = w[9*k:9*(k+1)]
             wj = w[9*(k+1):9*(k+2)]
-            fi = NLP_CRUISE.DYNAMIC_EQUATIONS(wi,ac,at,sim)
-            fj = NLP_CRUISE.DYNAMIC_EQUATIONS(wj,ac,at,sim)               
-            g, lbg, ubg = NLP_CRUISE.DYNAMIC_CONSTRAINTS(wi[:7],wj[:7],fi[:7],fj[:7],dT,tF)
+            fi = NLP_STG2.DYNAMIC_EQUATIONS(wi,ac,at,sim)
+            fj = NLP_STG2.DYNAMIC_EQUATIONS(wj,ac,at,sim)               
+            g, lbg, ubg = NLP_STG2.DYNAMIC_CONSTRAINTS(wi[:7],wj[:7],fi[:7],fj[:7],dT,tF)
             g_dyn.append(g)
             lbg_dyn.append(lbg)
             ubg_dyn.append(ubg)
         g_dyn = sum(g_dyn,[])
 
         # PATH CONSTRAINTS HANDLING
-        g_path, lbg_path, ubg_path = NLP_CRUISE.PATH_CONSTRAINTS(w,sim,N)
+        g_path, lbg_path, ubg_path = NLP_STG2.PATH_CONSTRAINTS(w,sim,N)
 
         # INITIAL AND FINAL STATE CONSTRAINTS HANDLING
-        g_0, g_f, lbg_0, lbg_f, ubg_0, ubg_f = NLP_CRUISE.INITIAL_AND_FINAL_CONSTRAINTS(w,sim.w0,sim.wf,N)
+        g_0, g_f, lbg_0, lbg_f, ubg_0, ubg_f = NLP_STG2.INITIAL_AND_FINAL_CONSTRAINTS(w,sim.w0,sim.wf,N)
 
         # SIMPLE BOUNDS FOR STATES AND CONTROL
-        lbx, ubx = NLP_CRUISE.SIMPLE_BOUNDS(lb,ub,sim,N)
+        lbx, ubx = NLP_STG2.SIMPLE_BOUNDS(lb,ub,sim,N)
 
         # Construction of final vectors.
         g = g_dyn + g_path + g_0 + g_f
@@ -353,23 +354,23 @@ class NLP_CRUISE:
         tF = w[9*N]
         for k in range(N-1):
             # Weights assignation for gamma, gamma dot and controls.
-            wg = sim.cruise_wg[0]
-            wh = sim.cruise_wg[1]
-            wg_dot = sim.cruise_wg[2]
-            wdt = sim.cruise_wg[3]
-            wde = sim.cruise_wg[4]
+            wg = sim.STG2_wg[0]
+            wh = sim.STG2_wg[1]
+            wg_dot = sim.STG2_wg[2]
+            wdt = sim.STG2_wg[3]
+            wde = sim.STG2_wg[4]
 
             # Normalisation vars.
             g_max = np.deg2rad(12.0)
             g_dot_max = g_max / sim.dT
             de_max = np.deg2rad(12.0)
-            href = -sim.w0[5]
+            href = -sim.ub[3]
 
             # Actual and next states and functions.
             wi = w[9*k:9*(k+1)]
             wj = w[9*(k+1):9*(k+2)]
-            fi = NLP_CRUISE.DYNAMIC_EQUATIONS(wi,ac,at,sim)
-            fj = NLP_CRUISE.DYNAMIC_EQUATIONS(wj,ac,at,sim)
+            fi = NLP_STG2.DYNAMIC_EQUATIONS(wi,ac,at,sim)
+            fj = NLP_STG2.DYNAMIC_EQUATIONS(wj,ac,at,sim)
 
             # Alpha computation and theta retrieving.
             ai = ca.atan2(wi[1],wi[0])
