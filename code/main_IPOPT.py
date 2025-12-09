@@ -4,7 +4,7 @@ import casadi as ca
 from aircraft import Aircraft
 from simulation import Sim
 from atmosphere import Atmos
-from nonlinearprogramming import NLP_STG2
+from nonlinearprogramming import NLP_STG1, NLP_STG2
 from plotterfunction import Plotter
 
 ###########################################################
