@@ -59,9 +59,9 @@ sim.w0 = x0
 
 # CRUISE SUBPROBLEM DEFINITION. Cruise flight trajectory
 # defined as a NLP problem.
-nlp = NLP_STG2()
-w0, w, lbx, ubx, g, lbg, ubg = NLP_STG2.CONSTRAINTS_AND_BOUNDS(nlp.x,nlp.u,nlp.utf,aircraft,atmos,sim)
-J = NLP_STG2.COST_FUCNTIONAL(w,aircraft,atmos,sim)
+nlp = NLP_STG1()
+w0, w, lbx, ubx, g, lbg, ubg = NLP_STG1.CONSTRAINTS_AND_BOUNDS(nlp.x,nlp.u,nlp.utf,aircraft,atmos,sim)
+J = NLP_STG1.COST_FUCNTIONAL(w,aircraft,atmos,sim)
 
 # Redefining vectors as stipulated by CASADi dictionary.
 w = ca.vertcat(w)
@@ -75,9 +75,9 @@ ubx = ca.vertcat(*ubx)
 # SOLVER
 # Configuration of the NLP and the solver.
 opts = {}
-opts['ipopt.max_iter'] = 3000
-opts['ipopt.tol'] = 1e-12
-opts['ipopt.acceptable_tol'] = 1e-12
+opts['ipopt.max_iter'] = 1000
+opts['ipopt.tol'] = 1e-8
+opts['ipopt.acceptable_tol'] = 1e-8
 nlp = {"x": w, "f": J, "g": g}
 solver = ca.nlpsol("solver", "ipopt", nlp)
 

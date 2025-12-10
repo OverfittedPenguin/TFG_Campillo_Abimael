@@ -76,8 +76,8 @@ class NLP_STG1:
         f = ca.sumsqr(ca.vertcat(Fx, Fz, My))
         opts = {}
         opts['ipopt.max_iter'] = 1000
-        opts['ipopt.tol'] = 1e-12
-        opts['ipopt.acceptable_tol'] = 1e-12
+        opts['ipopt.tol'] = 1e-8
+        opts['ipopt.acceptable_tol'] = 1e-8
         nlp = {'x': y, 'f': f}
         solver = ca.nlpsol('trim_solver_nlp', 'ipopt', nlp, opts)
 
@@ -368,18 +368,20 @@ class NLP_STG1:
         dT = sim.dT
         N = sim.N
         tF = w[9*N]
+
+        # Weights assignation for gamma dot and controls.
+        w_tF = sim.STG1_wg[0]
+        wg_dot = sim.STG1_wg[1]
+        wdt = sim.STG1_wg[2]
+        wde = sim.STG1_wg[3]
+        
+        # Normalisation vars.
+        VS = ac.lb_USER[0]
+        gmax = np.abs(np.asin(sim.lb[4] / VS))
+        g_dot_max = gmax / sim.dT
+        de_max = ac.ub[8]
+        
         for k in range(N-1):
-            # Weights assignation for gamma dot and controls.
-            wg_dot = sim.STG1_wg[0]
-            wdt = sim.STG1_wg[1]
-            wde = sim.STG1_wg[2]
-
-            # Normalisation vars.
-            VS = ac.lb_USER[0]
-            gmax = np.abs(np.asin(sim.lb[4] / VS))
-            g_dot_max = gmax / sim.dT
-            de_max = ac.ub[8]
-
             # Actual and next states and functions.
             wi = w[9*k:9*(k+1)]
             wj = w[9*(k+1):9*(k+2)]
@@ -391,8 +393,8 @@ class NLP_STG1:
             gj_dot = wj[2] - (fj[1]*wj[0] - fj[0]*wj[1]) / (wj[0]**2 + wj[1]**2)
 
             # COST FUCNTIONAL (Minimisation of gamma, gamma dot and controls)
-            J += dT/2 * (wg_dot*(gi_dot**2 + gj_dot**2) / g_dot_max**2) + wde*(wj[8] - wi[8])**2 / (sim.dT*de_max**2) + wdt*(wj[7] - wi[7])**2 / sim.dT
-        J += tF
+            J += (dT * tF)/2 * (wg_dot*(gi_dot**2 + gj_dot**2) / g_dot_max**2) + wde*(wj[8] - wi[8])**2 / (tF*sim.dT*de_max**2) + wdt*(wj[7] - wi[7])**2 / (sim.dT * tF)
+        J += w_tF*tF
         return J
 
 class NLP_STG2:
@@ -470,8 +472,8 @@ class NLP_STG2:
         f = ca.sumsqr(ca.vertcat(Fx, Fz, My))
         opts = {}
         opts['ipopt.max_iter'] = 1000
-        opts['ipopt.tol'] = 1e-12
-        opts['ipopt.acceptable_tol'] = 1e-12
+        opts['ipopt.tol'] = 1e-8
+        opts['ipopt.acceptable_tol'] = 1e-8
         nlp = {'x': y, 'f': f}
         solver = ca.nlpsol('trim_solver_nlp', 'ipopt', nlp, opts)
 
@@ -746,20 +748,24 @@ class NLP_STG2:
         dT = sim.dT
         N = sim.N
         tF = w[9*N]
-        for k in range(N-1):
-            # Weights assignation for gamma, gamma dot and controls.
-            wg = sim.STG2_wg[0]
-            wh = sim.STG2_wg[1]
-            wg_dot = sim.STG2_wg[2]
-            wdt = sim.STG2_wg[3]
-            wde = sim.STG2_wg[4]
+        
+        # Weights assignation for gamma, gamma dot and controls.
+        w_tF = sim.STG2_wg[0]
+        wg = sim.STG2_wg[1]
+        wh = sim.STG2_wg[2]
+        wg_dot = sim.STG2_wg[3]
+        wdt = sim.STG2_wg[4]
+        wde = sim.STG2_wg[5]
 
-            # Normalisation vars.
-            VS = ac.lb_USER[0]
-            gmax = np.asin(sim.ub[4] / VS)
-            g_dot_max = gmax / sim.dT
-            de_max = ac.ub[8]
-            href = -sim.ub[3]
+        # Normalisation vars.
+        VS = ac.lb_USER[0]
+        gmax = np.asin(sim.ub[4] / VS)
+        g_dot_max = gmax / sim.dT
+        de_max = ac.ub[8]
+        href = -sim.ub[3]
+
+        for k in range(N-1):
+ 
 
             # Actual and next states and functions.
             wi = w[9*k:9*(k+1)]
@@ -786,6 +792,6 @@ class NLP_STG2:
             hj = -wj[5]
 
             # COST FUCNTIONAL (Minimisation of gamma, gamma dot and controls)
-            J += dT/2 * (wg*(gi**2 + gj**2) / gmax**2 + wg_dot*(gi_dot**2 + gj_dot**2) / g_dot_max**2  + wh*((hi - href)**2 / href**2 + (hj - href)**2 / href**2)) + wde*(wj[8] - wi[8])**2 / (sim.dT*de_max**2) + wdt*(wj[7] - wi[7])**2 / sim.dT
-        J += tF
+            J += (dT*tF)/2 * (wg*(gi**2 + gj**2) / gmax**2 + wg_dot*(gi_dot**2 + gj_dot**2) / g_dot_max**2  + wh*((hi - href)**2 / href**2 + (hj - href)**2 / href**2)) + wde*(wj[8] - wi[8])**2 / (tF*sim.dT*de_max**2) + wdt*(wj[7] - wi[7])**2 / (tF*sim.dT)
+        J += w_tF*tF
         return J
