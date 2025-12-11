@@ -4,7 +4,7 @@ import casadi as ca
 from aircraft import Aircraft
 from simulation import Sim
 from atmosphere import Atmos
-from nonlinearprogramming import NLP_STG1, NLP_STG2
+from nonlinearprogramming import NLP_STG1, NLP_STG2, NLP_STG3
 from plotterfunction import Plotter
 
 ###########################################################
@@ -59,9 +59,9 @@ sim.w0 = x0
 
 # CRUISE SUBPROBLEM DEFINITION. Cruise flight trajectory
 # defined as a NLP problem.
-nlp = NLP_STG1()
-w0, w, lbx, ubx, g, lbg, ubg = NLP_STG1.CONSTRAINTS_AND_BOUNDS(nlp.x,nlp.u,nlp.utf,aircraft,atmos,sim)
-J = NLP_STG1.COST_FUCNTIONAL(w,aircraft,atmos,sim)
+nlp = NLP_STG3()
+w0, w, lbx, ubx, g, lbg, ubg = NLP_STG3.CONSTRAINTS_AND_BOUNDS(nlp.x,nlp.u,nlp.utf,aircraft,atmos,sim)
+J = NLP_STG3.COST_FUCNTIONAL(w,aircraft,atmos,sim)
 
 # Redefining vectors as stipulated by CASADi dictionary.
 w = ca.vertcat(w)
