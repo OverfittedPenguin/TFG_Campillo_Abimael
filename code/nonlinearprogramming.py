@@ -1199,8 +1199,8 @@ class NLP_STG3:
             de_dot = (dej - dei)**2 / (de_max**2*dT*tF)
 
             # Elevator saturation.
-            desi = dei**2 / de_max**2
-            desj = dej**2 / de_max**2
+            desi = dei**4 / de_max**4
+            desj = dej**4 / de_max**4
 
             # Running cost at instants i and j.
             Li = wg_g_dot*gi_dot + wg_sp*spi + wg_dtps*dtps_dot + wg_de*de_dot + wg_de_sat*desi
