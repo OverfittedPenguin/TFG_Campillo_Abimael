@@ -76,8 +76,8 @@ class NLP_STG1:
         f = ca.sumsqr(ca.vertcat(Fx, Fz, My))
         opts = {}
         opts['ipopt.max_iter'] = 3000
-        opts['ipopt.tol'] = 1e-9
-        opts['ipopt.acceptable_tol'] = 1e-9
+        opts['ipopt.tol'] = 1e-6
+        opts['ipopt.acceptable_tol'] = 1e-6
         nlp = {'x': y, 'f': f}
         solver = ca.nlpsol('trim_solver_nlp', 'ipopt', nlp, opts)
 
@@ -349,7 +349,7 @@ class NLP_STG1:
         VS = ac.lb_USER[0]
 
         gmin = np.asin(sim.lb[4] / VS)
-        g_dot_max = gmin / (sim.dT*tF)
+        g_dot_max = gmin**2 / (sim.dT*tF)
         de_max = ac.ub[8]
         
         for k in range(N-1):
@@ -377,17 +377,17 @@ class NLP_STG1:
             gj = (thj - aj) / gmin
 
             # Gamma dot computation.
-            gi_dot = (wi[2] - (fi[1]*wi[0] - fi[0]*wi[1]) / (wi[0]**2 + wi[1]**2))**2 / g_dot_max**2
-            gj_dot = (wj[2] - (fj[1]*wj[0] - fj[0]*wj[1]) / (wj[0]**2 + wj[1]**2))**2 / g_dot_max**2
+            gi_dot = (wi[2] - (fi[1]*wi[0] - fi[0]*wi[1]) / (wi[0]**2 + wi[1]**2))**2 / g_dot_max
+            gj_dot = (wj[2] - (fj[1]*wj[0] - fj[0]*wj[1]) / (wj[0]**2 + wj[1]**2))**2 / g_dot_max
 
             # Control rates.
             dtpsi = wi[7]
             dtpsj = wj[7]
-            dtps_dot = (dtpsj - dtpsi)**2 / (dT*tF)**2
+            dtps_dot = (dtpsj - dtpsi)**2 / (dT*tF)
             
             dei = wi[8]
             dej = wj[8]
-            de_dot = (dej - dei)**2 / (de_max*dT*tF)**2
+            de_dot = (dej - dei)**2 / (de_max**2*dT*tF)
 
             # Running cost at instants i and j.
             Li = wg_g*(gi - 1)**2 + wg_dot*gi_dot + wg_dtps*dtps_dot + wg_de*de_dot
@@ -475,8 +475,8 @@ class NLP_STG2:
         f = ca.sumsqr(ca.vertcat(Fx, Fz, My))
         opts = {}
         opts['ipopt.max_iter'] = 3000
-        opts['ipopt.tol'] = 1e-9
-        opts['ipopt.acceptable_tol'] = 1e-9
+        opts['ipopt.tol'] = 1e-6
+        opts['ipopt.acceptable_tol'] = 1e-6
         nlp = {'x': y, 'f': f}
         solver = ca.nlpsol('trim_solver_nlp', 'ipopt', nlp, opts)
 
@@ -756,7 +756,7 @@ class NLP_STG2:
         # Normalisation vars.
         VS = ac.lb_USER[0]
         gmax = np.asin(sim.ub[4] / VS)
-        g_dot_max = gmax / (sim.dT*tF)
+        g_dot_max = gmax**2 / (dT*tF)
         de_max = ac.ub[8]
         href = -sim.ub[3]
 
@@ -789,17 +789,17 @@ class NLP_STG2:
             hj = -wj[5] / href
 
             # Gamma dot computation.
-            gi_dot = (wi[2] - (fi[1]*wi[0] - fi[0]*wi[1]) / (wi[0]**2 + wi[1]**2))**2 / g_dot_max**2
-            gj_dot = (wj[2] - (fj[1]*wj[0] - fj[0]*wj[1]) / (wj[0]**2 + wj[1]**2))**2 / g_dot_max**2
+            gi_dot = (wi[2] - (fi[1]*wi[0] - fi[0]*wi[1]) / (wi[0]**2 + wi[1]**2))**2 / g_dot_max
+            gj_dot = (wj[2] - (fj[1]*wj[0] - fj[0]*wj[1]) / (wj[0]**2 + wj[1]**2))**2 / g_dot_max
 
             # Control rates.
             dtpsi = wi[7]
             dtpsj = wj[7]
-            dtps_dot = (dtpsj - dtpsi)**2 / (dT*tF)**2
+            dtps_dot = (dtpsj - dtpsi)**2 / (dT*tF)
             
             dei = wi[8]
             dej = wj[8]
-            de_dot = (dej - dei)**2 / (de_max*dT*tF)**2
+            de_dot = (dej - dei)**2 / (de_max**2*dT*tF)
 
             # Running cost at instants i and j.
             Li = wg_g*gi + wg_h*(hi - 1)**2 + wg_g_dot*gi_dot + wg_dtps*dtps_dot + wg_de*de_dot
@@ -887,8 +887,8 @@ class NLP_STG3:
         f = ca.sumsqr(ca.vertcat(Fx, Fz, My))
         opts = {}
         opts['ipopt.max_iter'] = 3000
-        opts['ipopt.tol'] = 1e-9
-        opts['ipopt.acceptable_tol'] = 1e-9
+        opts['ipopt.tol'] = 1e-6
+        opts['ipopt.acceptable_tol'] = 1e-6
         nlp = {'x': y, 'f': f}
         solver = ca.nlpsol('trim_solver_nlp', 'ipopt', nlp, opts)
 
@@ -1160,7 +1160,7 @@ class NLP_STG3:
         # Normalisation vars.
         VS = ac.lb_USER[0]
         gmax = np.asin(sim.ub[4] / VS)
-        g_dot_max = gmax / sim.dT
+        g_dot_max = gmax**2 / (dT*tF)
         asf = 0.60*ac.ub[3]
         amg = 0.40*ac.ub[3]
         de_max = ac.ub[8]
@@ -1186,17 +1186,17 @@ class NLP_STG3:
             spj = ca.mmax(ca.if_else((aj - asf) > 0.0, ai - asf, 0.0))**2 / amg**2
 
             # Gamma dot computation.
-            gi_dot = (wi[2] - (fi[1]*wi[0] - fi[0]*wi[1]) / (wi[0]**2 + wi[1]**2))**2 / g_dot_max**2
-            gj_dot = (wj[2] - (fj[1]*wj[0] - fj[0]*wj[1]) / (wj[0]**2 + wj[1]**2))**2 / g_dot_max**2
+            gi_dot = (wi[2] - (fi[1]*wi[0] - fi[0]*wi[1]) / (wi[0]**2 + wi[1]**2))**2 / g_dot_max
+            gj_dot = (wj[2] - (fj[1]*wj[0] - fj[0]*wj[1]) / (wj[0]**2 + wj[1]**2))**2 / g_dot_max
 
             # Control rates.
             dtpsi = wi[7]
             dtpsj = wj[7]
-            dtps_dot = (dtpsj - dtpsi)**2 / (dT*tF)**2
+            dtps_dot = (dtpsj - dtpsi)**2 / (dT*tF)
             
             dei = wi[8]
             dej = wj[8]
-            de_dot = (dej - dei)**2 / (de_max*dT*tF)**2
+            de_dot = (dej - dei)**2 / (de_max**2*dT*tF)
 
             # Elevator saturation.
             desi = dei**2 / de_max**2

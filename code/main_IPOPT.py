@@ -74,8 +74,8 @@ ubx = ca.vertcat(*ubx)
 # Configuration of the NLP and the solver.
 opts = {}
 opts['ipopt.max_iter'] = 3000
-opts['ipopt.tol'] = 1e-9
-opts['ipopt.acceptable_tol'] = 1e-9
+opts['ipopt.tol'] = 1e-6
+opts['ipopt.acceptable_tol'] = 1e-6
 nlp = {"x": w, "f": J, "g": g}
 solver = ca.nlpsol("solver", "ipopt", nlp)
 
@@ -125,8 +125,8 @@ ubx = ca.vertcat(*ubx)
 # Configuration of the NLP and the solver.
 opts = {}
 opts['ipopt.max_iter'] = 3000
-opts['ipopt.tol'] = 1e-9
-opts['ipopt.acceptable_tol'] = 1e-9
+opts['ipopt.tol'] = 1e-6
+opts['ipopt.acceptable_tol'] = 1e-6
 nlp = {"x": w, "f": J, "g": g}
 solver = ca.nlpsol("solver", "ipopt", nlp)
 
@@ -176,8 +176,8 @@ ubx = ca.vertcat(*ubx)
 # Configuration of the NLP and the solver.
 opts = {}
 opts['ipopt.max_iter'] = 3000
-opts['ipopt.tol'] = 1e-9
-opts['ipopt.acceptable_tol'] = 1e-9
+opts['ipopt.tol'] = 1e-6
+opts['ipopt.acceptable_tol'] = 1e-6
 nlp = {"x": w, "f": J, "g": g}
 solver = ca.nlpsol("solver", "ipopt", nlp)
 
