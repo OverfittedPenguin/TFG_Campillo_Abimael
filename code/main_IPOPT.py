@@ -89,22 +89,16 @@ sol = solver(
 )
 
 # Retrieving of iterations values and objective value.
-iters = solver.stats()['iter_count']
-obj = solver.stats()['iterations']['obj']
-time = np.round(solver.stats()['t_proc_total'],3)
+iters1 = solver.stats()['iter_count']
+obj1 = solver.stats()['iterations']['obj']
+time1 = np.round(solver.stats()['t_proc_total'],3)
 
-x = sol['x'].full().flatten()
-tF = x[9*sim.N]
-x = x[:9*sim.N]
-t = np.linspace(0.0, tF, sim.N)
+x1 = sol['x'].full().flatten()
+tF1 = x1[9*sim.N]
+x1 = x1[:9*sim.N]
 
-sim.w0 = x[9*(sim.N-1):9*sim.N]
-
-# PLOTS
-path = os.path.join(os.getcwd(), "images", "cruise_tf")
-os.makedirs(path, exist_ok=True)
-Plotter.GENERATE_RESULTS_PLOT(t,x,w0,aircraft,sim,path)
-Plotter.GENERATE_COST_PLOT(np.linspace(0,iters,len(obj)),np.array(obj),time,path)
+# Change in initial conditions. Stages chaining.
+sim.w0 = x1[9*(sim.N-1):9*sim.N]
 
 # STAGE 2: DISCHARGE. Cruise flight trajectory
 # defined as a NLP problem.
@@ -140,22 +134,16 @@ sol = solver(
 )
 
 # Retrieving of iterations values and objective value.
-iters = solver.stats()['iter_count']
-obj = solver.stats()['iterations']['obj']
-time = np.round(solver.stats()['t_proc_total'],3)
+iters2 = solver.stats()['iter_count']
+obj2 = solver.stats()['iterations']['obj']
+time2 = np.round(solver.stats()['t_proc_total'],3)
 
-x = sol['x'].full().flatten()
-tF = x[9*sim.N]
-x = x[:9*sim.N]
-t = np.linspace(0.0, tF, sim.N)
+x2 = sol['x'].full().flatten()
+tF2 = x2[9*sim.N]
+x2 = x2[:9*sim.N]
 
-sim.w0 = x[9*(sim.N-1):9*sim.N]
-
-# PLOTS
-path = os.path.join(os.getcwd(), "images", "cruise_tf")
-os.makedirs(path, exist_ok=True)
-Plotter.GENERATE_RESULTS_PLOT(t,x,w0,aircraft,sim,path)
-Plotter.GENERATE_COST_PLOT(np.linspace(0,iters,len(obj)),np.array(obj),time,path)
+# Change in initial conditions. Stages chaining.
+sim.w0 = x2[9*(sim.N-1):9*sim.N]
 
 # STAGE 3: CLIMB. Climb flight trajectory
 # defined as a NLP problem.
@@ -191,17 +179,19 @@ sol = solver(
 )
 
 # Retrieving of iterations values and objective value.
-iters = solver.stats()['iter_count']
-obj = solver.stats()['iterations']['obj']
-time = np.round(solver.stats()['t_proc_total'],3)
+iters3 = solver.stats()['iter_count']
+obj3 = solver.stats()['iterations']['obj']
+time3 = np.round(solver.stats()['t_proc_total'],3)
 
-x = sol['x'].full().flatten()
-tF = x[9*sim.N]
-x = x[:9*sim.N]
-t = np.linspace(0.0, tF, sim.N)
+x3 = sol['x'].full().flatten()
+tF3 = x3[9*sim.N]
+x3 = x3[:9*sim.N]
 
 # PLOTS
-path = os.path.join(os.getcwd(), "images", "cruise_tf")
+# Concatenation of stages states and controls.
+t = np.linspace(0.0, tF1 + tF2 + tF3, 3*sim.N)
+x = np.concatenate([x1, x2, x3])
+
+path = os.path.join(os.getcwd(), "images", "manoeuvre")
 os.makedirs(path, exist_ok=True)
-Plotter.GENERATE_RESULTS_PLOT(t,x,w0,aircraft,sim,path)
-Plotter.GENERATE_COST_PLOT(np.linspace(0,iters,len(obj)),np.array(obj),time,path)
+Plotter.GENERATE_RESULTS_PLOT(t,x,aircraft,sim,path)
