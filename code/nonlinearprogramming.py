@@ -75,9 +75,9 @@ class NLP_STG1:
         # NLP PROBLEM DEFINITION
         f = ca.sumsqr(ca.vertcat(Fx, Fz, My))
         opts = {}
-        opts['ipopt.max_iter'] = 1000
-        opts['ipopt.tol'] = 1e-8
-        opts['ipopt.acceptable_tol'] = 1e-8
+        opts['ipopt.max_iter'] = 3000
+        opts['ipopt.tol'] = 1e-9
+        opts['ipopt.acceptable_tol'] = 1e-9
         nlp = {'x': y, 'f': f}
         solver = ca.nlpsol('trim_solver_nlp', 'ipopt', nlp, opts)
 
@@ -86,22 +86,22 @@ class NLP_STG1:
 
         # SOLVER
         sol = solver(
-            x0=y0,   
-            lbx=lbx, 
-            ubx=ubx  
+            x0 = y0,   
+            lbx = lbx, 
+            ubx = ubx  
         )
         
         # RESULTS AND DECOMPOSITION INTO w0
         y_opt = sol['x'].full().flatten()
         alpha_trim = y_opt[0]
-        dt_trim    = y_opt[1]
+        dtps_trim    = y_opt[1]
         de_trim    = y_opt[2]
         
         u = V * np.cos(alpha_trim)
         w = V * np.sin(alpha_trim)
         
-        w0_state = np.array([u, w, 0.0, sim.w0[4], 0.0, -h, m])
-        w0_control = [dt_trim, de_trim, sim.t0]
+        w0_state = np.array([u, w, 0.0, alpha_trim, 0.0, -h, m])
+        w0_control = [dtps_trim, de_trim, sim.t0[0]]
         w0 = ca.vertcat(w0_state, w0_control)
         
         return w0
@@ -169,7 +169,7 @@ class NLP_STG1:
         wk = Fb_total[1] / x7 + x1 * x3
         qk = Mb_total / Iyy
         thetak = x3
-        mk = ca.if_else(x7 > (ac.BEM + ac.PM),-ac.SFC,0.0) # SFC.
+        mk = ca.if_else(x7 > (ac.BEM + ac.PM), -ac.SFC, 0.0) # SFC.
         
         # KINEMATICS. Inertial velocities computation.
         inertial_vel = ca.mtimes(Rhb, ca.vertcat(x1, x2))
@@ -216,7 +216,6 @@ class NLP_STG1:
             lbg_path.append(-1e20)
             ubg_path.append(0)   
 
-
         # END TIME CONSTRAINT. Reference altitude and distance.
         href = -sim.ub[3]
         xref = sim.R_entry - sim.f_tp*sim.Vtp*sim.lb[1]
@@ -227,16 +226,17 @@ class NLP_STG1:
         # Path constraints. Equality constraint.
         g_path.append(hf - href)
         lbg_path.append(0)
-        ubg_path.append(0)   
-        # Path constraint. Inequality constraint.
+        ubg_path.append(0)  
+
+        # Path constraint. Equality constraint.
         g_path.append((xf - x0) - xref)
-        lbg_path.append(-1e20)
+        lbg_path.append(0)
         ubg_path.append(0)   
 
         return g_path, lbg_path, ubg_path
     
     @staticmethod
-    def INITIAL_AND_FINAL_CONSTRAINTS(w,w0,wf,N):
+    def INITIAL_STATE_CONSTRAINTS(w,w0):
         # INITIAL STATE CONSTRAINTS. Controls freed.
         w_0 = w[:7]
         g_0 = []
@@ -249,20 +249,7 @@ class NLP_STG1:
             lbg_0.append(0)
             ubg_0.append(0)
 
-        # FINAL STATE CONSTRAINTS. Controls freed.
-        w_f = w[7*(N-1):7*N]
-        g_f = []
-        lbg_f = []
-        ubg_f = []
-
-        if wf != 0:
-            # Final state. Equality constraints.
-            for k in range(w_f.size1()):
-                g_f.append(w_f[k] - wf[k])
-                lbg_f.append(0)
-                ubg_f.append(0)
-
-        return g_0, g_f, lbg_0, lbg_f, ubg_0, ubg_f
+        return g_0, lbg_0, ubg_0
 
     @staticmethod
     def SIMPLE_BOUNDS(lb,ub,sim,N):
@@ -292,23 +279,23 @@ class NLP_STG1:
         tF = w[9*N]
 
         # Computation of trim condition.
-        w0_trim_node = NLP_STG1.COMPUTE_TRIM(ac,at,sim)
-        sim.w0 = w0_trim_node[:9]
+        w0_trim = NLP_STG1.COMPUTE_TRIM(ac,at,sim)
+        sim.w0 = w0_trim[:9]
         
         # Reconstruction of full initial guess
         # as planar functions.
         w0_ls = []
         for k in range(N):
-            w0_ls.append(w0_trim_node[0])
-            w0_ls.append(w0_trim_node[1])
-            w0_ls.append(w0_trim_node[2])
-            w0_ls.append(w0_trim_node[3])
-            w0_ls.append(w0_trim_node[0] * np.cos(w0_trim_node[3]) * dT * k)
-            w0_ls.append(w0_trim_node[5])
-            w0_ls.append(w0_trim_node[6])
-            w0_ls.append(w0_trim_node[7])
-            w0_ls.append(w0_trim_node[8])
-        w0_ls.append(ca.DM(sim.t0))
+            w0_ls.append(w0_trim[0])
+            w0_ls.append(w0_trim[1])
+            w0_ls.append(w0_trim[2])
+            w0_ls.append(w0_trim[3])
+            w0_ls.append(w0_trim[0] * np.cos(w0_trim[3]) * dT * k)
+            w0_ls.append(w0_trim[5])
+            w0_ls.append(w0_trim[6])
+            w0_ls.append(w0_trim[7])
+            w0_ls.append(w0_trim[8])
+        w0_ls.append(ca.DM(sim.t0[0]))
         w0 = np.concatenate(w0_ls)
 
         # DYNAMIC COSNTRAINTS HANDLING
@@ -329,21 +316,21 @@ class NLP_STG1:
         # PATH CONSTRAINTS HANDLING
         g_path, lbg_path, ubg_path = NLP_STG1.PATH_CONSTRAINTS(w,sim,ac,N)
 
-        # INITIAL AND FINAL STATE CONSTRAINTS HANDLING
-        g_0, g_f, lbg_0, lbg_f, ubg_0, ubg_f = NLP_STG1.INITIAL_AND_FINAL_CONSTRAINTS(w,sim.w0,sim.wf,N)
+        # INITIAL STATE CONSTRAINTS HANDLING
+        g_0, lbg_0, ubg_0 = NLP_STG1.INITIAL_STATE_CONSTRAINTS(w,sim.w0)
 
         # SIMPLE BOUNDS FOR STATES AND CONTROL
         lbx, ubx = NLP_STG1.SIMPLE_BOUNDS(lb,ub,sim,N)
 
         # Construction of final vectors.
-        g = g_dyn + g_path + g_0 + g_f
-        lbg = lbg_dyn + lbg_path + lbg_0 + lbg_f
-        ubg = ubg_dyn + ubg_path + ubg_0 + ubg_f
+        g = g_dyn + g_path + g_0 
+        lbg = lbg_dyn + lbg_path + lbg_0
+        ubg = ubg_dyn + ubg_path + ubg_0
 
         return w0, w, lbx, ubx, g, lbg, ubg
     
     @staticmethod
-    def COST_FUCNTIONAL(w,ac,at,sim):
+    def COST_FUNCTIONAL(w,ac,at,sim):
         # Cost initialisation, time step and number
         # of nodes.
         J = 0
@@ -352,15 +339,17 @@ class NLP_STG1:
         tF = w[9*N]
 
         # Weights assignation for gamma dot and controls.
-        w_tF = sim.STG1_wg[0]
-        wg_dot = sim.STG1_wg[1]
-        wdt = sim.STG1_wg[2]
-        wde = sim.STG1_wg[3]
+        wg_tF = sim.STG1_wg[0]
+        wg_g = sim.STG1_wg[1]
+        wg_dot = sim.STG1_wg[2]
+        wg_dtps = sim.STG1_wg[3]
+        wg_de = sim.STG1_wg[4]
         
         # Normalisation vars.
         VS = ac.lb_USER[0]
-        gmax = np.abs(np.asin(sim.lb[4] / VS))
-        g_dot_max = gmax / sim.dT
+
+        gmin = np.asin(sim.lb[4] / VS)
+        g_dot_max = gmin / (sim.dT*tF)
         de_max = ac.ub[8]
         
         for k in range(N-1):
@@ -370,13 +359,45 @@ class NLP_STG1:
             fi = NLP_STG1.DYNAMIC_EQUATIONS(wi,ac,at,sim)
             fj = NLP_STG1.DYNAMIC_EQUATIONS(wj,ac,at,sim)
 
-            # Gamma dot computation.
-            gi_dot = wi[2] - (fi[1]*wi[0] - fi[0]*wi[1]) / (wi[0]**2 + wi[1]**2)
-            gj_dot = wj[2] - (fj[1]*wj[0] - fj[0]*wj[1]) / (wj[0]**2 + wj[1]**2)
+            # Alpha computation.
+            uai = wi[0] - sim.wind[0]
+            uaj = wj[0] - sim.wind[0]
+            wai = wi[1] - sim.wind[1]
+            waj = wj[1] - sim.wind[1]
 
-            # COST FUCNTIONAL (Minimisation of gamma, gamma dot and controls)
-            J += (dT * tF)/2 * (wg_dot*(gi_dot**2 + gj_dot**2) / g_dot_max**2) + wde*(wj[8] - wi[8])**2 / (tF*sim.dT*de_max**2) + wdt*(wj[7] - wi[7])**2 / (sim.dT * tF)
-        J += w_tF*tF
+            ai = ca.atan2(wai,uai)
+            aj = ca.atan2(waj,uaj)
+
+            # Theta retrieving.
+            thi = wi[3]
+            thj = wj[3]
+
+            # Gamma computation.
+            gi = (thi - ai) / gmin
+            gj = (thj - aj) / gmin
+
+            # Gamma dot computation.
+            gi_dot = (wi[2] - (fi[1]*wi[0] - fi[0]*wi[1]) / (wi[0]**2 + wi[1]**2))**2 / g_dot_max**2
+            gj_dot = (wj[2] - (fj[1]*wj[0] - fj[0]*wj[1]) / (wj[0]**2 + wj[1]**2))**2 / g_dot_max**2
+
+            # Control rates.
+            dtpsi = wi[7]
+            dtpsj = wj[7]
+            dtps_dot = (dtpsj - dtpsi)**2 / (dT*tF)**2
+            
+            dei = wi[8]
+            dej = wj[8]
+            de_dot = (dej - dei)**2 / (de_max*dT*tF)**2
+
+            # Running cost at instants i and j.
+            Li = wg_g*(gi - 1)**2 + wg_dot*gi_dot + wg_dtps*dtps_dot + wg_de*de_dot
+            Lj = wg_g*(gj - 1)**2 + wg_dot*gj_dot + wg_dtps*dtps_dot + wg_de*de_dot
+
+            # COST FUNCTIONAL (Running Cost)
+            J += (dT * tF)/2 * (Li + Lj)
+        
+        # COST FUNCTIONAL (Terminal Cost)
+        J += wg_tF*tF
         return J
 
 class NLP_STG2:
@@ -453,9 +474,9 @@ class NLP_STG2:
         # NLP PROBLEM DEFINITION
         f = ca.sumsqr(ca.vertcat(Fx, Fz, My))
         opts = {}
-        opts['ipopt.max_iter'] = 1000
-        opts['ipopt.tol'] = 1e-8
-        opts['ipopt.acceptable_tol'] = 1e-8
+        opts['ipopt.max_iter'] = 3000
+        opts['ipopt.tol'] = 1e-9
+        opts['ipopt.acceptable_tol'] = 1e-9
         nlp = {'x': y, 'f': f}
         solver = ca.nlpsol('trim_solver_nlp', 'ipopt', nlp, opts)
 
@@ -472,14 +493,14 @@ class NLP_STG2:
         # RESULTS AND DECOMPOSITION INTO w0
         y_opt = sol['x'].full().flatten()
         alpha_trim = y_opt[0]
-        dt_trim    = y_opt[1]
+        dtps_trim    = y_opt[1]
         de_trim    = y_opt[2]
         
         u = V * np.cos(alpha_trim)
         w = V * np.sin(alpha_trim)
         
-        w0_state = np.array([u, w, 0.0, alpha_trim, 0.0, -50.0, m])
-        w0_control = [0.5, 0.05, sim.t0]
+        w0_state = np.array([u, w, 0.0, alpha_trim, 0.0, -h, m])
+        w0_control = [dtps_trim, de_trim, sim.t0[1]]
         w0 = ca.vertcat(w0_state, w0_control)
         
         return w0
@@ -513,8 +534,8 @@ class NLP_STG2:
 
         # PROPULSIVE FORCE AND MOMENT
         T_max,M_T_max = ac.PROPULSIVE_FORCES_MOMENTS(V,ac.RPM,rho,alpha)
-        T_max = ca.if_else(x7 > (ac.BEM + ac.PM),T_max,0.0)
-        M_T_max = ca.if_else(x7 > (ac.BEM + ac.PM),M_T_max,0.0)
+        T_max = ca.if_else(x7 > (ac.BEM + ac.PM), T_max, 0.0)
+        M_T_max = ca.if_else(x7 > (ac.BEM + ac.PM), M_T_max, 0.0)
         T = u1 * T_max
         M_T = u1 * M_T_max
         Fb_prop = ca.vertcat(T, 0.0)
@@ -547,8 +568,8 @@ class NLP_STG2:
         wk = Fb_total[1] / x7 + x1 * x3
         qk = Mb_total / Iyy
         thetak = x3
-        mk = ca.if_else(x7 > (ac.BEM + ac.PM),-ac.SFC,0.0) # SFC.
-        mk += ca.if_else(ca.logic_and(x5 > (sim.Vtp*1.5),x5 <= (sim.Vtp*(1.5 + 1.0))),-ac.PM,0.0) # Mass discharge.
+        mk = ca.if_else(x7 > (ac.BEM + ac.PM), -ac.SFC,0.0) # SFC.
+        mk += ca.if_else(ca.logic_and(x5 > (sim.Vtp*sim.lb[1]*sim.f_tp),x5 <= (sim.Vtp*(sim.lb[1]*sim.f_tp + sim.td))), -ac.PM/sim.td, 0.0) # Mass discharge.
         
         # KINEMATICS. Inertial velocities computation.
         inertial_vel = ca.mtimes(Rhb, ca.vertcat(x1, x2))
@@ -591,25 +612,30 @@ class NLP_STG2:
             ubg_path.append(0)   
 
             # TARGET ALTITUDE CONSTRAINT
-            href_l = -sim.ub[3] - 2.5
-            href_u = -sim.ub[3] + 2.5
+            href_l = -sim.ub[3] - 5.0
+            href_u = -sim.ub[3] + 5.0
             hi = -wi[5]
 
             # Path constraints. Inequality constraints.
             g_path.append(href_l - hi)
             lbg_path.append(-1e20)
             ubg_path.append(0)
+
+            # Path constraints. Inequality constraints.
             g_path.append(hi - href_u)
             lbg_path.append(-1e20)
             ubg_path.append(0)   
 
-        # END TIME CONSTRAINT
+        # DISCHARGE DISTANCE CONSTRAINT
         x0 = w[4]
         xf = w[9*N-5]
 
+        # Path constraints. Inequality constraints.
         g_path.append(sim.Vtp*sim.lb[1] - xf + x0)
         lbg_path.append(-1e20)
         ubg_path.append(0)
+
+        # Path constraint. Inequality constraints.
         g_path.append(xf - x0 - sim.Vtp*sim.ub[1])
         lbg_path.append(-1e20)
         ubg_path.append(0)   
@@ -617,7 +643,7 @@ class NLP_STG2:
         return g_path, lbg_path, ubg_path
     
     @staticmethod
-    def INITIAL_AND_FINAL_CONSTRAINTS(w,w0,wf,N):
+    def INITIAL_STATE_CONSTRAINTS(w,w0):
         # INITIAL STATE CONSTRAINTS. Controls freed.
         w_0 = w[:7]
         g_0 = []
@@ -630,19 +656,7 @@ class NLP_STG2:
             lbg_0.append(0)
             ubg_0.append(0)
 
-        # FINAL STATE CONSTRAINTS. Controls freed.
-        w_f = w[7*(N-1):7*N]
-        g_f = []
-        lbg_f = []
-        ubg_f = []
-        if wf != 0:
-            # Final state. Equality constraints.
-            for k in range(w_f.size1()):
-                g_f.append(w_f[k] - wf[k])
-                lbg_f.append(0)
-                ubg_f.append(0)
-
-        return g_0, g_f, lbg_0, lbg_f, ubg_0, ubg_f
+        return g_0, lbg_0, ubg_0
 
     @staticmethod
     def SIMPLE_BOUNDS(lb,ub,sim,N):
@@ -672,23 +686,23 @@ class NLP_STG2:
         tF = w[9*N]
 
         # Computation of trim condition.
-        w0_trim_node = NLP_STG2.COMPUTE_TRIM(ac,at,sim)
-        sim.w0 = w0_trim_node[:9]
+        w0_trim = NLP_STG2.COMPUTE_TRIM(ac,at,sim)
+        sim.w0 = w0_trim[:9]
         
         # Reconstruction of full initial guess
         # as planar functions.
         w0_ls = []
         for k in range(N):
-            w0_ls.append(w0_trim_node[0])
-            w0_ls.append(w0_trim_node[1])
-            w0_ls.append(w0_trim_node[2])
-            w0_ls.append(w0_trim_node[3])
-            w0_ls.append(w0_trim_node[0] * np.cos(w0_trim_node[3]) * dT * k)
-            w0_ls.append(w0_trim_node[5])
-            w0_ls.append(w0_trim_node[6])
-            w0_ls.append(w0_trim_node[7])
-            w0_ls.append(w0_trim_node[8])
-        w0_ls.append(ca.DM(sim.t0))
+            w0_ls.append(w0_trim[0])
+            w0_ls.append(w0_trim[1])
+            w0_ls.append(w0_trim[2])
+            w0_ls.append(w0_trim[3])
+            w0_ls.append(w0_trim[0] * np.cos(w0_trim[3]) * dT * k)
+            w0_ls.append(w0_trim[5])
+            w0_ls.append(w0_trim[6])
+            w0_ls.append(w0_trim[7])
+            w0_ls.append(w0_trim[8])
+        w0_ls.append(ca.DM(sim.t0[1]))
         w0 = np.concatenate(w0_ls)
 
         # DYNAMIC COSNTRAINTS HANDLING
@@ -709,21 +723,21 @@ class NLP_STG2:
         # PATH CONSTRAINTS HANDLING
         g_path, lbg_path, ubg_path = NLP_STG2.PATH_CONSTRAINTS(w,sim,N)
 
-        # INITIAL AND FINAL STATE CONSTRAINTS HANDLING
-        g_0, g_f, lbg_0, lbg_f, ubg_0, ubg_f = NLP_STG2.INITIAL_AND_FINAL_CONSTRAINTS(w,sim.w0,sim.wf,N)
+        # INITIAL STATE CONSTRAINTS HANDLING
+        g_0, lbg_0, ubg_0 = NLP_STG2.INITIAL_STATE_CONSTRAINTS(w,sim.w0)
 
         # SIMPLE BOUNDS FOR STATES AND CONTROL
         lbx, ubx = NLP_STG2.SIMPLE_BOUNDS(lb,ub,sim,N)
 
         # Construction of final vectors.
-        g = g_dyn + g_path + g_0 + g_f
-        lbg = lbg_dyn + lbg_path + lbg_0 + lbg_f
-        ubg = ubg_dyn + ubg_path + ubg_0 + ubg_f
+        g = g_dyn + g_path + g_0
+        lbg = lbg_dyn + lbg_path + lbg_0 
+        ubg = ubg_dyn + ubg_path + ubg_0 
 
         return w0, w, lbx, ubx, g, lbg, ubg
     
     @staticmethod
-    def COST_FUCNTIONAL(w,ac,at,sim):
+    def COST_FUNCTIONAL(w,ac,at,sim):
         # Cost initialisation, time step and number
         # of nodes.
         J = 0
@@ -731,18 +745,18 @@ class NLP_STG2:
         N = sim.N
         tF = w[9*N]
         
-        # Weights assignation for gamma, gamma dot and controls.
-        w_tF = sim.STG2_wg[0]
-        wg = sim.STG2_wg[1]
-        wh = sim.STG2_wg[2]
-        wg_dot = sim.STG2_wg[3]
-        wdt = sim.STG2_wg[4]
-        wde = sim.STG2_wg[5]
+        # Weights assignation.
+        wg_tF = sim.STG2_wg[0]
+        wg_g = sim.STG2_wg[1]
+        wg_h = sim.STG2_wg[2]
+        wg_g_dot = sim.STG2_wg[3]
+        wg_dtps = sim.STG2_wg[4]
+        wg_de = sim.STG2_wg[5]
 
         # Normalisation vars.
         VS = ac.lb_USER[0]
         gmax = np.asin(sim.ub[4] / VS)
-        g_dot_max = gmax / sim.dT
+        g_dot_max = gmax / (sim.dT*tF)
         de_max = ac.ub[8]
         href = -sim.ub[3]
 
@@ -753,31 +767,53 @@ class NLP_STG2:
             fi = NLP_STG2.DYNAMIC_EQUATIONS(wi,ac,at,sim)
             fj = NLP_STG2.DYNAMIC_EQUATIONS(wj,ac,at,sim)
 
-            # Alpha computation and theta retrieving.
-            ai = ca.atan2(wi[1],wi[0])
+            # Alpha computation.
+            uai = wi[0] - sim.wind[0]
+            uaj = wj[0] - sim.wind[0]
+            wai = wi[1] - sim.wind[1]
+            waj = wj[1] - sim.wind[1]
+
+            ai = ca.atan2(wai,uai)
+            aj = ca.atan2(waj,uaj)
+
+            # Theta retrieving.
             thi = wi[3]
-            aj = ca.atan2(wj[1],wj[0])
             thj = wj[3]
-            
+
             # Gamma computation.
-            gi = thi - ai
-            gj = thj - aj
+            gi = (thi - ai)**2 / gmax**2
+            gj = (thj - aj)**2 / gmax**2
+
+             # Altitude computation.
+            hi = -wi[5] / href
+            hj = -wj[5] / href
 
             # Gamma dot computation.
-            gi_dot = wi[2] - (fi[1]*wi[0] - fi[0]*wi[1]) / (wi[0]**2 + wi[1]**2)
-            gj_dot = wj[2] - (fj[1]*wj[0] - fj[0]*wj[1]) / (wj[0]**2 + wj[1]**2)
+            gi_dot = (wi[2] - (fi[1]*wi[0] - fi[0]*wi[1]) / (wi[0]**2 + wi[1]**2))**2 / g_dot_max**2
+            gj_dot = (wj[2] - (fj[1]*wj[0] - fj[0]*wj[1]) / (wj[0]**2 + wj[1]**2))**2 / g_dot_max**2
 
-            # Altitude computation.
-            hi = -wi[5]
-            hj = -wj[5]
+            # Control rates.
+            dtpsi = wi[7]
+            dtpsj = wj[7]
+            dtps_dot = (dtpsj - dtpsi)**2 / (dT*tF)**2
+            
+            dei = wi[8]
+            dej = wj[8]
+            de_dot = (dej - dei)**2 / (de_max*dT*tF)**2
 
-            # COST FUCNTIONAL (Minimisation of gamma, gamma dot and controls)
-            J += (dT*tF)/2 * (wg*(gi**2 + gj**2) / gmax**2 + wg_dot*(gi_dot**2 + gj_dot**2) / g_dot_max**2  + wh*((hi - href)**2 / href**2 + (hj - href)**2 / href**2)) + wde*(wj[8] - wi[8])**2 / (tF*sim.dT*de_max**2) + wdt*(wj[7] - wi[7])**2 / (tF*sim.dT)
-        J += w_tF*tF
+            # Running cost at instants i and j.
+            Li = wg_g*gi + wg_h*(hi - 1)**2 + wg_g_dot*gi_dot + wg_dtps*dtps_dot + wg_de*de_dot
+            Lj = wg_g*gj + wg_h*(hj - 1)**2 + wg_g_dot*gj_dot + wg_dtps*dtps_dot + wg_de*de_dot
+
+            # COST FUNCTIONAL (Running Cost)
+            J += (dT*tF)/2 * (Li + Lj)
+        
+        # COST FUNCTIONAL (Terminal Cost)
+        J += wg_tF*tF
         return J
     
 class NLP_STG3:
-    # MISSION DESCENT STAGE
+    # MISSION CLIMB STAGE
     def __init__(self):
         # DEFINE STATE AND CONTROLS
         # 7 states [u,w,q,theta,x,z,m].
@@ -850,9 +886,9 @@ class NLP_STG3:
         # NLP PROBLEM DEFINITION
         f = ca.sumsqr(ca.vertcat(Fx, Fz, My))
         opts = {}
-        opts['ipopt.max_iter'] = 1000
-        opts['ipopt.tol'] = 1e-8
-        opts['ipopt.acceptable_tol'] = 1e-8
+        opts['ipopt.max_iter'] = 3000
+        opts['ipopt.tol'] = 1e-9
+        opts['ipopt.acceptable_tol'] = 1e-9
         nlp = {'x': y, 'f': f}
         solver = ca.nlpsol('trim_solver_nlp', 'ipopt', nlp, opts)
 
@@ -875,8 +911,8 @@ class NLP_STG3:
         u = V * np.cos(alpha_trim)
         w = V * np.sin(alpha_trim)
         
-        w0_state = np.array([u, w, 0.0, sim.w0[4], 0.0, -h, m])
-        w0_control = [dt_trim, de_trim, sim.t0]
+        w0_state = np.array([u, w, 0.0, alpha_trim, 0.0, -h, m])
+        w0_control = [dt_trim, de_trim, sim.t0[2]]
         w0 = ca.vertcat(w0_state, w0_control)
         
         return w0
@@ -910,8 +946,8 @@ class NLP_STG3:
 
         # PROPULSIVE FORCE AND MOMENT
         T_max,M_T_max = ac.PROPULSIVE_FORCES_MOMENTS(V,ac.RPM,rho,alpha)
-        T_max = ca.if_else(x7 > (ac.BEM + ac.PM),T_max,0.0)
-        M_T_max = ca.if_else(x7 > (ac.BEM + ac.PM),M_T_max,0.0)
+        T_max = ca.if_else(x7 > (ac.BEM + ac.PM), T_max, 0.0)
+        M_T_max = ca.if_else(x7 > (ac.BEM + ac.PM), M_T_max, 0.0)
         T = u1 * T_max
         M_T = u1 * M_T_max
         Fb_prop = ca.vertcat(T, 0.0)
@@ -944,7 +980,7 @@ class NLP_STG3:
         wk = Fb_total[1] / x7 + x1 * x3
         qk = Mb_total / Iyy
         thetak = x3
-        mk = ca.if_else(x7 > (ac.BEM + ac.PM),-ac.SFC,0.0) # SFC.
+        mk = ca.if_else(x7 > (ac.BEM + ac.PM), -ac.SFC, 0.0) # SFC.
         
         # KINEMATICS. Inertial velocities computation.
         inertial_vel = ca.mtimes(Rhb, ca.vertcat(x1, x2))
@@ -1002,15 +1038,16 @@ class NLP_STG3:
         g_path.append(hf - href)
         lbg_path.append(0)
         ubg_path.append(0)   
+
         # Path constraint. Inequality constraint.
         g_path.append((xf - x0) - xref)
-        lbg_path.append(-1e20)
+        lbg_path.append(0)
         ubg_path.append(0)   
 
         return g_path, lbg_path, ubg_path
     
     @staticmethod
-    def INITIAL_AND_FINAL_CONSTRAINTS(w,w0,wf,N):
+    def INITIAL_STATE_CONSTRAINTS(w,w0):
         # INITIAL STATE CONSTRAINTS. Controls freed.
         w_0 = w[:7]
         g_0 = []
@@ -1023,20 +1060,7 @@ class NLP_STG3:
             lbg_0.append(0)
             ubg_0.append(0)
 
-        # FINAL STATE CONSTRAINTS. Controls freed.
-        w_f = w[7*(N-1):7*N]
-        g_f = []
-        lbg_f = []
-        ubg_f = []
-
-        if wf != 0:
-            # Final state. Equality constraints.
-            for k in range(w_f.size1()):
-                g_f.append(w_f[k] - wf[k])
-                lbg_f.append(0)
-                ubg_f.append(0)
-
-        return g_0, g_f, lbg_0, lbg_f, ubg_0, ubg_f
+        return g_0, lbg_0, ubg_0
 
     @staticmethod
     def SIMPLE_BOUNDS(lb,ub,sim,N):
@@ -1066,23 +1090,23 @@ class NLP_STG3:
         tF = w[9*N]
 
         # Computation of trim condition.
-        w0_trim_node = NLP_STG3.COMPUTE_TRIM(ac,at,sim)
-        sim.w0 = w0_trim_node[:9]
+        w0_trim = NLP_STG3.COMPUTE_TRIM(ac,at,sim)
+        sim.w0 = w0_trim[:9]
         
         # Reconstruction of full initial guess
         # as planar functions.
         w0_ls = []
         for k in range(N):
-            w0_ls.append(w0_trim_node[0])
-            w0_ls.append(w0_trim_node[1])
-            w0_ls.append(w0_trim_node[2])
-            w0_ls.append(w0_trim_node[3])
-            w0_ls.append(w0_trim_node[0] * np.cos(w0_trim_node[3]) * dT * k)
-            w0_ls.append(w0_trim_node[5])
-            w0_ls.append(w0_trim_node[6])
-            w0_ls.append(w0_trim_node[7])
-            w0_ls.append(w0_trim_node[8])
-        w0_ls.append(ca.DM(sim.t0))
+            w0_ls.append(w0_trim[0])
+            w0_ls.append(w0_trim[1])
+            w0_ls.append(w0_trim[2])
+            w0_ls.append(w0_trim[3])
+            w0_ls.append(w0_trim[0] * np.cos(w0_trim[3]) * dT * k)
+            w0_ls.append(w0_trim[5])
+            w0_ls.append(w0_trim[6])
+            w0_ls.append(w0_trim[7])
+            w0_ls.append(w0_trim[8])
+        w0_ls.append(ca.DM(sim.t0[2]))
         w0 = np.concatenate(w0_ls)
 
         # DYNAMIC COSNTRAINTS HANDLING
@@ -1104,20 +1128,20 @@ class NLP_STG3:
         g_path, lbg_path, ubg_path = NLP_STG3.PATH_CONSTRAINTS(w,sim,ac,N)
 
         # INITIAL AND FINAL STATE CONSTRAINTS HANDLING
-        g_0, g_f, lbg_0, lbg_f, ubg_0, ubg_f = NLP_STG3.INITIAL_AND_FINAL_CONSTRAINTS(w,sim.w0,sim.wf,N)
+        g_0, lbg_0, ubg_0 = NLP_STG3.INITIAL_STATE_CONSTRAINTS(w,sim.w0)
 
         # SIMPLE BOUNDS FOR STATES AND CONTROL
         lbx, ubx = NLP_STG3.SIMPLE_BOUNDS(lb,ub,sim,N)
 
         # Construction of final vectors.
-        g = g_dyn + g_path + g_0 + g_f
-        lbg = lbg_dyn + lbg_path + lbg_0 + lbg_f
-        ubg = ubg_dyn + ubg_path + ubg_0 + ubg_f
+        g = g_dyn + g_path + g_0
+        lbg = lbg_dyn + lbg_path + lbg_0
+        ubg = ubg_dyn + ubg_path + ubg_0
 
         return w0, w, lbx, ubx, g, lbg, ubg
     
     @staticmethod
-    def COST_FUCNTIONAL(w,ac,at,sim):
+    def COST_FUNCTIONAL(w,ac,at,sim):
         # Cost initialisation, time step and number
         # of nodes.
         J = 0
@@ -1126,15 +1150,19 @@ class NLP_STG3:
         tF = w[9*N]
 
         # Weights assignation for gamma dot and controls.
-        w_tF = sim.STG3_wg[0]
-        wg_dot = sim.STG3_wg[1]
-        wdt = sim.STG3_wg[2]
-        wde = sim.STG3_wg[3]
+        wg_tF = sim.STG3_wg[0]
+        wg_g_dot = sim.STG3_wg[1]
+        wg_sp = sim.STG3_wg[2] 
+        wg_dtps = sim.STG3_wg[3]
+        wg_de = sim.STG3_wg[4]
+        wg_de_sat = sim.STG3_wg[5]
         
         # Normalisation vars.
         VS = ac.lb_USER[0]
-        gmax = np.abs(np.asin(sim.ub[4] / VS))
+        gmax = np.asin(sim.ub[4] / VS)
         g_dot_max = gmax / sim.dT
+        asf = 0.60*ac.ub[3]
+        amg = 0.40*ac.ub[3]
         de_max = ac.ub[8]
         
         for k in range(N-1):
@@ -1144,11 +1172,43 @@ class NLP_STG3:
             fi = NLP_STG3.DYNAMIC_EQUATIONS(wi,ac,at,sim)
             fj = NLP_STG3.DYNAMIC_EQUATIONS(wj,ac,at,sim)
 
-            # Gamma dot computation.
-            gi_dot = wi[2] - (fi[1]*wi[0] - fi[0]*wi[1]) / (wi[0]**2 + wi[1]**2)
-            gj_dot = wj[2] - (fj[1]*wj[0] - fj[0]*wj[1]) / (wj[0]**2 + wj[1]**2)
+            # Alpha computation.
+            uai = wi[0] - sim.wind[0]
+            uaj = wj[0] - sim.wind[0]
+            wai = wi[1] - sim.wind[1]
+            waj = wj[1] - sim.wind[1]
 
-            # COST FUCNTIONAL (Minimisation of gamma, gamma dot and controls)
-            J += (dT * tF)/2 * (wg_dot*(gi_dot**2 + gj_dot**2) / g_dot_max**2) + wde*(wj[8] - wi[8])**2 / (tF*sim.dT*de_max**2) + wdt*(wj[7] - wi[7])**2 / (sim.dT * tF)
-        J += w_tF*tF
+            ai = ca.atan2(wai,uai)
+            aj = ca.atan2(waj,uaj)
+
+            # Stall protection.
+            spi = ca.mmax(ca.if_else((ai - asf) > 0.0, ai - asf, 0.0))**2 / amg**2
+            spj = ca.mmax(ca.if_else((aj - asf) > 0.0, ai - asf, 0.0))**2 / amg**2
+
+            # Gamma dot computation.
+            gi_dot = (wi[2] - (fi[1]*wi[0] - fi[0]*wi[1]) / (wi[0]**2 + wi[1]**2))**2 / g_dot_max**2
+            gj_dot = (wj[2] - (fj[1]*wj[0] - fj[0]*wj[1]) / (wj[0]**2 + wj[1]**2))**2 / g_dot_max**2
+
+            # Control rates.
+            dtpsi = wi[7]
+            dtpsj = wj[7]
+            dtps_dot = (dtpsj - dtpsi)**2 / (dT*tF)**2
+            
+            dei = wi[8]
+            dej = wj[8]
+            de_dot = (dej - dei)**2 / (de_max*dT*tF)**2
+
+            # Elevator saturation.
+            desi = dei**2 / de_max**2
+            desj = dej**2 / de_max**2
+
+            # Running cost at instants i and j.
+            Li = wg_g_dot*gi_dot + wg_sp*spi + wg_dtps*dtps_dot + wg_de*de_dot + wg_de_sat*desi
+            Lj = wg_g_dot*gj_dot + wg_sp*spj + wg_dtps*dtps_dot + wg_de*de_dot + wg_de_sat*desj
+
+            # COST FUNCTIONAL (Running Cost)
+            J += (dT*tF)/2 * (Li + Lj)
+        
+        # COST FUNCTIONAL (Terminal Cost)
+        J += wg_tF*tF
         return J

@@ -55,13 +55,11 @@ sim.w0 = x0
 ##          PROBLEM DEFINITION AND SOLUTION              ##
 ###########################################################
 
-# PREPROCESS
-
-# CRUISE SUBPROBLEM DEFINITION. Cruise flight trajectory
+# STAGE 1: DESCENT. Descent flight trajectory
 # defined as a NLP problem.
-nlp = NLP_STG3()
-w0, w, lbx, ubx, g, lbg, ubg = NLP_STG3.CONSTRAINTS_AND_BOUNDS(nlp.x,nlp.u,nlp.utf,aircraft,atmos,sim)
-J = NLP_STG3.COST_FUCNTIONAL(w,aircraft,atmos,sim)
+nlp = NLP_STG1()
+w0, w, lbx, ubx, g, lbg, ubg = NLP_STG1.CONSTRAINTS_AND_BOUNDS(nlp.x,nlp.u,nlp.utf,aircraft,atmos,sim)
+J = NLP_STG1.COST_FUNCTIONAL(w,aircraft,atmos,sim)
 
 # Redefining vectors as stipulated by CASADi dictionary.
 w = ca.vertcat(w)
@@ -75,9 +73,9 @@ ubx = ca.vertcat(*ubx)
 # SOLVER
 # Configuration of the NLP and the solver.
 opts = {}
-opts['ipopt.max_iter'] = 1000
-opts['ipopt.tol'] = 1e-8
-opts['ipopt.acceptable_tol'] = 1e-8
+opts['ipopt.max_iter'] = 3000
+opts['ipopt.tol'] = 1e-9
+opts['ipopt.acceptable_tol'] = 1e-9
 nlp = {"x": w, "f": J, "g": g}
 solver = ca.nlpsol("solver", "ipopt", nlp)
 
@@ -95,12 +93,108 @@ iters = solver.stats()['iter_count']
 obj = solver.stats()['iterations']['obj']
 time = np.round(solver.stats()['t_proc_total'],3)
 
-###########################################################
-##                     POSTPROCESS                       ##
-###########################################################
+x = sol['x'].full().flatten()
+tF = x[9*sim.N]
+x = x[:9*sim.N]
+t = np.linspace(0.0, tF, sim.N)
 
-# RECONSTRUCTION OF STATE VECTOR THROUGH TIME
-# Retrieving of states values and time array generation.
+sim.w0 = x[9*(sim.N-1):9*sim.N]
+
+# PLOTS
+path = os.path.join(os.getcwd(), "images", "cruise_tf")
+os.makedirs(path, exist_ok=True)
+Plotter.GENERATE_RESULTS_PLOT(t,x,w0,aircraft,sim,path)
+Plotter.GENERATE_COST_PLOT(np.linspace(0,iters,len(obj)),np.array(obj),time,path)
+
+# STAGE 2: DISCHARGE. Cruise flight trajectory
+# defined as a NLP problem.
+nlp = NLP_STG2()
+w0, w, lbx, ubx, g, lbg, ubg = NLP_STG2.CONSTRAINTS_AND_BOUNDS(nlp.x,nlp.u,nlp.utf,aircraft,atmos,sim)
+J = NLP_STG2.COST_FUNCTIONAL(w,aircraft,atmos,sim)
+
+# Redefining vectors as stipulated by CASADi dictionary.
+w = ca.vertcat(w)
+w0 = ca.vertcat(w0)
+g = ca.vertcat(*g)
+lbg = ca.vertcat(*lbg)
+ubg = ca.vertcat(*ubg)
+lbx = ca.vertcat(*lbx)
+ubx = ca.vertcat(*ubx)
+
+# SOLVER
+# Configuration of the NLP and the solver.
+opts = {}
+opts['ipopt.max_iter'] = 3000
+opts['ipopt.tol'] = 1e-9
+opts['ipopt.acceptable_tol'] = 1e-9
+nlp = {"x": w, "f": J, "g": g}
+solver = ca.nlpsol("solver", "ipopt", nlp)
+
+# TRAJECTORIES. SOLUTION
+sol = solver(
+    x0 = w0,
+    lbx = lbx,
+    ubx = ubx,
+    lbg = lbg,
+    ubg = ubg
+)
+
+# Retrieving of iterations values and objective value.
+iters = solver.stats()['iter_count']
+obj = solver.stats()['iterations']['obj']
+time = np.round(solver.stats()['t_proc_total'],3)
+
+x = sol['x'].full().flatten()
+tF = x[9*sim.N]
+x = x[:9*sim.N]
+t = np.linspace(0.0, tF, sim.N)
+
+sim.w0 = x[9*(sim.N-1):9*sim.N]
+
+# PLOTS
+path = os.path.join(os.getcwd(), "images", "cruise_tf")
+os.makedirs(path, exist_ok=True)
+Plotter.GENERATE_RESULTS_PLOT(t,x,w0,aircraft,sim,path)
+Plotter.GENERATE_COST_PLOT(np.linspace(0,iters,len(obj)),np.array(obj),time,path)
+
+# STAGE 3: CLIMB. Climb flight trajectory
+# defined as a NLP problem.
+nlp = NLP_STG3()
+w0, w, lbx, ubx, g, lbg, ubg = NLP_STG3.CONSTRAINTS_AND_BOUNDS(nlp.x,nlp.u,nlp.utf,aircraft,atmos,sim)
+J = NLP_STG3.COST_FUNCTIONAL(w,aircraft,atmos,sim)
+
+# Redefining vectors as stipulated by CASADi dictionary.
+w = ca.vertcat(w)
+w0 = ca.vertcat(w0)
+g = ca.vertcat(*g)
+lbg = ca.vertcat(*lbg)
+ubg = ca.vertcat(*ubg)
+lbx = ca.vertcat(*lbx)
+ubx = ca.vertcat(*ubx)
+
+# SOLVER
+# Configuration of the NLP and the solver.
+opts = {}
+opts['ipopt.max_iter'] = 3000
+opts['ipopt.tol'] = 1e-9
+opts['ipopt.acceptable_tol'] = 1e-9
+nlp = {"x": w, "f": J, "g": g}
+solver = ca.nlpsol("solver", "ipopt", nlp)
+
+# TRAJECTORIES. SOLUTION
+sol = solver(
+    x0 = w0,
+    lbx = lbx,
+    ubx = ubx,
+    lbg = lbg,
+    ubg = ubg
+)
+
+# Retrieving of iterations values and objective value.
+iters = solver.stats()['iter_count']
+obj = solver.stats()['iterations']['obj']
+time = np.round(solver.stats()['t_proc_total'],3)
+
 x = sol['x'].full().flatten()
 tF = x[9*sim.N]
 x = x[:9*sim.N]
