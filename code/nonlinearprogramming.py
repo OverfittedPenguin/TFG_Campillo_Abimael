@@ -338,7 +338,7 @@ class NLP_STG1:
         N = sim.N
         tF = w[9*N]
 
-        # Weights assignation for gamma dot and controls.
+        # Weights assignation.
         wg_tF = sim.STG1_wg[0]
         wg_g = sim.STG1_wg[1]
         wg_dot = sim.STG1_wg[2]
@@ -620,8 +620,6 @@ class NLP_STG2:
             g_path.append(href_l - hi)
             lbg_path.append(-1e20)
             ubg_path.append(0)
-
-            # Path constraints. Inequality constraints.
             g_path.append(hi - href_u)
             lbg_path.append(-1e20)
             ubg_path.append(0)   
@@ -1149,7 +1147,7 @@ class NLP_STG3:
         N = sim.N
         tF = w[9*N]
 
-        # Weights assignation for gamma dot and controls.
+        # Weights assignation.
         wg_tF = sim.STG3_wg[0]
         wg_g_dot = sim.STG3_wg[1]
         wg_sp = sim.STG3_wg[2] 

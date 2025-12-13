@@ -4,8 +4,10 @@ import os
 
 class Plotter:
     def GENERATE_MANOEUVRE_TRAJECTORIES(t,stg1,stg2,stg3,ac,sim,path):
+        # Colors palette.
         colors_hex = ['#001233', '#003874', '#007FFF',  "#4DB6AC", '#A9B7C7', '#ef233c']
-        # States and controls storage vectors.
+
+        # States and controls storage vectors per stage.
         x1_1 = []
         x2_1 = []
         x3_1 = []
@@ -275,7 +277,9 @@ class Plotter:
         plt.show()
     
     def GENERATE_RESULTS_PLOT(t,x,ac,sim,path):
+        # Colors palette.
         colors_hex = ['#001233', '#003874', '#007FFF',  "#4DB6AC", '#A9B7C7', '#ef233c']
+        
         # States and controls storage vectors.
         x1 = []
         x2 = []

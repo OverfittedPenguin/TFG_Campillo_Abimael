@@ -45,10 +45,8 @@ print("ATMOS CONDITIONS LOADED.")
 # Initial mass.
 sim.x0[7] = aircraft.BEM + aircraft.FM + aircraft.PM
 
-# Computation of trim conditions for controls at initial state.
-x0 = sim.x0[1:8]
-
 # Initial state vector
+x0 = sim.x0[1:8]
 sim.w0 = x0
 
 ###########################################################
@@ -93,11 +91,12 @@ iters1 = solver.stats()['iter_count']
 obj1 = solver.stats()['iterations']['obj']
 time1 = np.round(solver.stats()['t_proc_total'],3)
 
+# States and controls retrieving.
 x1 = sol['x'].full().flatten()
 tF1 = x1[9*sim.N]
 x1 = x1[:9*sim.N]
 
-# Change in initial conditions. Stages chaining.
+# Change in initial conditions. Chain between STG1 and STG2.
 sim.w0 = x1[9*(sim.N-1):9*sim.N]
 
 # STAGE 2: DISCHARGE. Cruise flight trajectory
@@ -138,11 +137,12 @@ iters2 = solver.stats()['iter_count']
 obj2 = solver.stats()['iterations']['obj']
 time2 = np.round(solver.stats()['t_proc_total'],3)
 
+# States and controls retrieving.
 x2 = sol['x'].full().flatten()
 tF2 = x2[9*sim.N]
 x2 = x2[:9*sim.N]
 
-# Change in initial conditions. Stages chaining.
+# Change in initial conditions. Chain between STG2 and STG3.
 sim.w0 = x2[9*(sim.N-1):9*sim.N]
 
 # STAGE 3: CLIMB. Climb flight trajectory
@@ -190,6 +190,7 @@ x3 = x3[:9*sim.N]
 ###########################################################
 ##                    POSTPROCESSING                     ##
 ###########################################################
+# Time vectors creation.
 t1 = np.linspace(0.0, tF1, sim.N)
 t2 = np.linspace(tF1, tF1 + tF2, sim.N)
 t3 = np.linspace(tF1 + tF2, tF1 + tF2 + tF3, sim.N)
@@ -200,7 +201,7 @@ path = os.path.join(os.getcwd(), "images", "manoeuvre")
 os.makedirs(path, exist_ok=True)
 Plotter.GENERATE_MANOEUVRE_TRAJECTORIES(t,x1,x2,x3,aircraft,sim,path)
 
-# TRAJECTORIES AND COST. Full trajectory.
+# TRAJECTORIES AND COST. per each stage.
 path = os.path.join(os.getcwd(), "images", "manoeuvre", "STG1")
 os.makedirs(path, exist_ok=True)
 Plotter.GENERATE_RESULTS_PLOT(t1,x1,aircraft,sim,path)
