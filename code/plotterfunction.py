@@ -274,18 +274,9 @@ class Plotter:
         fig2.savefig(os.path.join(path, "CONTROLS.svg"))
         plt.show()
     
-    def GENERATE_RESULTS_PLOT(t,x,x0,ac,sim,path):
+    def GENERATE_RESULTS_PLOT(t,x,ac,sim,path):
         colors_hex = ['#001233', '#003874', '#007FFF',  "#4DB6AC", '#A9B7C7', '#ef233c']
         # States and controls storage vectors.
-        x0_1 = []
-        x0_2 = []
-        x0_3 = []
-        x0_4 = []
-        x0_5 = []
-        x0_6 = []
-        x0_7 = []
-        u0_1 = []
-        u0_2 = []
         x1 = []
         x2 = []
         x3 = []
@@ -303,15 +294,6 @@ class Plotter:
             # For each variable, the current value is retrieved and 
             # appended into the respective storage array.
             idx = 9*k
-            x0_1.append(x0[idx])
-            x0_2.append(x0[idx + 1])
-            x0_3.append(x0[idx + 2])
-            x0_4.append(x0[idx + 3])
-            x0_5.append(x0[idx + 4])
-            x0_6.append(x0[idx + 5])
-            x0_7.append(x0[idx + 6])
-            u0_1.append(x0[idx + 7])
-            u0_2.append(x0[idx + 8])
 
             x1.append(x[idx])
             x2.append(x[idx + 1])
@@ -343,16 +325,7 @@ class Plotter:
         u1 = np.array(u1)
         u2 = np.array(u2)
 
-                # Arrays conversion.
-        x0_1 = np.squeeze(x0_1)
-        x0_2 = np.squeeze(x0_2)
-        x0_3 = np.squeeze(x0_3)
-        x0_4 = np.squeeze(x0_4)
-        x0_5 = np.squeeze(x0_5)
-        x0_6 = np.squeeze(x0_6)
-        x0_7 = np.squeeze(x0_7)
-        u0_1 = np.squeeze(u0_1)
-        u0_2 = np.squeeze(u0_2)
+        # Arrays conversion.
         x1 = np.squeeze(x1)
         x2 = np.squeeze(x2)
         x3 = np.squeeze(x3)
@@ -376,7 +349,6 @@ class Plotter:
 
         # Arrays conversion.
         V = np.array(V)
-        Vtp = np.ones(len(V))*sim.Vtp
         alpha = np.array(alpha)
         g = np.array(g)
 
