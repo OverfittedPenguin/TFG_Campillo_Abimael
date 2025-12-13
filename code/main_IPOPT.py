@@ -190,8 +190,7 @@ x3 = x3[:9*sim.N]
 # PLOTS
 # Concatenation of stages states and controls.
 t = np.linspace(0.0, tF1 + tF2 + tF3, 3*sim.N)
-x = np.concatenate([x1, x2, x3])
 
 path = os.path.join(os.getcwd(), "images", "manoeuvre")
 os.makedirs(path, exist_ok=True)
-Plotter.GENERATE_RESULTS_PLOT(t,x,aircraft,sim,path)
+Plotter.GENERATE_MANOEUVRE_TRAJECTORIES(t,x1,x2,x3,aircraft,sim,path)

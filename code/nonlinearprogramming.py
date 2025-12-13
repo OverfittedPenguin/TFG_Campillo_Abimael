@@ -612,8 +612,8 @@ class NLP_STG2:
             ubg_path.append(0)   
 
             # TARGET ALTITUDE CONSTRAINT
-            href_l = -sim.ub[3] - 5.0
-            href_u = -sim.ub[3] + 5.0
+            href_l = -sim.ub[3] - 3.0
+            href_u = -sim.ub[3] + 3.0
             hi = -wi[5]
 
             # Path constraints. Inequality constraints.
