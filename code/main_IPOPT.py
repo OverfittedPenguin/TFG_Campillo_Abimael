@@ -196,23 +196,32 @@ t2 = np.linspace(tF1, tF1 + tF2, sim.N)
 t3 = np.linspace(tF1 + tF2, tF1 + tF2 + tF3, sim.N)
 t = np.concatenate([t1, t2, t3])
 
+# Arrangement for iterations and objectives vectors.
+iters1 = np.linspace(0,iters1,len(obj1))
+obj1 = np.array(obj1)
+iters2 = np.linspace(0,iters2,len(obj2))
+obj2 = np.array(obj2)
+iters3 = np.linspace(0,iters3,len(obj3))
+obj3 = np.array(obj3)
+
 # TRAJECTORIES AND COST. Full trajectory.
 path = os.path.join(os.getcwd(), "images", "manoeuvre")
 os.makedirs(path, exist_ok=True)
 Plotter.GENERATE_MANOEUVRE_TRAJECTORIES(t,x1,x2,x3,aircraft,sim,path)
+Plotter.GENERATE_MANOEUVRE_COST(iters1,iters2,iters3,obj1,obj2,obj3,time1+time2+time3,path)
 
 # TRAJECTORIES AND COST. per each stage.
 path = os.path.join(os.getcwd(), "images", "manoeuvre", "STG1")
 os.makedirs(path, exist_ok=True)
 Plotter.GENERATE_RESULTS_PLOT(t1,x1,aircraft,sim,path)
-Plotter.GENERATE_COST_PLOT(np.linspace(0,iters1,len(obj1)),np.array(obj1),time1,path)
+Plotter.GENERATE_COST_PLOT(iters1,obj1,time1,path)
 
 path = os.path.join(os.getcwd(), "images", "manoeuvre", "STG2")
 os.makedirs(path, exist_ok=True)
 Plotter.GENERATE_RESULTS_PLOT(t2,x2,aircraft,sim,path)
-Plotter.GENERATE_COST_PLOT(np.linspace(0,iters2,len(obj2)),np.array(obj2),time2,path)
+Plotter.GENERATE_COST_PLOT(iters2,obj2,time2,path)
 
 path = os.path.join(os.getcwd(), "images", "manoeuvre", "STG3")
 os.makedirs(path, exist_ok=True)
 Plotter.GENERATE_RESULTS_PLOT(t3,x3,aircraft,sim,path)
-Plotter.GENERATE_COST_PLOT(np.linspace(0,iters3,len(obj3)),np.array(obj3),time3,path)
+Plotter.GENERATE_COST_PLOT(iters3,obj3,time3,path)
