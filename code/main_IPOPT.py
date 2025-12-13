@@ -187,8 +187,11 @@ x3 = sol['x'].full().flatten()
 tF3 = x3[9*sim.N]
 x3 = x3[:9*sim.N]
 
-# PLOTS
-# Concatenation of stages states and controls.
+###########################################################
+##                    POSTPROCESSING                     ##
+###########################################################
+
+# PLOT GENERATION
 t = np.linspace(0.0, tF1 + tF2 + tF3, 3*sim.N)
 
 path = os.path.join(os.getcwd(), "images", "manoeuvre")
