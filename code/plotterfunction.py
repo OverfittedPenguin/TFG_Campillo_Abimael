@@ -276,19 +276,22 @@ class Plotter:
         fig2.savefig(os.path.join(path, "CONTROLS.svg"))
         plt.show()
     
-    def GENERATE_MANOEUVRE_COST(it1,it2,it3,obj1,obj2,obj3,time,path):
-        colors_hex = ['#003874', '#007FFF',  "#4DB6AC"]
+    def GENERATE_MANOEUVRE_COST(it1,it2,it3,obj1,obj2,obj3,pinf1,pinf2,pinf3,dinf1,dinf2,dinf3,time,path):
+        # Colors palette.
+        colors_hex = ['#003874', '#007FFF',  "#4DB6AC", '#ef233c']
+
+        # PLOT: COST OBJECTIVE
         fig1, axs = plt.subplots(
             nrows=1, 
             ncols=3, 
-            figsize=(14,7),
+            figsize=(16,6),
             gridspec_kw={'hspace': 0.65, 'wspace': 0.35}
             )
         fig1.subplots_adjust(
             left=0.05,  
             right=0.95, 
-            bottom=0.35
             )
+        
         # STAGE 1
         axs[0].plot(it1,obj1,color=colors_hex[0],linestyle="-",linewidth=1.5)
 
@@ -296,17 +299,6 @@ class Plotter:
         axs[0].set_xlabel("Iterations [-]",fontsize = 14,fontstyle='italic',fontfamily='serif')
         axs[0].set_ylabel("Cost objective [-]",fontsize = 14, fontstyle='italic', fontfamily='serif')
         axs[0].set_title("Objective (STAGE 1, descent)",fontsize = 14, fontweight='bold', fontfamily='serif', loc="left")
-        fig1.suptitle(
-            r"STAGE 1 (Cost determined by minimisation of $(\gamma - \gamma_d)^2$; $\dot{\gamma}^2$; $\dot{\delta}_{TPS}^2$ and  $\dot{\delta}_{e}^2$)" + "\n" + \
-            r"STAGE 2 (Cost determined by minimisation of $\gamma^2$; $(h - h_{ref})^2$; $\dot{\gamma}^2$; $\dot{\delta}_{TPS}^2$ and  $\dot{\delta}_{e}^2$)" + "\n" + \
-            r"STAGE 3 (Cost determined by minimisation of $\dot{\gamma}^2$; $(\alpha - \alpha_{safe})^2$; $\dot{\delta}_{TPS}^2$; $\dot{\delta}_{e}^2$ and $\frac{\delta_{e}^2}{\delta_{e, max}^2}$)" "\n" + \
-            f"Total computation time: {np.round(time,3)}s",
-            fontsize=14,
-            fontfamily='serif',
-            x=0.05, 
-            y=0.25,
-            horizontalalignment='left'
-        )
         axs[0].minorticks_on()
         axs[0].grid(which='minor', linestyle=':', linewidth=0.75, color='gray', alpha=0.75)
 
@@ -331,8 +323,57 @@ class Plotter:
         axs[2].grid(which='minor', linestyle=':', linewidth=0.75, color='gray', alpha=0.75)
 
         fig1.savefig(os.path.join(path, "COST.svg"))
-        plt.show()
 
+        # PLOT: INFEASABILITIES
+        fig2, axs1 = plt.subplots(
+            nrows=1, 
+            ncols=3, 
+            figsize=(16,6),
+            gridspec_kw={'hspace': 0.65, 'wspace': 0.35}
+            )
+        fig2.subplots_adjust(
+            left=0.05,  
+            right=0.95, 
+            )
+        
+        # STAGE 1
+        axs1[0].plot(it1,pinf1,label="Pr. Inf.",color=colors_hex[1],linestyle="-",linewidth=1.5)
+        axs1[0].plot(it1,dinf1,label="Du. Inf.",color=colors_hex[3],linestyle="-",linewidth=1.5)
+
+        # Titles, grid and legend.
+        axs1[0].set_xlabel("Iterations [-]",fontsize = 14,fontstyle='italic',fontfamily='serif')
+        axs1[0].set_ylabel("Magnitude [-]",fontsize = 14, fontstyle='italic', fontfamily='serif')
+        axs1[0].set_title("Infeasabilities (STAGE 1, descent)",fontsize = 14, fontweight='bold', fontfamily='serif', loc="left")
+        axs1[0].minorticks_on()
+        axs1[0].legend(fontsize=10, prop={'family': 'serif'}, loc="upper right")
+        axs1[0].grid(which='minor', linestyle=':', linewidth=0.75, color='gray', alpha=0.75)
+
+        # STAGE 2
+        axs1[1].plot(it2,pinf2,label="Pr. Inf.",color=colors_hex[1],linestyle="-",linewidth=1.5)
+        axs1[1].plot(it2,dinf2,label="Du. Inf.",color=colors_hex[3],linestyle="-",linewidth=1.5)
+
+        # Titles, grid and legend.
+        axs1[1].set_xlabel("Iterations [-]",fontsize = 14,fontstyle='italic',fontfamily='serif')
+        axs1[1].set_ylabel("Magnitude [-]",fontsize = 14, fontstyle='italic', fontfamily='serif')
+        axs1[1].set_title("Infesabilities (STAGE 2, discharge)",fontsize = 14, fontweight='bold', fontfamily='serif', loc="left")
+        axs1[1].minorticks_on()
+        axs1[1].legend(fontsize=10, prop={'family': 'serif'}, loc="upper right")
+        axs1[1].grid(which='minor', linestyle=':', linewidth=0.75, color='gray', alpha=0.75)
+
+        # STAGE 3
+        axs1[2].plot(it3,pinf3,label="Pr. Inf.",color=colors_hex[1],linestyle="-",linewidth=1.5)
+        axs1[2].plot(it3,dinf3,label="Du. Inf.",color=colors_hex[3],linestyle="-",linewidth=1.5)
+
+        # Titles, grid and legend.
+        axs1[2].set_xlabel("Iterations [-]",fontsize = 14,fontstyle='italic',fontfamily='serif')
+        axs1[2].set_ylabel("Magnitude [-]",fontsize = 14, fontstyle='italic', fontfamily='serif')
+        axs1[2].set_title("Infeasabilities (STAGE 3, climb)",fontsize = 14, fontweight='bold', fontfamily='serif', loc="left")
+        axs1[2].minorticks_on()
+        axs1[2].legend(fontsize=10, prop={'family': 'serif'}, loc="upper right")
+        axs1[2].grid(which='minor', linestyle=':', linewidth=0.75, color='gray', alpha=0.75)
+
+        fig2.savefig(os.path.join(path, "CONTSRAINTS_OPTIMALITY.svg"))
+        plt.show()
     
     def GENERATE_RESULTS_PLOT(t,x,ac,sim,path):
         # Colors palette.
@@ -547,7 +588,7 @@ class Plotter:
 
     def GENERATE_COST_PLOT(it,obj,time,path):
         # PLOT: COST EVOLUTION
-        plt.figure(figsize=(12,8))
+        plt.figure(figsize=(10,6))
         plt.subplots_adjust(
             left=0.10, 
             bottom=0.20, 
