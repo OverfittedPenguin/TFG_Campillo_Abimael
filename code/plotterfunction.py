@@ -306,15 +306,6 @@ class Plotter:
             u2.append(x[idx + 8])
 
         # Arrays conversion.
-        x0_1 = np.array(x0_1)
-        x0_2 = np.array(x0_2)
-        x0_3 = np.array(x0_3)
-        x0_4 = np.array(x0_4)
-        x0_5 = np.array(x0_5)
-        x0_6 = np.array(x0_6)
-        x0_7 = np.array(x0_7)
-        u0_1 = np.array(u0_1)
-        u0_2 = np.array(u0_2)
         x1 = np.array(x1)
         x2 = np.array(x2)
         x3 = np.array(x3)
