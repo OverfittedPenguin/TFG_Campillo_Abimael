@@ -275,7 +275,7 @@ class Plotter:
         plt.show()
     
     def GENERATE_RESULTS_PLOT(t,x,x0,ac,sim,path):
-        colors_hex = ['#0072B2', '#D55E00', '#009E73', '#F0E442', '#CC79A7', '#595959']
+        colors_hex = ['#001233', '#003874', '#007FFF',  "#4DB6AC", '#A9B7C7', '#ef233c']
         # States and controls storage vectors.
         x0_1 = []
         x0_2 = []
@@ -393,40 +393,39 @@ class Plotter:
             )
 
         # VELOCITIES
-        axs[0,0].plot(t,x1,label="u",color=colors_hex[0],linestyle="--",linewidth=1.5)
+        axs[0,0].plot(t,x1,label="u",color=colors_hex[4],linestyle="--",linewidth=1.5)
         axs[0,0].plot(t,x2,label="w",color=colors_hex[2],linestyle="-.",linewidth=1.5)
-        axs[0,0].plot(t,V,label="V",color=colors_hex[4],linestyle=":",linewidth=1.5)
-        axs[0,0].plot(t,Vtp,label=r"$V_{tp}$",color="black",linestyle="-",linewidth=1.5)
+        axs[0,0].plot(t,V,label="V",color=colors_hex[0],linestyle="-",linewidth=1.2)
 
         # Bounds.
-        V_max = np.ones(len(V))*np.sqrt(ac.ub[0]**2 + ac.ub[1]**2)
-        V_min = np.zeros(len(V))
-        axs[0,0].plot(t,V_max,label=r"$V_{ub}$",color="red",linestyle="--",linewidth=1.5)
-        axs[0,0].plot(t,V_min,label=r"$V_{lb}$",color="red",linestyle="--",linewidth=1.5)
+        V_NO = np.ones(len(V)) * ac.ub_USER[0]
+        V_S = np.ones(len(V)) * ac.lb_USER[0]
+        axs[0,0].plot(t,V_NO,label=r"$V_{NO}$",color=colors_hex[5],linestyle="--",linewidth=1.5)
+        axs[0,0].plot(t,V_S,label=r"$V_{S}$",color=colors_hex[5],linestyle="-.",linewidth=1.5)
 
         # Titles, grid and legend.
         axs[0,0].set_xlabel("Time [s]",fontsize = 14,fontstyle='italic',fontfamily='serif')
         axs[0,0].set_ylabel("Velocity [m/s]",fontsize = 14, fontstyle='italic', fontfamily='serif')
-        axs[0,0].set_title("Velocities through time",fontsize = 16, fontweight='bold', fontfamily='serif', loc="left")
+        axs[0,0].set_title("Velocities",fontsize = 16, fontweight='bold', fontfamily='serif', loc="left")
         axs[0,0].minorticks_on()
         axs[0,0].grid(which='minor', linestyle=':', linewidth=0.75, color='gray', alpha=0.75)
         axs[0,0].legend(fontsize=10, prop={'family': 'serif'}, loc="upper left", bbox_to_anchor=(1.02,1))
 
         # ANGLES
-        axs[0,1].plot(t,x4,label=r"$\theta$",color=colors_hex[0],linestyle="--",linewidth=1.5)
-        axs[0,1].plot(t,alpha,label=r"$\alpha$",color=colors_hex[4],linestyle="-.",linewidth=1.5)
-        axs[0,1].plot(t,g,label=r"$\gamma$",color=colors_hex[5],linestyle="-",linewidth=1.5)
+        axs[0,1].plot(t,x4,label=r"$\theta$",color=colors_hex[3],linestyle="--",linewidth=1.5)
+        axs[0,1].plot(t,alpha,label=r"$\alpha$",color=colors_hex[2],linestyle="-.",linewidth=1.5)
+        axs[0,1].plot(t,g,label=r"$\gamma$",color=colors_hex[1],linestyle="-",linewidth=1.5)
 
         # Bounds.
         th_max= np.ones(len(alpha))*ac.ub[3]
         th_min = np.ones(len(alpha))*ac.lb[3]
-        axs[0,1].plot(t,th_max,label=r"$\theta_{ub}$",color="red",linestyle="--",linewidth=1.5)
-        axs[0,1].plot(t,th_min,label=r"$\theta_{lb}$",color="red",linestyle="--",linewidth=1.5)
+        axs[0,1].plot(t,th_max,label=r"$\theta_{ub}$",color=colors_hex[5],linestyle="--",linewidth=1.5)
+        axs[0,1].plot(t,th_min,label=r"$\theta_{lb}$",color=colors_hex[5],linestyle="-.",linewidth=1.5)
 
         # Titles, grid and legend.
         axs[0,1].set_xlabel("Time [s]",fontsize = 14,fontstyle='italic',fontfamily='serif')
         axs[0,1].set_ylabel("Angle [rad]",fontsize = 14, fontstyle='italic', fontfamily='serif')
-        axs[0,1].set_title("Angles through time",fontsize = 16, fontweight='bold', fontfamily='serif', loc="left")
+        axs[0,1].set_title("Angles",fontsize = 16, fontweight='bold', fontfamily='serif', loc="left")
         axs[0,1].minorticks_on()
         axs[0,1].grid(which='minor', linestyle=':', linewidth=0.75, color='gray', alpha=0.75)
         axs[0,1].legend(fontsize=10, prop={'family': 'serif'}, loc="upper left", bbox_to_anchor=(1.02,1))
@@ -437,13 +436,13 @@ class Plotter:
         # Bounds.
         m_max = np.ones(len(x7))*ac.ub[6]
         m_min = np.ones(len(x7))*ac.lb[6]
-        axs[1,0].plot(t,m_max,label=r"$m_{ub}$",color="red",linestyle="--",linewidth=1.5)
-        axs[1,0].plot(t,m_min,label=r"$m_{lb}$",color="red",linestyle="--",linewidth=1.5)
+        axs[1,0].plot(t,m_max,label=r"$MTOM$",color=colors_hex[5],linestyle="--",linewidth=1.5)
+        axs[1,0].plot(t,m_min,label=r"$BEM$",color=colors_hex[5],linestyle="-.",linewidth=1.5)
 
         # Titles, grid and legend.
         axs[1,0].set_xlabel("Time [s]",fontsize = 14,fontstyle='italic',fontfamily='serif')
         axs[1,0].set_ylabel("Mass [kg]",fontsize = 14, fontstyle='italic', fontfamily='serif')
-        axs[1,0].set_title("Mass through time",fontsize = 16, fontweight='bold', fontfamily='serif', loc="left")
+        axs[1,0].set_title("Mass",fontsize = 16, fontweight='bold', fontfamily='serif', loc="left")
         axs[1,0].minorticks_on()
         axs[1,0].grid(which='minor', linestyle=':', linewidth=0.75, color='gray', alpha=0.75)
         axs[1,0].legend(fontsize=10, prop={'family': 'serif'}, loc="upper left", bbox_to_anchor=(1.02,1))
@@ -454,8 +453,12 @@ class Plotter:
         # Bounds.
         h_max = np.ones(len(x5))*ac.ub[5]
         h_min = np.ones(len(x5))*ac.lb[5]
-        axs[1,1].plot(x5,-h_max,label=r"$h_{ub}$",color="red",linestyle="--",linewidth=1.5)
-        axs[1,1].plot(x5,-h_min,label=r"$h_{lb}$",color="red",linestyle="--",linewidth=1.5)
+        h_ref = np.ones(len(x5))*sim.ub[3]
+        h_cruise = np.ones(len(x5))*sim.lb[3]
+        axs[1,1].plot(x5,-h_max,label=r"$h_{lb}$",color=colors_hex[5],linestyle="-.",linewidth=1.5)
+        axs[1,1].plot(x5,-h_min,label=r"$h_{ub}$",color=colors_hex[5],linestyle="--",linewidth=1.5)
+        axs[1,1].plot(x5,-h_cruise,label=r"$h_{cruise}$",color=colors_hex[3],linestyle="--",linewidth=1)
+        axs[1,1].plot(x5,-h_ref,label=r"$h_{ref}$",color=colors_hex[3],linestyle="-.",linewidth=1)
 
         # Titles, grid and legend.
         axs[1,1].set_xlabel("Horizontal distance [m]",fontsize = 14,fontstyle='italic',fontfamily='serif')
@@ -482,37 +485,35 @@ class Plotter:
             )
 
         # TPS
-        axs[0].plot(t,u1,label="TPS",color="black",linestyle="-",linewidth=1.5)
-        axs[0].plot(t,u0_1,label=r"$TPS_0$",color="grey",linestyle="--",linewidth=1.5)
+        axs[0].plot(t,u1,label="TPS",color=colors_hex[0],linestyle="-",linewidth=1.5)
 
         # Bounds.
         TPS_max = np.ones(len(t))*ac.ub[7]
         TPS_min = np.zeros(len(t))
-        axs[0].plot(t,TPS_max,label=r"$TPS_{ub}$",color="red",linestyle="--",linewidth=1.5)
-        axs[0].plot(t,TPS_min,label=r"$TPS_{lb}$",color="red",linestyle="--",linewidth=1.5)
+        axs[0].plot(t,TPS_max,label=r"$TPS_{ub}$",color=colors_hex[5],linestyle="--",linewidth=1.5)
+        axs[0].plot(t,TPS_min,label=r"$TPS_{lb}$",color=colors_hex[5],linestyle="-.",linewidth=1.5)
 
         # Titles, grid and legend.
         axs[0].set_xlabel("Time [s]",fontsize = 14,fontstyle='italic',fontfamily='serif')
         axs[0].set_ylabel("TPS - throttle position sensor [-]",fontsize = 14, fontstyle='italic', fontfamily='serif')
-        axs[0].set_title("TPS through time",fontsize = 16, fontweight='bold', fontfamily='serif', loc="left")
+        axs[0].set_title(r"$\delta_{TPS}$ control",fontsize = 16, fontweight='bold', fontfamily='serif', loc="left")
         axs[0].minorticks_on()
         axs[0].grid(which='minor', linestyle=':', linewidth=0.75, color='gray', alpha=0.75)
         axs[0].legend(fontsize=10, prop={'family': 'serif'}, loc="upper left", bbox_to_anchor=(1.02,1))
 
         # ELEVATOR
-        axs[1].plot(t,u2,label=r"$\delta_e$",color="black",linestyle="-",linewidth=1.5)
-        axs[1].plot(t,u0_2,label=r"$\delta_{e,0}$",color="grey",linestyle="--",linewidth=1.5)
+        axs[1].plot(t,u2,label=r"$\delta_e$",color=colors_hex[0],linestyle="-",linewidth=1.5)
 
         # Bounds.
         de_max= np.ones(len(t))*ac.ub[8]
         de_min = np.ones(len(t))*ac.lb[8]
-        axs[1].plot(t,de_max,label=r"$\delta_{e,ub}$",color="red",linestyle="--",linewidth=1.5)
-        axs[1].plot(t,de_min,label=r"$\delta_{e,lb}$",color="red",linestyle="--",linewidth=1.5)
+        axs[1].plot(t,de_max,label=r"$\delta_{e,ub}$",color=colors_hex[5],linestyle="--",linewidth=1.5)
+        axs[1].plot(t,de_min,label=r"$\delta_{e,lb}$",color=colors_hex[5],linestyle="-.",linewidth=1.5)
 
         # Titles, grid and legend.
         axs[1].set_xlabel("Time [s]",fontsize = 14,fontstyle='italic',fontfamily='serif')
         axs[1].set_ylabel(r"$\delta_e$ - elevator deflection [rad]",fontsize = 14, fontstyle='italic', fontfamily='serif')
-        axs[1].set_title(r"$\delta_e$ through time",fontsize = 16, fontweight='bold', fontfamily='serif', loc="left")
+        axs[1].set_title(r"$\delta_e$ control",fontsize = 16, fontweight='bold', fontfamily='serif', loc="left")
         axs[1].minorticks_on()
         axs[1].grid(which='minor', linestyle=':', linewidth=0.75, color='gray', alpha=0.75)
         axs[1].legend(fontsize=10, prop={'family': 'serif'}, loc="upper left", bbox_to_anchor=(1.02,1))
