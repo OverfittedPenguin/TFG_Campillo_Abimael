@@ -1,8 +1,21 @@
-\usepackage[utf8]{inputenc}      % UTF-8 encoding
-\usepackage[T1]{fontenc}         % Font encoding
-\usepackage{mathptmx}            % Times New Roman font
-\usepackage{setspace}            % Setspace
-\usepackage{geometry}            % Margins
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[acronym, symbols, nomain, nonumberlist]{glossaries}
+\usepackage{hyperref}
+\hypersetup{
+    hidelinks,           
+    colorlinks=false,    
+    breaklinks=true      
+}
+\usepackage{glossary-long}
+\usepackage[scaled]{helvet} 
+\usepackage[table]{xcolor}
+\definecolor{RoyalBlue}{RGB}{65,105,225}
+\usepackage{tikz}
+\usepackage{titlesec}
+\usepackage{setspace}            
+\usepackage{geometry}            
 \usepackage{lipsum}
 \geometry{
     left=2.5cm,
@@ -11,14 +24,11 @@
     bottom=3.5cm,
     headsep=0.75cm
 }
-
-\usepackage{graphicx}           % Images
-\usepackage{fancyhdr}           % Customization, headers and footers
+\usepackage{graphicx}           
+\usepackage{fancyhdr}           
 \usepackage{parskip}
-\setlength{\parskip}{0.8em}     % Parskip at the beginning and end of paragraphs
-\setlength{\parindent}{0pt}     % No indentation
-\usepackage{xcolor}             % Colors
-\definecolor{RoyalBlue}{RGB}{65,105,225}
-\usepackage{wrapfig}            % Wraping texts
-\usepackage[style=ieee, sorting=none, backend=biber]{biblatex} % Bibliography
+\setlength{\parskip}{0.8em}     
+\setlength{\parindent}{0pt}     
+\usepackage{wrapfig}            
+\usepackage[style=ieee, sorting=none, backend=biber]{biblatex} 
 \addbibresource{references.bib}

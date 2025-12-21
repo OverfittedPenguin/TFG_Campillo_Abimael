@@ -2,21 +2,56 @@
 
 % PACKAGES AND CONFIGURATIONS
 \input{packages}
+\renewcommand{\familydefault}{\rmdefault}
 
 % HEADER AND FOOTER
 \pagestyle{fancy}
 \fancyhf{} 
 
-\setlength{\headheight}{42.25491pt}
-\addtolength{\topmargin}{-30.25491pt}
+\setlength{\headheight}{46pt} 
+\addtolength{\topmargin}{-4pt}
 
-\fancyhead[L]{\includegraphics[width=5.5cm]{images/default/logo_UPC_header.png}}
-\fancyhead[R]{Real-Time Optimal Trajectory \\ Generation for Fixed-Wing UAVs}
-\fancyfoot[C]{\thepage}
+\fancyhead[R]{
+    \small\rmfamily\bfseries 
+    \begin{tabular}[b]{r@{}}
+        Real-Time Optimal Trajectory \\ 
+        Generation for Fixed-Wing UAVs
+    \end{tabular}
+}
+\fancyfoot[C]{\small\rmfamily\thepage}
 
-\renewcommand{\headrulewidth}{0.5pt} 
+% Line settings
+\renewcommand{\headrulewidth}{0.4pt}
 
+\titleformat{\chapter}[block]
+  {\normalfont\large\sffamily}
+  {\textcolor{RoyalBlue}{\thechapter}\hspace{15pt}\vrule width 2pt\hspace{15pt}}
+  {0pt}
+  {\huge\bfseries}
 
+% GLOSSARIES AND ACRONYMS
+\newglossary[slg]{symbolslist}{syi}{syg}{Nomenclature}
+\makeglossaries
+\input{chapters/acronyms.tex}
+\input{chapters/nomenclature.tex}
+
+\newglossarystyle{nomenclaturestyle}{
+  \setglossarystyle{long3col}
+  \renewenvironment{theglossary}%
+    {\begin{longtable}{@{}l p{0.7\textwidth} r@{}}
+     \rmfamily\bfseries Symbol & \rmfamily\bfseries Description & \rmfamily\bfseries Unit \\ \hline
+     \endhead}%
+    {\end{longtable}}
+  
+  \renewcommand*{\glossentry}[2]{%
+    \rmfamily \glstarget{##1}{\glossentryname{##1}} & 
+    \rmfamily \glossentrydesc{##1} & 
+    \rmfamily \glossentrysymbol{##1} \\
+  }
+}
+
+\setglossarystyle{list}
+\renewcommand*{\glsnamefont}[1]{\rmfamily\bfseries #1}
 
 %% DOCUMENT %%
 \begin{document}
@@ -35,7 +70,7 @@
 \vspace{1cm}
 \begin{center}
 \scalebox{2}{
-  \parbox{0.9\linewidth}{
+  \parbox{0.85\linewidth}{
     \textcolor{RoyalBlue}{
       Real-Time Optimal Trajectory Generation \\
       for Fixed-Wing UAVs in Firefighting \\
@@ -78,12 +113,14 @@
 \tableofcontents
 \listoffigures
 \listoftables
+\printglossary[type=\acronymtype, title=Acronyms, style=list]
+\printglossary[type=symbolslist, style=nomenclaturestyle]
 \newpage
 
 % MAIN CONTENT
 \pagestyle{fancy}
 \pagenumbering{arabic}
-\input{chapters/preface}
+\input{chapters/ch2_funcdamentals_oc.tex}
 
 % REFERENCES
 \printbibliography[heading=bibintoc,title={References}]
