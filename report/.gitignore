@@ -11,7 +11,6 @@
 *.syg
 *.syi
 
-
 # Carpeta de salida del compilador (opcional)
 output/
 build/
