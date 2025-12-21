@@ -1,7 +1,25 @@
 \chapter{Fundamentals of Optimal Control and its Implementation}
-
+\textcolor{red}{PENDIENTE}
 
 \section{Introduction to Optimal Control Theory}
-The \gls{oct} is a control field related branch where an objective function has to be optimised -most of the times, it has to be minimised- in order to find the control trajectory for a determined dynamical system. This theory is hystorically realted with calculus of variations, where optimal points -either maxima or minima- are found using lñittle variations in functions or functionals (\textcolor{red}{CITA}). This field of study, proposed by Isaac Newton, was developed as a solving approach for the brachistochrone problem, posed by Bernoulli in 1696. The brachistochrone curve is defined as the fastest descent path -most optimal path for minimising time- between two points A and B under a uniform gravitational field. Counterintuitively, it was found that the most optimal path was not but the cycloidal ramp, as can be seen on the image below, where ball has to roll under gravity only at the different paths, and the same grade shaded figures correspond to same time-instants.
+The \gls{oct} is a control field related branch where an objective function has to be optimised -most of the times, it has to be minimised- in order to find the control trajectory for a determined dynamical system. This theory is historically realted with calculus of variations, where optimal points -either maxima or minima- are found using little variations in functions or functionals (\textcolor{red}{CITA 1}). This field of study, proposed by Isaac Newton, was developed as a solving approach for the brachistochrone problem, posed by Bernoulli in 1696. The brachistochrone curve is defined as the fastest descent path -most optimal path for minimising time- between two points A and B under a uniform gravitational field. Counterintuitively, it was found that the most optimal path was not but the cycloidal ramp, as can be seen in the image below, where the ball has to roll under gravity only at the different paths, and the same grade shaded figures correspond to same time instants.
 
-In essence, the \gls{oct} responds the need to solve continuous time optimisation problems, as the once presented. Thus, the \gls{ocp} can be understood as a n-dimensional extension of the \gls{nlp} problem. The NLP problem can be defined as the minimisation of a given function subject to a different set of equations or inequations, called constraints.
+In essence, the \gls{oct} responds the need to solve continuous time optimisation problems, as once presented. Thus, the \gls{ocp} can be understood as a n-dimensional extension of the \gls{nlp} problem. The NLP problem can be defined as the minimisation of a given function subject to a different set of equations or inequations that act as restrictions -also called constraints- and simple bounds (\textcolor{red}{CITA 3}).
+
+\begin{equation}
+    \begin{aligned}
+        \max_{x\in \mathbb{R}^{n}} \ \  & f\ (x)\\
+        \text{s.t.} \ \  & g_{j} \ (x)\leq b_{j} \ \text{for each} \ j=1,\dotsc ,m\\
+        & x=(x_{1} ,\dotsc ,x_{n} )\\
+        & g=(g_{1} ,\dotsc ,g_{m} ).
+    \end{aligned}
+    \label{eq: NLP}
+\end{equation}
+
+The \gls{nlp} problem is limited to a finite number of state variables and restrictions, since it has a discretised treatment. At this point, it has to be mentioned that any \gls{nlp} problem goes through three different phases, which are applicable to the \gls{ocp} or any optimisation problem. The first phase is modelling, which is, in fact, a mathematical description of a dynamic system through simple equations that allow future state predictions of a system thanks to a given set of control variables. While state variables $y_i$ are the variables that describe system conditions at a given time, control variables $u_i$ are the variables that can be manipulated through time because they have an influence on the system. In other words, state variables are consequence of the control variables -p.e for a flight trajectory, the position and velocity of the aircraft would be the state variables for a set of different control variables as could be the \gls{aoa} or the \gls{tps}-. Secondly, the restrictions have to be applied to the system in the form of equality or inequality constraints to describe its physical or operational limitations. In addition, the admissible trajectory and admissible control are described; that means that state and control variables satisfy the restrictions within all time domain, respectively -later will be referred to as simple bounds-. Third and last phase is optimisation, which means the maximisation or minimisation of the cost function or functional associated with the system while complying with all the constraints and bounds set for a determined optimisation criteria. For example, in the brachistochrone problem introduced before, there are several feasible paths between points A and B, but only the cycloidal path complies with the minimum time optimisation criteria.
+
+\subsection{Mathematical formulation}
+\textcolor{red}{PENDIENTE}
+
+\subsection{Cost function and problem constraints}
+\textcolor{red}{PENDIENTE}
