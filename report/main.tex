@@ -24,10 +24,15 @@
 \renewcommand{\headrulewidth}{0.4pt}
 
 \titleformat{\chapter}[block]
-  {\normalfont\large\sffamily}
-  {\textcolor{RoyalBlue}{\thechapter}\hspace{15pt}\vrule width 2pt\hspace{15pt}}
+  {\normalfont\bfseries\rmfamily}
+  {%
+    \textcolor{RoyalBlue}{\fontsize{25}{33}\selectfont\bfseries\thechapter}
+    \hspace{10pt}
+    \vrule width 3pt 
+    \hspace{10pt}
+  }
   {0pt}
-  {\huge\bfseries}
+  {\huge\rmfamily} 
 
 % GLOSSARIES AND ACRONYMS
 \newglossary[slg]{symbolslist}{syi}{syg}{Nomenclature}
