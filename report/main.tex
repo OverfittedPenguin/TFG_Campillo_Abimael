@@ -11,6 +11,7 @@
 \setlength{\headheight}{46pt} 
 \addtolength{\topmargin}{-4pt}
 
+\fancyhead[L]{\includegraphics[width=5cm]{images/default/logo_UPC_header.png}}
 \fancyhead[R]{
     \small\rmfamily\bfseries 
     \begin{tabular}[b]{r@{}}
@@ -19,10 +20,9 @@
     \end{tabular}
 }
 \fancyfoot[C]{\small\rmfamily\thepage}
-
-% Line settings
 \renewcommand{\headrulewidth}{0.4pt}
 
+% CHAPTER'S TITLE
 \titleformat{\chapter}[block]
   {\normalfont\bfseries\rmfamily}
   {%
@@ -44,7 +44,7 @@
   \setglossarystyle{long3col}
   \renewenvironment{theglossary}%
     {\begin{longtable}{@{}l p{0.7\textwidth} r@{}}
-     \rmfamily\bfseries Symbol & \rmfamily\bfseries Description & \rmfamily\bfseries Units \\ \hline
+     \rmfamily\bfseries Symbol & \rmfamily\bfseries Description & \rmfamily\bfseries Units \\ \hline \vspace{1pt}
      \endhead}%
     {\end{longtable}}
   
@@ -74,8 +74,8 @@
 \phantom{abs}
 \vspace{1cm}
 \begin{center}
-\scalebox{2}{
-  \parbox{0.85\linewidth}{
+\scalebox{1.95}{
+  \parbox{\linewidth}{
     \textcolor{RoyalBlue}{
       Real-Time Optimal Trajectory Generation \\
       for Fixed-Wing UAVs in Firefighting \\
