@@ -1,5 +1,5 @@
 \chapter{Fundamentals of Optimal Control and its Implementation}
-This chapter includes the mathematical formualtion of the \gls{ocp}, which is the base of the \gls{oct}. It also includes a careful explanation about direct and indirect methods, which are two different approaches to solve optimal control problems, highlighting the \gls{dcm} and \gls{pmp}. Eventually, the \gls{ipopt} is presented as the used approach, including the mathematical formulation of the method and its implementation from CASADi's Python library.
+This chapter includes the mathematical formualtion of the \gls{ocp}, which is the base of the \gls{oct}. It also includes a careful explanation about direct and indirect methods, which are two different approaches to solve optimal control problems, highlighting the \gls{dcm} and \gls{pmp}. Eventually, the \gls{ipopt} is presented as the used approach, including the mathematical formulation of the method and its implementation from CasADi's Python library.
 
 \section{Introduction to Optimal Control Theory}
 The \gls{oct} is a control field related branch where an objective function has to be optimised -most of the times, it has to be minimised- in order to find the control trajectory for a determined dynamical system. This theory is historically realted with calculus of variations, where optimal points -either maxima or minima- are found using little variations in functions or functionals (\textcolor{red}{CITA 1}). This field of study, proposed by Isaac Newton, was developed as a solving approach for the brachistochrone problem, posed by Bernoulli in 1696. The brachistochrone curve is defined as the fastest descent path -most optimal path for minimising time- between two points A and B under a uniform gravitational field. Counterintuitively, it was found that the most optimal path was not but the cycloidal ramp, as can be seen in the image below, where the ball has to roll under gravity only at the different paths, and the same grade shaded figures correspond to same time instants.
@@ -32,7 +32,7 @@ The \gls{ocp} is defined as follows.
 
 \begin{equation}
     \begin{aligned}
-        \min_{y,u} \ \  & J(y,u) = \Phi[y(t_f),t_f] + \int _{t_0}^{t_f} L[ y(t),u(t),t] \ dt\\
+        \min_{y,u} \ \  & J(y,u) := \Phi[y(t_f),t_f] + \int _{t_0}^{t_f} L[ y(t),u(t),t] \ dt\\
         \text{s.t.} \ \  & \dot{y} =f[y(t),u(t),t]\\
         & g[y(t),u(t),t] \leq 0\\
         & \varphi [y(t_0 ),u(t_0),t_0] =0\\
@@ -141,7 +141,7 @@ Eventually, the terminal cost can be added taken into account its contribution o
 
 \begin{equation}
     \begin{aligned}
-        \min_{y,u} \ \  & J(y,u)= \Phi[ y(t_{N} ),u(t_{N} ),t_{N}] +\sum _{k=0}^{N-1}\frac{1}{2} h_{k} \cdotp ( L_{k} +L_{k+1})\\
+        \min_{y,u} \ \  & J(y,u) := \Phi[ y(t_{N} ),u(t_{N} ),t_{N}] +\sum _{k=0}^{N-1}\frac{1}{2} h_{k} \cdotp ( L_{k} +L_{k+1})\\
         \text{s.t.} \ \  & y_{k+1} =y_{k} + \frac{1}{2} h_{k} \cdotp (f_{k} +f_{k+1} )\\
         & g[y(t_k),u(t_k),t_k] \leq 0 \text{ for } \forall k\\
         & \varphi [y(t_0 ),u(t_0),t_0] =0\\
@@ -254,3 +254,12 @@ Therefore, the \gls{pmp} can be expressed as the minimisation of the Hamiltonian
 \end{equation}
 
 \textcolor{red}{PENSAR SI AÑADIR FORMULACIÓN DEL PROBLEMA CON ADJUNTO PARA CLARIFICACIÓN EN APÉNDICES (APÉNDICES A Y B DE LIBRETA)}
+
+\section{Introduction to IPOPT}
+The \gls{ipopt} is a robust interior-point line-search algorithm designed to solve large-scale \gls{nlp} problems. This method is particularly well-suited for high-dimensional trajectory optimisation, such as the low-altitude flight manoeuvres required during water-discharge phases in firefighting missions -the primary focus of this thesis-.
+
+\gls{ipopt} identifies local optimal solutions by employing a primal-dual barrier approach to handle inequality constraints and a filter-based line-search method to ensure global convergence. The following subsections detail the mathematical formulation of the \gls{ipopt} algorithm and its practical implementation via the CasADi numerical optimisation framework.
+
+\subsection{Mathematical formulation}
+
+\subsection{Implementation in CasADi}
