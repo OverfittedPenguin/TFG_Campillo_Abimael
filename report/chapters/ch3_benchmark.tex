@@ -1,0 +1,103 @@
+\chapter{Benchmark Problem: A Level-Flight Cruise Trajectory}
+This chapter introduces the reader to flight dynamics using a level-cruise flight trajectory. Also, that trajectory is formulated as an \gls{ocp} and solved via an implementation using CasADi. Therefore, a mathematical formulation on \gls{ocp} notation is presented right after the equations of motion and, right before presenting the results. Eventually, the free-end condition is applied to the problem, acting as a preamble of the following chapter.
+
+\section{UAV Kinematics and Equations of Motion}
+Firstly, the flight dynamics for a general \gls{uav} flight trajectory had to be introduced and described. Since the aim of the project is \gls{oct} development for firefighting manoeuvres, some hypothesis have to be applied. The hypotheses considered are the follwoing ones.
+
+\begin{itemize}
+    \item A bidimensional (2D) trajectory without tridimensional (3D) effects will be considered. Thus, all lateral stability and movements will be neglected and only longitudinal static stability will be considered -i.e $\mathcal{L} = 0$, $\mathcal{N}=0$, $\Phi = 0$, $\dot{\Phi} = 0$, $\Psi = 0$, $\dot{\Psi} = 0$, $y = const.$ and $\dot{y} = 0$-.
+    \item All dynamic modes are neglected and only static stability phenomena will be included.
+    \item The atmospheric condistions shall be modelled using International Standard Atmoshpere (ISA) model. Only static bidimensional (2D) wind field could be sonsidered, which means that free-stream velocity has to be constant in all domain.
+    \item Bidimensional (2D) level-flight cruise trajectory implies a nul flight path angle and nul variation of the same -i.e $\gamma = 0$ and $\dot{\gamma} = 0$-.
+\end{itemize}
+
+Once the hypostheses have been written, its time to introduce the flight dynamics that are involved in bidimensional (2D) flight trajectories. The image below shows the free body diagram  and the relation between plane reference systems -i.e including body axes ($x_b$,$z_b$), wind axes ($x_w$,$z_w$) and local-horizon axes ($x_h$,$z_h$)-.
+
+Applying Newton's second law, the equilibrium of forces and moments can be obtained. To see the different elements involved in each equation, the reader can refer to nomenclature's section. 
+
+\begin{equation}
+    \sum F_{x_b} = m\frac{du}{dt} = m\dot{u} = T + L\sin(\alpha) - D\cos(\alpha) - W\sin(\theta) - mqw 
+    \label{eq:Forces_Xb}
+\end{equation}
+
+\begin{equation}
+    \sum F_{z_b} = m\frac{dw}{dt} =m\dot{w} = W\cos(\theta) - L\cos(\alpha) - D\sin(\alpha) + mqu
+    \label{eq:Forces_Zb}
+\end{equation}
+
+\begin{equation}
+    \sum M_{y_b} = I_{y}\frac{dq}{dt} =I_{y}\dot{q} = C_m\bar{q}S\bar{c} - T\left[\Delta X_{CT}\sin(\varepsilon) + \Delta Z
+    _{CT}   \cos(\varepsilon)\right]
+    \label{eq:Moment_Yb}
+\end{equation}
+
+Along to the dynamic equations, the \gls{uav} kinematics can be described using the rotation matrix between body and horizontal axes as follows.
+
+\begin{equation}
+    \begin{bmatrix}
+        \dot{x} \\
+        \dot{z}
+    \end{bmatrix}
+    \coloneqq R_{hb}
+    \begin{bmatrix}
+        u\\
+        w
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        \cos \theta & \sin \theta\\
+        -\sin \theta & \cos \theta
+    \end{bmatrix}
+    \begin{bmatrix}
+        u \\
+        w
+    \end{bmatrix}
+    = 
+    \begin{bmatrix}
+       u \cos \theta + w \sin \theta\\
+        -u \sin \theta + w \cos \theta
+    \end{bmatrix}
+    \label{eq:Inertial_Velocities}
+\end{equation}
+
+Eventually, pitch and mass variations have to be considered to complete the full dynamic and kinematics set of equations. It has to be pinpointed that for this benchmark problem, only specific fuel consuption is considered on mass variation equation.
+
+\begin{equation}
+    \frac{d\theta}{dt} \coloneqq \dot{\theta} = q
+    \label{eq:Theta_dot}
+\end{equation}
+
+\begin{equation}
+    \frac{dm}{dt} \coloneqq \dot{m} = -SFC
+    \label{eq:Mass_dot}
+\end{equation}
+
+As a clarification on the equation terms, below are the complete formulation of aerodynamic forces and moments, with all proper aerodynamic coefficients considered. 
+
+\begin{equation}
+    L \coloneqq \frac{1}{2}\bar{q}SC_L = \frac{1}{2}\bar{q}S\left(C_{L,0} + C_{L,\alpha}\alpha + C_{L,\delta_e}\delta_e\right)
+    \label{eq:Lift}
+\end{equation}
+
+\begin{equation}
+    D \coloneqq \frac{1}{2}\bar{q}SC_D = \frac{1}{2}\bar{q}S\left[C_{D,0} + k\left(C_{L,0} + C_{L,\alpha}\alpha + C_{L,\delta_e}\delta_e\right)^2\right]
+    \label{eq:Drag}
+\end{equation}
+
+\begin{equation}
+    C_m \coloneqq C_{m,0} + C_{m,\alpha}\alpha + C_{m,\delta_e}\delta_e
+    \label{eq:Moment}
+\end{equation}
+
+\section{Mathematical Formulation of the OCP}
+
+\subsection{Cost functional definition}
+
+\subsection{Constraints}
+
+\subsection{NLP formulation and implementation via CasADi}
+
+\section{Results}
+
+\section{Addition of the Free-End Condition}
+

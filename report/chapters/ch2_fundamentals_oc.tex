@@ -32,7 +32,7 @@ The \gls{ocp} is defined as follows.
 
 \begin{equation}
     \begin{aligned}
-        \min_{y,u} \ \  & J(y,u) := \Phi[y(t_f),t_f] + \int _{t_0}^{t_f} L[ y(t),u(t),t] \ dt\\
+        \min_{y,u} \ \  & J(y,u) \coloneqq \Phi[y(t_f),t_f] + \int _{t_0}^{t_f} L[ y(t),u(t),t] \ dt\\
         \text{s.t.} \ \  & \dot{y} =f[y(t),u(t),t]\\
         & g[y(t),u(t),t] \leq 0\\
         & \varphi [y(t_0 ),u(t_0),t_0] =0\\
@@ -109,9 +109,9 @@ At this point, a trapezoidal scheme is proposed to be used on the numerical appr
     \begin{aligned}
         & \int _{t_{0}}^{t_f} L(y,u,t)\ dt\approx \sum _{k=0}^{N-1}\frac{1}{2} h_{k} \cdotp ( L_{k} +L_{k+1})\\
         where & \\
-        & h_{k} :=t_{k+1} -t_{k}\\
-        & L_{k} :=L[ y(t_{k} ),u(t_{k} ),t_{k}]\\
-        & L_{k+1} :=L[ y(t_{k+1} ),u(t_{k+1} ),t_{k+1}]\\
+        & h_{k} \coloneqq t_{k+1} -t_{k}\\
+        & L_{k} \coloneqq L[ y(t_{k} ),u(t_{k} ),t_{k}]\\
+        & L_{k+1} \coloneqq L[ y(t_{k+1} ),u(t_{k+1} ),t_{k+1}]\\
         & t_{k} \ \text{for each} \ k\in [0,N-1]
     \end{aligned}
     \label{eq:DCM_Running_Cost}
@@ -141,7 +141,7 @@ Eventually, the terminal cost can be added taken into account its contribution o
 
 \begin{equation}
     \begin{aligned}
-        \min_{y,u} \ \  & J(y,u) := \Phi[ y(t_{N} ),u(t_{N} ),t_{N}] +\sum _{k=0}^{N-1}\frac{1}{2} h_{k} \cdotp ( L_{k} +L_{k+1})\\
+        \min_{y,u} \ \  & J(y,u) \coloneqq \Phi[ y(t_{N} ),u(t_{N} ),t_{N}] +\sum _{k=0}^{N-1}\frac{1}{2} h_{k} \cdotp ( L_{k} +L_{k+1})\\
         \text{s.t.} \ \  & y_{k+1} =y_{k} + \frac{1}{2} h_{k} \cdotp (f_{k} +f_{k+1} )\\
         & g[y(t_k),u(t_k),t_k] \leq 0 \text{ for } \forall k\\
         & \varphi [y(t_0 ),u(t_0),t_0] =0\\
@@ -167,7 +167,7 @@ The optimality conditions are consequence of the application of the Euler-Lagran
 \end{equation}
 
 \begin{equation}
-    \mathcal{L}(x,z ,\mu ):=f(x)+\sum _{i=0}^{m} z _{i} g_{i} (x)++\sum _{j=0}^{p} \mu _{j} h_{j} (x)
+    \mathcal{L}(x,z ,\mu )\coloneqq f(x)+\sum _{i=0}^{m} z _{i} g_{i} (x)++\sum _{j=0}^{p} \mu _{j} h_{j} (x)
     \label{eq:OP_Lagrangian}
 \end{equation}
 
@@ -178,7 +178,7 @@ The \gls{kkt} conditions are stationarity, complementary slackness, primal feasa
 \end{itemize}
 
 \begin{equation}
-    \nabla _{x}\mathcal{L} (x,\lambda ,\mu ):=\nabla f(x)+\sum _{i=0}^{m} z_{i} \nabla g_{i} (x)+\sum _{j=0}^{p} \mu _{j} \nabla h_ {j} (x)=0
+    \nabla _{x}\mathcal{L} (x,\lambda ,\mu )\coloneqq\nabla f(x)+\sum _{i=0}^{m} z_{i} \nabla g_{i} (x)+\sum _{j=0}^{p} \mu _{j} \nabla h_ {j} (x)=0
     \label{eq:KKT_Stationarity}
 \end{equation}
 
@@ -215,7 +215,7 @@ The \gls{kkt} conditions are stationarity, complementary slackness, primal feasa
 On its part, the transversality conditions are the boundary conditions for the co-state variables $\lambda$. They are a necessary condition for optimisation in state free-end problems, which means that there's no end known for the trajectory. These transversality conditions can be defined as the existence of a n-vectorial function of the co-state variables $\lambda (t)$ and a m-vectorial function $\nu (t)$ such that the Hamiltonian function $ H(\lambda,\nu,t)$, see equation \eqref{eq:Hamiltonian}, can be defined like in a boundary value problem in his canonical form with \gls{ode}s in all time domain $t_{0} \leq t\leq t_f$ \cite{Stryk1992}\cite{Leonard1992}.
 
 \begin{equation}
-    H\ (\lambda ,\nu ,t):=\lambda ^{T} f+\nu ^{T} g
+    H\ (\lambda ,\nu ,t)\coloneqq\lambda ^{T} f+\nu ^{T} g
     \label{eq:Hamiltonian}
 \end{equation}
 
@@ -238,7 +238,7 @@ Eventually, the \gls{pmp} is a fundamental result of optimal control theory, sin
         & \dot{\lambda } (t)=-\frac{\partial H}{\partial y}\\
         & \lambda (T)=\frac{\partial \Phi }{\partial y(T)}\\
         where & \\
-        & H(y,u,\lambda ,t):=L(y,u,t)+\lambda ^{T} f(y,u,t)\\
+        & H(y,u,\lambda ,t)\coloneqq L(y,u,t)+\lambda ^{T} f(y,u,t)\\
         & \dot{y} (t)=f(y,u,t)
     \end{aligned}
     \label{eq:PMP_Problem}
@@ -248,7 +248,7 @@ Therefore, the \gls{pmp} can be expressed as the minimisation of the Hamiltonian
 
 \begin{equation}
     \begin{aligned}
-        u(t):=\arg\min_{u\in U} \ H\ (y,u,\lambda ,t)
+        u(t)\coloneqq\arg\min_{u\in U} \ H\ (y,u,\lambda ,t)
     \end{aligned}
     \label{eq:PMP}
 \end{equation}
@@ -272,7 +272,7 @@ Below there is a general formulation of an optimisation problem followed by its 
 
 \begin{equation}
     \begin{aligned}
-        \min_{x\in \mathbb{R}^{n}} \ \  & \varphi_\mu(x) := f(x) - \mu \sum_{i=0}^n ln(x^{(i)})\\
+        \min_{x\in \mathbb{R}^{n}} \ \  & \varphi_\mu(x) \coloneqq f(x) - \mu \sum_{i=0}^n ln(x^{(i)})\\
         \text{s.t.} \ \  & c(x) = 0\\
     \end{aligned}
     \label{eq:Barrier_Problem}
@@ -281,7 +281,7 @@ Below there is a general formulation of an optimisation problem followed by its 
 The barrier method transforms the inequality constraints of a problem into a sequence of equality-constrained subproblems that are easier to solve numerically. Once the barrier problem is defined, the IPOPT algorithm computes an approximate solution for a fixed value of the barrier parameter $\mu$. This process is iterative: for each $\mu_j$, the algorithm seeks a local solution to the subproblem. Upon reaching a specific inner tolerance, the barrier parameter is decreased, and the previous solution is used as a 'warm start' for the next subproblem.
 
 \begin{equation}
-    \mathcal{L}(x,\lambda,z) := f(x) + c(x)^T\lambda - x^Tz
+    \mathcal{L}(x,\lambda,z) \coloneqq f(x) + c(x)^T\lambda - x^Tz
     \label{eq:BP_Lagrangian}
 \end{equation}
 
@@ -299,7 +299,7 @@ Following the Lagrangian, the \gls{kkt} conditions can be defined for the barrie
 At this point, optimality error of the barrier problem can be defined using \gls{kkt} conditions. The error is the ratio that would be used to compare with tolerances to determine if local and global optimal points are reached. Full definition of $s_d$ and $s_c$ can be found on \cite{Waechter2004}.
 
 \begin{equation}
-    E_\mu(x,\lambda,z):= \text{max}\left\{\frac{||\nabla f(x) + \nabla c(x)-z||_\infty}{s_d}, \frac{||XZe-\mu e||_\infty}{s_c}\right\}
+    E_\mu(x,\lambda,z)\coloneqq \text{max}\left\{\frac{||\nabla f(x) + \nabla c(x)-z||_\infty}{s_d}, \frac{||XZe-\mu e||_\infty}{s_c}\right\}
     \label{eq:BP_Error}
 \end{equation}
 
@@ -345,9 +345,9 @@ From the previous expression, gradients could be computed. Thus, the update on v
 
 \begin{subequations}
     \begin{align}
-        x_{k+1} &:= x_k + \alpha_k d_x^k \\
-        \lambda_{k+1} &:= \lambda_k + \alpha_k d_{\lambda}^k \\
-        z_{k+1} &:= z_k + \alpha_z^k d_z^k
+        x_{k+1} &\coloneqq x_k + \alpha_k d_x^k \\
+        \lambda_{k+1} &\coloneqq \lambda_k + \alpha_k d_{\lambda}^k \\
+        z_{k+1} &\coloneqq z_k + \alpha_z^k d_z^k
     \end{align}
     \label{eq:BP_Updated_Steps}
 \end{subequations}
@@ -389,7 +389,7 @@ Since the needs explained above, suppose a simple problem directly extracted fro
 
 \begin{equation}
     \begin{aligned}
-        \min_{x, y, z} \quad & f(x,z) :=x^2 + 100z^2 \\
+        \min_{x, y, z} \quad & f(x,z) \coloneqq x^2 + 100z^2 \\
         \text{s.t.} \quad & z + (1 - x)^2 - y = 0
     \end{aligned}
     \label{eq:CasADi_Example}
@@ -402,7 +402,7 @@ The directrices for the creation of \gls{nlp} problem dictionary are:
     \item \underline{Cost function $f(x,z)$:} The cost function has to include the penalties defined for each variable when needed. In the example, there is a unique cost defined. Nevertheless, if it was defined for more than one collocation point it would be translated into \textit{ca.nlpsol()} needs like stated in \eqref{eq:CasADi_NLP_Cost}.
 
     \begin{equation}
-        F(x,z) := x_0^2 + 100z_0^2 + x_1^2 + 100z_1^2 + \dotsc + x_N^2 + 100z_N^2
+        F(x,z) \coloneqq x_0^2 + 100z_0^2 + x_1^2 + 100z_1^2 + \dotsc + x_N^2 + 100z_N^2
         \label{eq:CasADi_NLP_Cost}
     \end{equation}
 
