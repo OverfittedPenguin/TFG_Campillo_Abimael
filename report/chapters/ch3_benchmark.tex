@@ -1,7 +1,8 @@
 \chapter{Benchmark Problem: A Level-Flight Cruise Trajectory}
-This chapter introduces the reader to flight dynamics using a level-cruise flight trajectory. Also, that trajectory is formulated as an \gls{ocp} and solved via an implementation using CasADi. Therefore, a mathematical formulation on \gls{ocp} notation is presented right after the equations of motion and, right before presenting the results. Eventually, the free-end condition is applied to the problem, acting as a preamble of the following chapter.
+\textcolor{red}{This chapter introduces the reader to flight dynamics using a level-cruise flight trajectory. Also, that trajectory is formulated as an \gls{ocp} and solved via an implementation using CasADi. Therefore, a mathematical formulation on \gls{ocp} notation is presented right after the equations of motion and, right before presenting the results. Eventually, the free-end condition is applied to the problem, acting as a preamble of the following chapter.}
 
 \section{UAV Kinematics and Equations of Motion}
+\label{sec:EOM}
 Firstly, the flight dynamics for a general \gls{uav} flight trajectory had to be introduced and described. Since the aim of the project is \gls{oct} development for firefighting manoeuvres, some hypothesis have to be applied. The hypotheses considered are the follwoing ones.
 
 \begin{itemize}
@@ -90,12 +91,120 @@ As a clarification on the equation terms, below are the complete formulation of 
 \end{equation}
 
 \section{Mathematical Formulation of the OCP}
+Next step is to transform the problem above into a set of equations using the \gls{oc} notation. To do so, the three phases of optimisation problems descriptions is used, which means that the problem has to be modelled, constrained and then optimised.
 
-\subsection{Cost functional definition}
+\subsection{States and controls}
+First step is modelisation, which means that state and control variables have to be defined for the problem. Since the benchmark problem is a level-flight cruise trajectory, the states involved in the previous equations of motion are: local-horizon position ($x$,$z$); body velocities ($u$,$w$); pitch ($\theta$); pitch rate ($q$); and mass ($m$). Those seven states are the ones that allow describing the trajectory and \gls{uav} condition through time, since they indicate position, attitude and mass.
 
-\subsection{Constraints}
+The previous states are defined for a bidimensional (2D) frame using only longitudinal stability equations, as has been indicated before. Therefore, the controls that shall be used are no other ones but \gls{tps}, denoted as $\delta_{tps}$, and elevator deflection, denoted as $\delta_e$. That pair of control variables are the minimum controllable conditions for the longitudinal flight given the conditions of the problem and they are responsible of controlling speed and altitude, respectively -i.e \gls{uav} speed is controlled by variations in \gls{tps} while \gls{uav} altitude is controlled by $\delta_e$ variations-.
 
-\subsection{NLP formulation and implementation via CasADi}
+Eventually, the state and control vector can be constructed, followed by its form using state space notation -where $x_i$ are states and $u_i$ are controls-. Notice that the order followed to construct the vector has to be states variables followed by control variables; nevertheless, is indistinct which state or control goes first in each group. The order has been chosen by convenience for later \gls{nlp} formulation.
+
+\begin{equation}
+\mathbf{w} \coloneqq 
+\begin{bmatrix}
+    u \\
+    w \\
+    q \\
+    \theta \\
+    x \\
+    z \\
+    m \\
+    \delta_{tps} \\
+    \delta_{e} \\
+\end{bmatrix}
+=
+\begin{bmatrix}
+    x_1 \\
+    x_2 \\
+    x_3 \\
+    x_4 \\
+    x_5 \\
+    x_6 \\
+    x_7 \\
+    u_1 \\
+    u_2 \\
+\end{bmatrix}
+\label{eq:Benchmark_States_Controls}
+\end{equation}
+
+\subsection{Constraints and bounds}
+After the state space is set, the constraints can be defined for the problem. At this point, previous remarks on constraint definition towards \gls{ocp} notation could be recovered. That means that constraints are described following the prestablished order, which starts by dynamic constraints. Since dynamic constraints have been defined in section \ref{sec:EOM}, they have to be transcribed using state space notation, which led to the following set of expressions.\footnote{From now on, sine operation $\sin()$ is denoted as $s$ and, cosine operation $\cos()$ is denoted as $c$, as clarified in nomenclature section This has been done for an easy readability of some equations and operations.}
+
+\begin{equation}
+\begin{split}
+    \dot{x_1} ={} & \frac{1}{x_7} \Big[ T(x_1,x_2,x_6,u_1) + L(x_1,x_2,x_6,u_2) \cdot s\alpha(x_1,x_2) \\
+    & - D(x_1,x_2,x_6,u_2) \cdot c\alpha(x_1,x_2) \Big] - x_3x_2 - g \cdot sx_4
+\end{split}
+\label{eq:Benchmark_EOM_1}
+\end{equation}
+
+\begin{equation}
+\begin{split}
+    \dot{x_2} ={} & g \cdot cx_4 - \frac{1}{x_7} \Big[ L(x_1,x_2,x_6,u_2) \cdot c\alpha(x_1,x_2) \\
+    & + D(x_1,x_2,x_6,u_2) \cdot s\alpha(x_1,x_2) \Big] + x_3x_1 
+\end{split}
+\label{eq:Benchmark_EOM_2}
+\end{equation}
+
+\begin{equation}
+\begin{split}
+    \dot{x_3} ={} & \frac{1}{I_y} \Big[ C_m(u_2)\bar{q}(x_1,x_2,x_6)S\bar{c} \\
+    & - T(x_1,x_2,x_6,u_1)\left[\Delta X_{CT}\cdot s \epsilon (x_1,x_2)+ \Delta Z_{CT}\cdot c \epsilon (x_1,x_2)\right]\Big]
+\end{split}
+\label{eq:Benchmark_EOM_3}
+\end{equation}
+
+\begin{equation}
+    \dot{x_4} = x_3
+\label{eq:Benchmark_EOM_4}
+\end{equation}
+
+\begin{equation}
+    \dot{x_5} = x_1\cdot c x_4 + x_2\cdot s x_4
+\label{eq:Benchmark_EOM_5}
+\end{equation}
+
+\begin{equation}
+    \dot{x_6} = -x_1\cdot s x_4 + x_2\cdot c x_4
+\label{eq:Benchmark_EOM_6}
+\end{equation}
+
+\begin{equation}
+    \dot{x_7} = -SFC
+\label{eq:Benchmark_EOM_7}
+\end{equation}
+
+The set of equations above can be summarised to a reduced version if RHS is expressed as fucntionals of the states and controls involved only.
+
+\begin{equation}
+\begin{bmatrix}
+    \dot{x_1} \\
+    \dot{x_2} \\
+    \dot{x_3} \\
+    \dot{x_4} \\
+    \dot{x_5} \\
+    \dot{x_6} \\
+    \dot{x_7} \\
+\end{bmatrix}
+\coloneqq
+\begin{bmatrix}
+    f_1(x_1,x_2,x_3,x_4,x_6,x_7,u_1,u_2) \\
+    f_2(x_1,x_2,x_3,x_4,x_6,x_7,u_2) \\
+    f_3(x_1,x_2,x_6,u_1,u_2) \\
+    f_4(x_3) \\
+    f_5(x_1,x_2,x_4) \\
+    f_6(x_1,x_2,x_4) \\
+    -SFC
+\end{bmatrix}
+\label{eq:Benchmark_Dynamic_Constraints}
+\end{equation}
+
+Once dynamic constraints have been fully described, its time to set the path constraints and define them using state space notation. As said before, path constraints are the ones that 
+
+\subsection{Cost functional}
+
+\section{NLP Formulation and Implementation via CasADi}
 
 \section{Results}
 
