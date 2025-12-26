@@ -129,7 +129,7 @@ Eventually, the state and control vector can be constructed, followed by its for
 \end{equation}
 
 \subsection{Constraints and bounds}
-After the state space is set, the constraints can be defined for the problem. At this point, previous remarks on constraint definition towards \gls{ocp} notation could be recovered. That means that constraints are described following the prestablished order, which starts by dynamic constraints. Since dynamic constraints have been defined in section \ref{sec:EOM}, they have to be transcribed using state space notation, which led to the following set of expressions.\footnote{From now on, sine operation $\sin()$ is denoted as $s$ and, cosine operation $\cos()$ is denoted as $c$, as clarified in nomenclature section This has been done for an easy readability of some equations and operations.}
+After the state space is set, the constraints can be defined, following second step on \gls{ocp} definition. At this point, previous remarks on constraint definition towards \gls{ocp} notation could be recovered. That means that constraints are described following the prestablished order, which starts by dynamic constraints. Since dynamic constraints have been defined in section \ref{sec:EOM}, they have to be transcribed using state space notation, which led to the following set of expressions.\footnote{From now on, sine operation $\sin()$ is denoted as $s$ and, cosine operation $\cos()$ is denoted as $c$, as clarified in nomenclature section This has been done for an easy readability of some equations and operations.}
 
 \begin{equation}
 \begin{split}
@@ -178,31 +178,87 @@ After the state space is set, the constraints can be defined for the problem. At
 The set of equations above can be summarised to a reduced version if RHS is expressed as fucntionals of the states and controls involved only.
 
 \begin{equation}
+    \mathbf{g_{dyn}} \coloneqq
 \begin{bmatrix}
-    \dot{x_1} \\
-    \dot{x_2} \\
-    \dot{x_3} \\
-    \dot{x_4} \\
-    \dot{x_5} \\
-    \dot{x_6} \\
-    \dot{x_7} \\
+    \dot{x_1} -  f_1(x_1,x_2,x_3,x_4,x_6,x_7,u_1,u_2)\\
+    \dot{x_2} -  f_2(x_1,x_2,x_3,x_4,x_6,x_7,u_2)\\
+    \dot{x_3} - f_3(x_1,x_2,x_6,u_1,u_2)\\
+    \dot{x_4} - f_4(x_3)\\
+    \dot{x_5} - f_5(x_1,x_2,x_4)\\
+    \dot{x_6} - f_6(x_1,x_2,x_4)\\
+    \dot{x_7} -SFC\\
 \end{bmatrix}
-\coloneqq
-\begin{bmatrix}
-    f_1(x_1,x_2,x_3,x_4,x_6,x_7,u_1,u_2) \\
-    f_2(x_1,x_2,x_3,x_4,x_6,x_7,u_2) \\
-    f_3(x_1,x_2,x_6,u_1,u_2) \\
-    f_4(x_3) \\
-    f_5(x_1,x_2,x_4) \\
-    f_6(x_1,x_2,x_4) \\
-    -SFC
-\end{bmatrix}
+=
+0
 \label{eq:Benchmark_Dynamic_Constraints}
 \end{equation}
 
-Once dynamic constraints have been fully described, its time to set the path constraints and define them using state space notation. As said before, path constraints are the ones that 
+Once dynamic constraints have been fully described, its time to set the path constraints and define them using state space notation. As said before, path constraints are the ones that could affect state and control trajectories during all time domain. For a level-flight cruise trajectory it is important to introduce a target speed ($V_{tp}$) and a target altitude ($h_{ref}$) as a constraints, see expressions below. It has to be pinpointed that flight path angle could be introduced as a constraint, but it has been chosen to introduce it later as a penalty into cost functional definition. Both constraints for target speed and target altitude are introduced using inequality expressions, so as not to be too restrictive with the problem -i.e the expressions has to introduce some margins with target constant values-.
+
+\begin{equation}
+    \begin{cases}
+        0.9V_{tp} - \sqrt{(u - V_{x_w})^2 + (w - V_{z_w})^2} \leq 0 \\
+        \sqrt{(u - V_{x_w})^2 + (w - V_{z_w})^2} - 1.1V_{tp} \leq 0
+    \end{cases}
+    \label{eq:Benchmark_Path_1}
+\end{equation}
+
+\begin{equation}
+    \begin{cases}
+        (h_{ref} - 3.0) + z \leq 0 \\
+        -z - (h_{ref} + 3.0) \leq 0
+    \end{cases}
+    \label{eq:Benchmark_Path_2}
+\end{equation}
+
+Transcribing the equations using state space notation led to the following set of expressions.
+
+\begin{equation}
+    \mathbf{g_{path}} \coloneqq
+    \begin{bmatrix}
+        0.9V_{tp} - \sqrt{(x_1 - V_{x_w})^2 + (x_2 - V_{z_w})^2}\\
+        \sqrt{(x_1 - V_{x_w})^2 + (x_2 - V_{z_w})^2} - 1.1V_{tp}\\
+        (h_{ref} - 3.0) + x_6\\
+        -x_6 - (h_{ref} + 3.0)
+    \end{bmatrix}
+    \leq 0
+    \label{eq:Benchmark_Path_Constraints}
+\end{equation}
+
+Eventually, the simple bounds for each state and control variable have to be declared. The lower bounds and upper bounds are separated onto two different groups denoted by $lbx$ and $ubx$, respectively. They have been already denoted using state space notation.
+
+\begin{equation}
+    \mathbf{lbx} \coloneqq 
+    \begin{bmatrix}
+    u_{min} - x_1  \\
+    w_{min} - x_2 \\
+    - x_3 \\
+    \theta_{min} - x_4 \\
+    - x_5 \\
+    z_{min} - x_6 \\
+    BEM - x_7 \\  
+    \end{bmatrix}
+    \leq 0
+    \label{eq:Benchmark_LBX}
+\end{equation}
+
+\begin{equation}
+    \mathbf{ubx} \coloneqq 
+    \begin{bmatrix}
+    x_1 - u_{max}  \\
+    x_2 - w_{max} \\
+    x_3 \\
+    x_4 - \theta_{max} \\
+    x_5 \\
+    x_6 - z_{max}\\
+    x_7 - MTOM \\  
+    \end{bmatrix}
+    \leq 0
+    \label{eq:Benchmark_UBX}
+\end{equation}
 
 \subsection{Cost functional}
+Third phase of an \gls{ocp} definition is defining which variables have to be optimised and below which optimisation criteria. For this benchmark case, 
 
 \section{NLP Formulation and Implementation via CasADi}
 
