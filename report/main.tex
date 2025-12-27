@@ -44,8 +44,11 @@
   \setglossarystyle{long3col}
   \renewenvironment{theglossary}%
     {\begin{longtable}{@{}l p{0.65\textwidth} r@{}}
-     \rmfamily\bfseries Symbol & \rmfamily\bfseries Description & \rmfamily\bfseries Units \\ 
-     \noalign{\smallskip} \hline \noalign{\vspace{8pt}} % Space before and after line
+     \rmfamily\bfseries Symbol & \rmfamily\bfseries Description & \rmfamily\bfseries Units \\ [1ex]
+     \hline 
+     \noalign{\vspace{6pt}}
+     % Corrected Notation Note: Using multicolumn to avoid the \cr error
+     \multicolumn{3}{@{}l}{\small\textit{Note: Bold symbols denote vectors; dotted symbols denote time-derivatives ($\dot{x} = dx/dt$).}} \\ [2ex]
      \endhead}%
     {\end{longtable}}
   

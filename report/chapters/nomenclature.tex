@@ -1,19 +1,19 @@
 \newglossaryentry{bodyaxes}{
-  name={$F_b$},
+  name={$F_b(x_b,z_b)$},
   description={Body-fixed reference frame with origin at the CG, $x_b$ along the fuselage, and $z_b$ pointing down},
   symbol={$-$},
   type=symbolslist
 }
 
 \newglossaryentry{windaxes}{
-  name={$F_w$},
-  description={Wind reference frame, $x_w$ aligned with the velocity vector $V$},
+  name={$F_w(x_w,z_w)$},
+  description={Wind reference frame, $x_w$ aligned with the aerodynamic velocity vector and $z_w$ perpendicularly pointing down},
   symbol={$-$},
   type=symbolslist
 }
 
 \newglossaryentry{localhorizon}{
-  name={$F_h$},
+  name={$F_h(x_h,z_h)$},
   description={Local horizon reference frame (North-East-Down)},
   symbol={$-$},
   type=symbolslist
@@ -21,27 +21,27 @@
 
 \newglossaryentry{weight}{
   name={$W$},
-  description={Weight force, force projected into positive z-local-horizon axis ($z_h$). Its is the product of mass ($m$) per gravity's constant ($g$)},
+  description={Weight force, force projected into positive z-local-horizon axis ($z_h$)},
   symbol={$[N]$},
   type=symbolslist
 }
 
 \newglossaryentry{mass}{
   name={$m$},
-  description={Aircraft mass},
+  description={Aircraft's mass},
   symbol={$[kg]$},
   type=symbolslist
 }
 
 \newglossaryentry{iy}{
   name={$I_y$},
-  description={Moment of inertia about the pitch axis},
+  description={Moment of inertia about the pitch axis ($y_b$)},
   symbol={$[kg \cdot m^2]$},
   type=symbolslist
 }
 
 \newglossaryentry{bodyvel}{
-  name={$u, v, w$},
+  name={$u, w$},
   description={Velocity components in the body-fixed frame},
   symbol={$[m/s]$},
   type=symbolslist
@@ -49,21 +49,21 @@
 
 \newglossaryentry{pitchrate}{
   name={$q$},
-  description={Pitch rate, angular velocity about the y-body axis},
+  description={Pitch rate, angular velocity about the y-body axis ($y_b$)},
   symbol={$[rad/s]$},
   type=symbolslist
 }
 
 \newglossaryentry{pitch}{
   name={$\theta$},
-  description={Pitch angle, angle between $x_b$ and the horizontal plane},
+  description={Pitch angle, angle between $x_b$ and the horizontal plane ($x_h-y_h$)},
   symbol={$[rad]$},
   type=symbolslist
 }
 
 \newglossaryentry{fpa}{
   name={$\gamma$},
-  description={Flight path angle, angle between the velocity vector and the horizontal plane},
+  description={Flight path angle, angle between the aerodynamic velocity vector and the horizontal plane ($x_h-y_h$)},
   symbol={$[rad]$},
   type=symbolslist
 }
@@ -91,22 +91,22 @@
 
 \newglossaryentry{cl_coeffs}{
   name={$C_{L_0}, C_{L_\alpha}, C_{L_{\delta e}}$},
-  description={Lift coefficients: zero-alpha lift, lift-curve slope, and elevator effectiveness},
-  symbol={$[1], [rad^{-1}]$},
+  description={Lift coefficients: zero-alpha lift, lift-curve slope, and elevator lift contribution},
+  symbol={$[-], [rad^{-1}], [rad^{-1}]$},
   type=symbolslist
 }
 
 \newglossaryentry{cd_coeffs}{
   name={$C_{D_0}, k$},
   description={Drag coefficients: parasitic drag and induced drag factor},
-  symbol={$[1]$},
+  symbol={$[-]$},
   type=symbolslist
 }
 
 \newglossaryentry{cm_coeffs}{
   name={$C_{m_0}, C_{m_\alpha}, C_{m_{\delta e}}$},
-  description={Pitching moment coefficients: static stability and control derivatives},
-  symbol={$[1], [rad^{-1}]$},
+  description={Pitching moment coefficients: static stability and elevator moment contribution},
+  symbol={$[-], [rad^{-1}],[rad^{-1}]$},
   type=symbolslist
 }
 
@@ -119,7 +119,7 @@
 
 \newglossaryentry{dist_ct_cg}{
   name={$\Delta X_{CT}, \Delta Z_{CT}$},
-  description={Horizontal and vertical distances from the Center of Thrust to the Center of Gravity},
+  description={Horizontal and vertical distances from the Center of Thrust (CT) to the Center of Gravity (CG)},
   symbol={$[m]$},
   type=symbolslist
 }
@@ -134,7 +134,7 @@
 \newglossaryentry{sfc}{
   name={$SFC$},
   description={Specific Fuel Consumption},
-  symbol={$[kg/(N \cdot s)]$},
+  symbol={$[kg/s]$},
   type=symbolslist
 }
 
@@ -161,14 +161,21 @@
 
 \newglossaryentry{vtp}{
   name={$V_{tp}$},
-  description={True airspeed of the tailplane (or True Path Velocity)},
+  description={Target speed for level-flight cruise trajectory or water-discharge level-flight stage},
   symbol={$[m/s]$},
   type=symbolslist
 }
 
 \newglossaryentry{href}{
   name={$h_{ref}$},
-  description={Reference altitude},
+  description={Reference altitude for level-flight cruise trajectory or water-discharge level-flight stage},
   symbol={$[m]$},
+  type=symbolslist
+}
+
+\newglossaryentry{windfield_2d}{
+  name={$\mathbf{V}_w$},
+  description={Bidimensional wind field vector, defined by horizontal ($V_{x_w}$) and vertical ($V_{z_w}$) components in the local horizon frame},
+  symbol={$[m/s]$},
   type=symbolslist
 }
