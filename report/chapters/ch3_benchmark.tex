@@ -14,6 +14,13 @@ Firstly, the flight dynamics for a general \gls{uav} flight trajectory had to be
 
 Once the hypostheses have been written, its time to introduce the flight dynamics that are involved in bidimensional (2D) flight trajectories. The image below shows the free body diagram  and the relation between plane reference systems -i.e including body axes ($x_b$,$z_b$), wind axes ($x_w$,$z_w$) and local-horizon axes ($x_h$,$z_h$)-.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{images/benchmark_fbd.png}
+    \caption{Free-body diagram of an aircraft bidimensional (2D) flight trajectory involved forces and moments. Own source.}
+    \label{fig:Benchmark}
+\end{figure}
+
 Applying Newton's second law, the equilibrium of forces and moments can be obtained. To see the different elements involved in each equation, the reader can refer to nomenclature's section. 
 
 \begin{equation}
@@ -315,9 +322,7 @@ Once all penalties have been defined, the whole cost functional ins its Lagrange
 \end{equation}
 
 \section{NLP Formulation and Implementation via CasADi}
-After defining the whole \gls{ocp}, it is time to discretise the equations using trapezoidal rule to achieve a \gls{nlp} problem formulation and, therefore, implement it into CasADi blocks. To do the discretisation it is important to remark two different points: firstly, the dynamic constraints will be evaluated for the actual time-instant and next time-instant -following trapezoidal integration scheme- while initial constraints will be enforced at time-instant $t_0$ only, and path constraints will be enforced at each time-instant $t_k$ separately; referring to Lagrange cost term, it will be evaluated also following a trapezoidal scheme.
-
-These leads to the following constraints, simple bounds and cost terms. It has to be pinpointed that, in this case, end-time is known and, therefore, time-step is defined as $\Delta t = t_f / (N-1)$, where N is the number of collocation points -or nodes-. Moreover, its implementation in CasADi has to follow the statements done in section \ref{sec:CasADi}, which means to create state and controls, constraints and simple bounds vectors as large as the number of states and control variables per node -seven (7) states plus two (2) controls, per node-
+After defining the whole \gls{ocp}, it is time to discretise the equations using trapezoidal rule to achieve a \gls{nlp} problem formulation and, therefore, implement it into CasADi blocks. To do the discretisation it is important to remark two different points: firstly, the dynamic constraints will be evaluated for the actual time-instant and next time-instant -following trapezoidal integration scheme- while initial constraints will be enforced at time-instant $t_0$ only, and path constraints will be enforced at each time-instant $t_k$ separately; referring to Lagrange cost term, it will be evaluated also following a trapezoidal scheme. This leads to the following constraints, simple bounds and cost terms. It has to be pinpointed that, in this case, end-time is known and, therefore, time-step is defined as $\Delta t = t_f / (N-1)$, where N is the number of collocation points -or nodes-. Moreover, its implementation in CasADi has to follow the statements done in section \ref{sec:CasADi}, which means to create state and controls, constraints and simple bounds vectors as large as the number of states and control variables per node -seven (7) states plus two (2) controls, per node-
 
 \begin{equation}
     \begin{aligned}
@@ -370,7 +375,7 @@ These leads to the following constraints, simple bounds and cost terms. It has t
 \begin{equation}
     \begin{aligned}
         L^k & \coloneqq L(\mathbf{x}^k, \mathbf{u}^k) \\
-        J & \coloneqq \frac{\Delta t}{2} \sum_{k=0}^{N-1} \left( L^k + L^{k+1} \right)
+        J(\mathbf{w}) & \coloneqq \frac{\Delta t}{2} \sum_{k=0}^{N-1} \left( L^k + L^{k+1} \right)
     \end{aligned}
     \label{eq:Benchmark_NLP_Cost_Final}
 \end{equation}
@@ -390,7 +395,7 @@ Next, the \gls{nlp} problem can be defined properly using almost CasADi notation
 The algorithm that has been implemented to solve the \gls{nlp} problem using \gls{ipopt} solver is the refered below. The whole structure of the implemented algorithm in Python can be seen in appendix \textcolor{red}{ANEXO CÓDIGO}, referring to benckmark problem code section.
 
 \begin{algorithm}[H]
-\caption{Trajectory Optimisation Algorithm for Level-Cruise Flight}
+\caption{Trajectory Optimisation Algorithm for Level-Cruise Flight.}
 \begin{algorithmic}
 \STATE \textbf{1. Initialise Parameters:} 
 \STATE \quad Define $N$ nodes, end-time $t_F$, time-step $\Delta t$, and symbolic vectors for $\mathbf{x}, \mathbf{u}$.
@@ -423,12 +428,119 @@ The algorithm that has been implemented to solve the \gls{nlp} problem using \gl
 \end{algorithmic}
 \end{algorithm}
 
-
 \section{Results}
 
 \section{Addition of the Free-End Condition}
+Next step in \gls{ocp} formulation is to set the free-end condition to the problem stated before. Free-end condition implies adding end time ($t_f$) as a control variable and to let the solver compute its value as part of the dynamic constraints, path constraints -if needed specific end-time conditions- and as part of the cost functional -at this point, terminal cost or Mayer term, has to be remembered-. 
+
+To do so, the following section will include the modifciation on the \gls{nlp} formulation and in the implementation made. Afterwards, the results of the state and control trajectories for a free-end condition will be presented.
 
 \subsection{NLP formualtion and implementation}
+As said before, end time participates in all trapezoidal schemes -so it participates in all dynamic equations-, can participate as path constraints when a terminal state condition is set and, participates into the cost functional implicitly at running cost, because there is also a trapezoidal scheme integrated, and explicitly as a terminal cost. In this case, it would be implemented as both implicit and explicit forms into cost functional. 
+
+Firstly, the state and control vector will incorporate a unique symbolic term or control variable that will refer to the final time ($u_{t_F}$). It would also have lower and upper bounds associated, so the modification rest like this:
+
+\begin{equation}
+    \mathbf{w} \coloneqq 
+    \begin{bmatrix}
+        \mathbf{x}^0 \\ \mathbf{u}^0 \\ \mathbf{x}^1 \\ \mathbf{u}^1 \\ \vdots \\ \mathbf{x}^N \\ \mathbf{u}^N \\ t_F
+    \end{bmatrix}, \quad
+    \mathbf{w}_{lb} \coloneqq 
+    \begin{bmatrix}
+        \mathbf{1}_{N+1} \otimes \mathbf{lbx} \\
+        t_{F,min}
+    \end{bmatrix}, \quad
+    \mathbf{w}_{ub} \coloneqq 
+    \begin{bmatrix}
+        \mathbf{1}_{N+1} \otimes \mathbf{ubx} \\
+        t_{F,max}
+    \end{bmatrix}
+    \label{eq:Benchmark_Plus_NLP_w}
+\end{equation}
+
+Secondly, the constraints could add some path constraints referring to final state conditions. Those, would only be evaluated at final node N. In this case, the following equations have been added tot the path constraints block of constraints as they indicate the minimum and maximum distance to perform the level-flight cruise trajectory -the expressions are also expressed along to previous path constraints and integrated with all \gls{nlp} constraints vector-. 
+
+\begin{equation}
+    \mathbf{h}_{dist} \coloneqq 
+    \begin{bmatrix}
+        V_{tp} \cdot t_{min} - (x_f - x_0) \\
+        (x_f - x_0) - V_{tp} \cdot t_{max}
+    \end{bmatrix} \leq \mathbf{0}
+    \label{eq:Benchmark_Plus_Path_Contraint_Added}
+\end{equation}
+
+\begin{equation}
+    \mathbf{g}(\mathbf{w}) \coloneqq 
+    \begin{bmatrix} 
+        \mathbf{d}^0 \\ \vdots \\ \mathbf{d}^{N-1} \\ \hline 
+        \mathbf{h}^0 \\ \vdots \\ \mathbf{h}^N \\ \hline 
+        \mathbf{h}_{dist} \\ \hline
+        \mathbf{\varphi}_0 
+    \end{bmatrix}, \quad
+    \mathbf{g}_{lb} \coloneqq
+    \begin{bmatrix} 
+        \mathbf{0}_{7N} \\ 
+        -\mathbf{\infty}_{4(N+1)} \\ 
+        -\mathbf{\infty}_{2} \\
+        \mathbf{0}_{7} 
+    \end{bmatrix}, \quad
+    \mathbf{g}_{ub} \coloneqq
+    \begin{bmatrix} 
+        \mathbf{0}_{7N} \\ 
+        \mathbf{0}_{4(N+1)} \\ 
+        \mathbf{0}_{2} \\
+        \mathbf{0}_{7} 
+    \end{bmatrix}
+    \label{eq:Benchmark_Plus_NLP_g}
+\end{equation}
+
+Next, the cost functional integrates terminal cost term, only applies to end time, and running cost term, corrected by adding $t_F$ and restringing the problem to $N-1$ time-intervals with a fixed value of nodes, since time-step is now defined as $\Delta t = 1 / (N-1)$.
+
+\begin{equation}
+    J(\mathbf{w}) \coloneqq \frac{\Delta t \cdot t_F}{2}\sum_{k=0}^{N-1} \left(L^k + L^{k+1}\right) + w_{t_F} \cdot t_F
+    \label{eq:Benchmark_Plus_Cost}
+\end{equation}
+
+Eventually, the \gls{nlp} problem can be defined properly using almost CasADi notation before presenting the scheme algorithm so solve it using \gls{ipopt}. 
+
+\begin{equation}
+    \begin{aligned}
+        & \min_{\mathbf{w}} \quad J(\mathbf{w}) \coloneqq \frac{\Delta t \cdot t_F}{2}\sum_{k=0}^{N-1} \left(L^k + L^{k+1}\right) + w_{t_F} \cdot t_F \\
+        & \text{s.t.} \quad \mathbf{g}(\mathbf{w}) \in [\mathbf{g}_{lb}, \mathbf{g}_{ub}] \\
+        & \quad \quad \mathbf{w} \in \left[ 
+        \begin{bmatrix} \mathbf{1}_{N+1} \otimes \mathbf{lbx} \\ t_{F,min} \end{bmatrix}, 
+        \begin{bmatrix} \mathbf{1}_{N+1} \otimes \mathbf{ubx} \\ t_{F,max} \end{bmatrix} 
+        \right]
+    \end{aligned}
+    \label{eq:Benchmark_Plus_NLP}
+\end{equation}
+
+\begin{algorithm}[H]
+\caption{Updated Version of \textbf{Algorithm 2}, Free-End Condition Added.}
+\begin{algorithmic}
+\STATE \textbf{1. Initialise Parameters:} 
+\STATE \quad Define $N$ nodes, time-step $\Delta t = 1/(N-1)$, and symbolic vectors for $\mathbf{x}, \mathbf{u}, t_F$.
+\STATE \quad Obtain trim state $\mathbf{x}_{trim}$ via static NLP solver.
+\STATE \quad Construct initial guess $\mathbf{w}_0$ using $\mathbf{w}_{trim}$ and linear propagation.
+\STATE \textbf{2. Assemble Decision Vector:} 
+\STATE \quad Formulate $\mathbf{w} \coloneqq [\mathbf{x}^0, \mathbf{u}^0, \dots, \mathbf{x}^{N}, \mathbf{u}^{N}, t_F]^\top \in \mathbb{R}^{9N+1}$.
+\STATE \quad Apply variable bounds: $\mathbf{w} \in \left[ \begin{smallmatrix} \mathbf{1}_{N+1} \otimes \mathbf{lbx} \\ t_{F,min} \end{smallmatrix} \right], \left[ \begin{smallmatrix} \mathbf{1}_{N+1} \otimes \mathbf{ubx} \\ t_{F,max} \end{smallmatrix} \right]$.
+\FOR{$i = 0$ \TO $N_{iter}$}
+    \STATE \textbf{3. Evaluate NLP Functions:}
+    \STATE \quad Compute trapezoidal Cost: $J(\mathbf{w}) = \frac{\Delta t \cdot t_F}{2}\sum_{k=0}^{N-1} (L^k + L^{k+1}) + w_{t_F} \cdot t_F$.
+    \STATE \quad Evaluate scaled dynamics $\mathbf{d}^k$ and path Constraints $\mathbf{h}^k$.
+    \STATE \quad Stack constraints: $\mathbf{g}(\mathbf{w}) \coloneqq [\mathbf{d}^0, \dots, \mathbf{d}^{N-1}, \mathbf{h}^0, \dots, \mathbf{h}^N, \mathbf{\varphi}_0]^\top$.
+    \STATE \textbf{4. Check Convergence:}
+    \IF{$E_0(J, \mathbf{g}, \mathbf{w}) \leq \epsilon_{tol}$}
+        \STATE \textbf{STOP:} Optimal trajectory found.
+    \ENDIF
+    \STATE \textbf{5. Compute Step (KKT System):} Form the Lagrangian $\mathcal{L}(\mathbf{w}, \lambda, z)$ and solve the linearised primal-dual system for search direction $d_i$.
+    \STATE \textbf{6. Filter Line-Search:} Determine step size $\alpha_i$ to ensure decrease in $J$ or constraint violation $\|\mathbf{g}\|$.
+    \STATE \textbf{7. Update Iterates:} $\mathbf{w}_{i+1} = \mathbf{w}_i + \alpha_i d_i^w$.
+\ENDFOR
+\STATE \textbf{8. Post-processing:} Extract state trajectories, control trajectories and optimal $t_F$ for plotting.
+\end{algorithmic}
+\end{algorithm}
 
 \subsection{Results}
 

@@ -355,26 +355,20 @@ From the previous expression, gradients could be computed. Thus, the update on v
 Eventually, a summarised version of the general \gls{ipopt} algorithm has been adapted from the original source \cite{Waechter2004}.
 
 \begin{algorithm}
-\caption{Interior-Point Filter Line-Search Algorithm (IPOPT)}
+\caption{Interior-Point Filter Line-Search Algorithm (IPOPT).}
 \begin{algorithmic}
 \STATE \textbf{1. Initialise:} Choose $x_0 > 0$, $\lambda_0, z_0 > 0$, $\mu > 0$, and iteration limit $N$.
 \FOR{$k = 0$ \TO $N$}
-    \STATE \textbf{2. Compute Errors:} Calculate $E_\mu(x_k, \lambda_k, z_k)$ and $E_0(x_k, \lambda_k, z_k)$.
-    
+    \STATE \textbf{2. Compute Errors:} Calculate $E_\mu(x_k, \lambda_k, z_k)$ and $E_0(x_k, \lambda_k, z_k)$.   
     \IF{$E_0 \leq \epsilon_{tol}$}
         \STATE \textbf{STOP:} Optimal solution found at iteration $k$.
     \ENDIF
-
     \IF{$E_\mu \leq \kappa_\epsilon \mu$}
         \STATE \textbf{3. Update Barrier:} Decrease $\mu$ and return to Step 2.
     \ENDIF
-
     \STATE \textbf{4. Solve KKT System:} Compute search directions $d_k$ via expression \eqref{eq:BP_Newton_System}.
-    
     \STATE \textbf{5. Filter Line-Search:} Determine $\alpha_k$ via the filter method.
-    
     \STATE \textbf{6. Update Iterates:} $x_{k+1} = x_k + \alpha_k d_k^x$, etc.
-    
 \ENDFOR
 \IF{$k = N$}
     \STATE \textbf{Exit:} Maximum iterations reached without convergence.
