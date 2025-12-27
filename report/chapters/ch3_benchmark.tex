@@ -150,7 +150,7 @@ After the state space is set, the constraints can be defined, following second s
 \begin{equation}
 \begin{split}
     \dot{x_3} ={} & \frac{1}{I_y} \Big[ C_m(u_2)\bar{q}(x_1,x_2,x_6)S\bar{c} \\
-    & - T(x_1,x_2,x_6,u_1)\left[\Delta X_{CT}\cdot s \epsilon (x_1,x_2)+ \Delta Z_{CT}\cdot c \epsilon (x_1,x_2)\right]\Big]
+    & - T(x_1,x_2,x_6,u_1)\left[\Delta X_{CT}\cdot s \varepsilon (x_1,x_2)+ \Delta Z_{CT}\cdot c \varepsilon (x_1,x_2)\right]\Big]
 \end{split}
 \label{eq:Benchmark_EOM_3}
 \end{equation}
@@ -225,6 +225,24 @@ Transcribing the equations using state space notation led to the following set o
     \label{eq:Benchmark_Path_Constraints}
 \end{equation}
 
+At this point, the only remaining constraints are initial state conditions, which will be enforced to a known state value. Thus, the following equations will have to be enforced also.
+
+\begin{equation}
+    \mathbf{\varphi_{0}} \coloneqq
+\begin{bmatrix}
+    x_1^0 -  u_0\\
+    x_2^0 -  w_0\\
+    x_3^0\\
+    x_4^0 - \theta_0\\
+    x_5^0\\
+    x_6^0 - h_{ref}\\
+    x_7^0 - TOM\\
+\end{bmatrix}
+=
+0
+\label{eq:Benchmark_Initial_Constraints}
+\end{equation}
+
 Eventually, the simple bounds for each state and control variable have to be declared. The lower bounds and upper bounds are separated onto two different groups denoted by $lbx$ and $ubx$, respectively. They have been already denoted using state space notation.
 
 \begin{equation}
@@ -282,14 +300,101 @@ Third phase of an \gls{ocp} definition is defining which variables have to be op
     \item Eventually, control variable rates minimisation have been introduced using a quadratic penalty, in each case, for preventing a bang-bang -rapidly control changing- behaviour, since it is a non-feasible behaviour in real systems. Furthermore, control rate minimisation is the normal criteria for real pilots when facing low-altitude flight manoeuvres, also known as "lazy pilot" implementation. This implementation basically reduces pilot workload while preventing overcontrol risks, as stated by Stengel in \cite{stengel1994optimal}. The cost expressions for both \gls{tps} and elevator deflection are the following ones, respectively -$t_{k+1}$ and $t_{k}$, refer to next and actual time-instants-.
     
     \begin{equation}
-    J_{\delta_{TPS}} \coloneqq \frac{\left(\delta_{TPS}^{k+1} - \delta_{TPS}^{k}\right)^2}{\Delta t} = \frac{\left(u_1^{k+1} - u_1^{k}\right)^2}{\Delta t}
+    J_{\dot{\delta}_{TPS}} \coloneqq \frac{\left(\delta_{TPS}^{k+1} - \delta_{TPS}^{k}\right)^2}{\Delta t} = \frac{\left(u_1^{k+1} - u_1^{k}\right)^2}{\Delta t}
     \end{equation}
     \begin{equation}
-    J_{\delta_{e}} \coloneqq \frac{\left(\delta_{e}^{k+1} - \delta_{e}^{k}\right)^2}{\delta_{e, max}^2\Delta t} = \frac{\left(u_2^{k+1} - u_2^{k}\right)^2}{\delta_{e,max}^2\Delta t}
+    J_{\dot{\delta}_{e}} \coloneqq \frac{\left(\delta_{e}^{k+1} - \delta_{e}^{k}\right)^2}{\delta_{e, max}^2\Delta t} = \frac{\left(u_2^{k+1} - u_2^{k}\right)^2}{\delta_{e,max}^2\Delta t}
     \end{equation}
 \end{itemize}
 
+Once all penalties have been defined, the whole cost functional ins its Lagrange form can be stated as follows. Notice that notation has been indicated in its discretised form, using time-instant $t_k$, and each cost term has a penalty weight associated.
+
+\begin{equation}
+    L(x,u) := \sum_{k=0}^{N-1} \left(w_\gamma\cdot J_\gamma^k + w_h \cdot J_h^k + w_{\dot{\gamma}}\cdot J_{\dot{\gamma}}^k + w_{\dot{\delta}_{TPS}}\cdot J_{\dot{\delta}_{TPS}} + w_{\dot{\delta}_e}\cdot J_{\dot{\delta}_e}\right)
+    \label{eq:Benchmark_Cost}
+\end{equation}
+
 \section{NLP Formulation and Implementation via CasADi}
+After defining the whole \gls{ocp}, it is time to discretise the equations using trapezoidal rule to achieve a \gls{nlp} problem formulation and, therefore, implement it into CasADi blocks. To do the discretisation it is important to remark two different points: firstly, the dynamic constraints will be evaluated for the actual time-instant and next time-instant -following trapezoidal integration scheme- while initial constraints will be enforced at time-instant $t_0$ only, and path constraints will be enforced at each time-instant $t_k$ separately; referring to Lagrangian cost term, it will be evaluated also following a trapezoidal scheme.
+
+These leads to the following constraints, simple bounds and cost terms. It has to be pinpointed that, in this case, end-time is known and, therefore, time-step is defined as $\Delta t = t_f / (N-1)$, where N is the number of collocation points -or nodes-. Moreover, its implementation in CasADi has to follow the statements done in section \ref{sec:CasADi}, which means to create state and controls, constraints and simple bounds vectors as large as the number of states and control variables per node -seven (7) states plus two (2) controls, per node-
+
+\begin{equation}
+    \begin{aligned}
+        \mathbf{x}^k & \coloneqq [x_1^k, x_2^k, x_3^k, x_4^k, x_5^k, x_6^k, x_7^k]^\top \\
+        \mathbf{u}^k & \coloneqq [u_1^k, u_2^k]^\top \\[10pt]
+        \mathbf{w} & \coloneqq 
+        \begin{bmatrix}
+            \mathbf{x}^0 \\ \mathbf{u}^0 \\ \mathbf{x}^1 \\ \mathbf{u}^1 \\ \vdots \\ \mathbf{x}^N \\ \mathbf{u}^N
+        \end{bmatrix}
+    \end{aligned}
+    \label{eq:Benchmark_NLP_w}
+\end{equation}
+
+\begin{gather}
+    \mathbf{d}^k \coloneqq \mathbf{x}^{k+1} - \mathbf{x}^k - \frac{\Delta t}{2} \left( \mathbf{f}^k + \mathbf{f}^{k+1} \right) \in \mathbb{R}^7 \\
+    \mathbf{h}^k \coloneqq \mathbf{g}_{\text{path}}( \mathbf{x}^k, \mathbf{u}^k ) \in \mathbb{R}^4 \\
+    \mathbf{\varphi}_0 \coloneqq \mathbf{x}^0 - \mathbf{x}_{\text{init}} \in \mathbb{R}^7
+\end{gather}
+
+\begin{equation}
+    \mathbf{g} \coloneqq 
+    \begin{bmatrix}
+        \mathbf{d}^0 \\ \vdots \\ \mathbf{d}^{N-1} \\ \hline
+        \mathbf{h}^0 \\ \vdots \\ \mathbf{h}^N \\ \hline
+        \mathbf{\varphi}_0
+    \end{bmatrix}
+    \label{eq:Benchmark_NLP_g}
+\end{equation}
+
+\begin{equation}
+    \begin{aligned}
+        \mathbf{w}_{lb} & \coloneqq \mathbf{1}_{N+1} \otimes \mathbf{lbx} \\
+        \mathbf{w}_{ub} & \coloneqq \mathbf{1}_{N+1} \otimes \mathbf{ubx}
+    \end{aligned}
+    \label{eq:Benchmark_NLP_Bounds}
+\end{equation}
+
+\begin{equation}
+    \begin{aligned}
+        \mathcal{L}^k & \coloneqq L(\mathbf{x}^k, \mathbf{u}^k) \\
+        J & \coloneqq \frac{\Delta t}{2} \sum_{k=0}^{N-1} \left( \mathcal{L}^k + \mathcal{L}^{k+1} \right)
+    \end{aligned}
+    \label{eq:Benchmark_NLP_Cost_Final}
+\end{equation}
+
+
+Next, the \gls{nlp} problem can be defined properly using almost CasADi notation -since it describes the minimisation of a cost functional defined for all symbolic variables form state-control vector $w$ subject to a set of constraints and simple bounds-. 
+
+\begin{equation}
+    \begin{aligned}
+        & \min_{\mathbf{w}} \quad J(\mathbf{w}) \coloneqq \frac{\Delta t}{2}\sum_{k=0}^{N-1} \left(\mathcal{L}^k + \mathcal{L}^{k+1}\right) \\
+        & \text{s.t.} \quad \mathbf{g}(\mathbf{w}) \in [\mathbf{g}_{lb}, \mathbf{g}_{ub}] \\
+        & \quad \quad \mathbf{w} \in [\mathbf{1}_{N+1} \otimes \mathbf{lbx}, \ \mathbf{1}_{N+1} \otimes \mathbf{ubx}] \\
+        \text{where:} \quad & \mathbf{g}(\mathbf{w}) \coloneqq 
+        \begin{bmatrix} 
+            \mathbf{d}^0 \\ \vdots \\ \mathbf{d}^{N-1} \\ \hline 
+            \mathbf{h}^0 \\ \vdots \\ \mathbf{h}^N \\ \hline 
+            \mathbf{\varphi}_0 
+        \end{bmatrix}, \quad
+        \mathbf{g}_{lb} \coloneqq
+        \begin{bmatrix} 
+            \mathbf{0}_{7N} \\ 
+            -\mathbf{\infty}_{4(N+1)} \\ 
+            \mathbf{0}_{7} 
+        \end{bmatrix}, \quad
+        \mathbf{g}_{ub} \coloneqq
+        \begin{bmatrix} 
+            \mathbf{0}_{7N} \\ 
+            \mathbf{0}_{4(N+1)} \\ 
+            \mathbf{0}_{7} 
+        \end{bmatrix}
+    \end{aligned}
+    \label{eq:Benchmark_NLP}
+\end{equation}
+
+The algorithm that has been implemented to solve the \gls{nlp} problem using \gls{ipopt} solver is the following one.
+
 
 \section{Results}
 

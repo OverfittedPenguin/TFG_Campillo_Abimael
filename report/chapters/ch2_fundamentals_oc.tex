@@ -383,6 +383,7 @@ Eventually, a summarised version of the general \gls{ipopt} algorithm has been a
 \end{algorithm}
 
 \subsection{Implementation of IPOPT using CasADi}
+\label{sec:CasADi}
 \gls{ipopt} is one of the integrated solvers provided by CasADi inside the \textit{ca.nlpsol()} block. This solver blocks needs from a very specific definition of the problem initial guess, its variables, constraints and simple bounds using symbolic notation. This specific definition has to end in the creation of a \textit{nlp()} dictionary that contains all the discretised symbolic variables that form the \gls{nlp} problem. In other words, from the \gls{ocp}, a discretisation has to be applied to reach a fesaible \gls{nlp} definition with initial guess, constraints and simple bounds defined for each variable at each collocation point -all those defined using symbolic notation-. In addition, this dictionary has to include the definition of the cost function as the sum of all variables, when needed.
 
 Since the needs explained above, suppose a simple problem directly extracted from \gls{nlp} CasADi documentation section \cite{Andersson2018}. In this problem, there are three different variables, an objective function and an equality cosntraint.
