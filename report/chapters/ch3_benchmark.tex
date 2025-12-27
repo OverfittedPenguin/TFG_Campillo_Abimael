@@ -331,47 +331,14 @@ These leads to the following constraints, simple bounds and cost terms. It has t
     \label{eq:Benchmark_NLP_w}
 \end{equation}
 
-\begin{gather}
+\begin{gather*}
     \mathbf{d}^k \coloneqq \mathbf{x}^{k+1} - \mathbf{x}^k - \frac{\Delta t}{2} \left( \mathbf{f}^k + \mathbf{f}^{k+1} \right) \in \mathbb{R}^7 \\
     \mathbf{h}^k \coloneqq \mathbf{g}_{\text{path}}( \mathbf{x}^k, \mathbf{u}^k ) \in \mathbb{R}^4 \\
     \mathbf{\varphi}_0 \coloneqq \mathbf{x}^0 - \mathbf{x}_{\text{init}} \in \mathbb{R}^7
-\end{gather}
+\end{gather*}
 
 \begin{equation}
-    \mathbf{g} \coloneqq 
-    \begin{bmatrix}
-        \mathbf{d}^0 \\ \vdots \\ \mathbf{d}^{N-1} \\ \hline
-        \mathbf{h}^0 \\ \vdots \\ \mathbf{h}^N \\ \hline
-        \mathbf{\varphi}_0
-    \end{bmatrix}
-    \label{eq:Benchmark_NLP_g}
-\end{equation}
-
-\begin{equation}
-    \begin{aligned}
-        \mathbf{w}_{lb} & \coloneqq \mathbf{1}_{N+1} \otimes \mathbf{lbx} \\
-        \mathbf{w}_{ub} & \coloneqq \mathbf{1}_{N+1} \otimes \mathbf{ubx}
-    \end{aligned}
-    \label{eq:Benchmark_NLP_Bounds}
-\end{equation}
-
-\begin{equation}
-    \begin{aligned}
-        \mathcal{L}^k & \coloneqq L(\mathbf{x}^k, \mathbf{u}^k) \\
-        J & \coloneqq \frac{\Delta t}{2} \sum_{k=0}^{N-1} \left( \mathcal{L}^k + \mathcal{L}^{k+1} \right)
-    \end{aligned}
-    \label{eq:Benchmark_NLP_Cost_Final}
-\end{equation}
-
-
-Next, the \gls{nlp} problem can be defined properly using almost CasADi notation -since it describes the minimisation of a cost functional defined for all symbolic variables form state-control vector $w$ subject to a set of constraints and simple bounds-. 
-
-\begin{equation}
-    \begin{aligned}
-        & \min_{\mathbf{w}} \quad J(\mathbf{w}) \coloneqq \frac{\Delta t}{2}\sum_{k=0}^{N-1} \left(\mathcal{L}^k + \mathcal{L}^{k+1}\right) \\
-        & \text{s.t.} \quad \mathbf{g}(\mathbf{w}) \in [\mathbf{g}_{lb}, \mathbf{g}_{ub}] \\
-        & \quad \quad \mathbf{w} \in [\mathbf{1}_{N+1} \otimes \mathbf{lbx}, \ \mathbf{1}_{N+1} \otimes \mathbf{ubx}] \\
-        \text{where:} \quad & \mathbf{g}(\mathbf{w}) \coloneqq 
+    \mathbf{g}(\mathbf{w}) \coloneqq 
         \begin{bmatrix} 
             \mathbf{d}^0 \\ \vdots \\ \mathbf{d}^{N-1} \\ \hline 
             \mathbf{h}^0 \\ \vdots \\ \mathbf{h}^N \\ \hline 
@@ -389,14 +356,79 @@ Next, the \gls{nlp} problem can be defined properly using almost CasADi notation
             \mathbf{0}_{4(N+1)} \\ 
             \mathbf{0}_{7} 
         \end{bmatrix}
+    \label{eq:Benchmark_NLP_g}
+\end{equation}
+
+\begin{equation}
+    \begin{aligned}
+        \mathbf{w}_{lb} & \coloneqq \mathbf{1}_{N+1} \otimes \mathbf{lbx} \\
+        \mathbf{w}_{ub} & \coloneqq \mathbf{1}_{N+1} \otimes \mathbf{ubx}
+    \end{aligned}
+    \label{eq:Benchmark_NLP_Bounds}
+\end{equation}
+
+\begin{equation}
+    \begin{aligned}
+        L^k & \coloneqq L(\mathbf{x}^k, \mathbf{u}^k) \\
+        J & \coloneqq \frac{\Delta t}{2} \sum_{k=0}^{N-1} \left( L^k + L^{k+1} \right)
+    \end{aligned}
+    \label{eq:Benchmark_NLP_Cost_Final}
+\end{equation}
+
+
+Next, the \gls{nlp} problem can be defined properly using almost CasADi notation. 
+
+\begin{equation}
+    \begin{aligned}
+        & \min_{\mathbf{w}} \quad J(\mathbf{w}) \coloneqq \frac{\Delta t}{2}\sum_{k=0}^{N-1} \left(L^k + L^{k+1}\right) \\
+        & \text{s.t.} \quad \mathbf{g}(\mathbf{w}) \in [\mathbf{g}_{lb}, \mathbf{g}_{ub}] \\
+        & \quad \quad \mathbf{w} \in [\mathbf{1}_{N+1} \otimes \mathbf{lbx}, \ \mathbf{1}_{N+1} \otimes \mathbf{ubx}] \\
     \end{aligned}
     \label{eq:Benchmark_NLP}
 \end{equation}
 
-The algorithm that has been implemented to solve the \gls{nlp} problem using \gls{ipopt} solver is the following one.
+The algorithm that has been implemented to solve the \gls{nlp} problem using \gls{ipopt} solver is the reffered below. The whole structure of the implemented algorithm in Python can be seen in appendix \textcolor{red}{ANEXO CÓDIGO}, referring to benckmark problem code section.
+
+\begin{algorithm}[H]
+\caption{Trajectory Optimisation Algorithm for Level-Cruise Flight}
+\begin{algorithmic}
+\STATE \textbf{1. Initialise Parameters:} 
+\STATE \quad Define $N$ nodes, end-time $t_F$, $\Delta t$, and symbolic vectors for $\mathbf{x}, \mathbf{u}$.
+\STATE \quad Obtain trim state $\mathbf{x}_{trim}$ via static NLP solver.
+\STATE \quad Construct initial guess $\mathbf{w}_0$ using $\mathbf{w}_{trim}$ and linear propagation.
+
+\STATE \textbf{2. Assemble Decision Vector:} 
+\STATE \quad Formulate $\mathbf{w} \coloneqq [\mathbf{x}^0, \mathbf{u}^0, \dots, \mathbf{x}^{N}, \mathbf{u}^{N}]^\top \in \mathbb{R}^{9N}$.
+\STATE \quad Apply variable bounds: $\mathbf{w} \in [\mathbf{1}_{N+1} \otimes \mathbf{lbx}, \ \mathbf{1}_{N+1} \otimes \mathbf{ubx}]$.
+
+\FOR{$k = 0$ \TO $N$}
+    \STATE \textbf{3. Evaluate NLP Functions:}
+    \STATE \quad Compute trapezoidal Cost: $J(\mathbf{w}) = \frac{\Delta t}{2}\sum_{k=0}^{N-2} (L^k + L^{k+1})$.
+    \STATE \quad Evaluate dynamics $\mathbf{d}^k$ and path Constraints $\mathbf{h}^k$.
+    \STATE \quad Stack constraints: $\mathbf{g}(\mathbf{w}) \coloneqq [\mathbf{d}^0, \dots, \mathbf{d}^{N-1}, \mathbf{h}^0, \dots, \mathbf{h}^N, \mathbf{\varphi}_0]^\top$.
+
+    \STATE \textbf{4. Check Convergence:}
+    \IF{$E_0(J, \mathbf{g}, \mathbf{w}) \leq \epsilon_{tol}$}
+        \STATE \textbf{STOP:} Optimal trajectory found.
+    \ENDIF
+
+    \STATE \textbf{5. Compute Step (KKT System):} Form the Lagrangian $\mathcal{L}(\mathbf{w}, \lambda, z)$ and solve the linearised primal-dual system for search direction $d_k$.
+    
+    \STATE \textbf{6. Filter Line-Search:} Determine step size $\alpha_k$ to ensure decrease in $J$ or constraint violation $\|\mathbf{g}\|$.
+    
+    \STATE \textbf{7. Update Iterates:} $\mathbf{w}_{k+1} = \mathbf{w}_k + \alpha_k d_k^w$.
+    
+\ENDFOR
+\STATE \textbf{8. Post-processing:} Extract state and control trajectories for plotting.
+\end{algorithmic}
+\end{algorithm}
 
 
 \section{Results}
 
 \section{Addition of the Free-End Condition}
+
+\subsection{NLP formualtion and implementation}
+
+\subsection{Results}
 
