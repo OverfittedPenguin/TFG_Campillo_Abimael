@@ -96,7 +96,7 @@ Next step is to transform the problem above into a set of equations using the \g
 \subsection{States and controls}
 First step is modelisation, which means that state and control variables have to be defined for the problem. Since the benchmark problem is a level-flight cruise trajectory, the states involved in the previous equations of motion are: local-horizon position ($x$,$z$); body velocities ($u$,$w$); pitch ($\theta$); pitch rate ($q$); and mass ($m$). Those seven states are the ones that allow describing the trajectory and \gls{uav} condition through time, since they indicate position, attitude and mass.
 
-The previous states are defined for a bidimensional (2D) frame using only longitudinal stability equations, as has been indicated before. Therefore, the controls that shall be used are no other ones but \gls{tps}, denoted as $\delta_{tps}$, and elevator deflection, denoted as $\delta_e$. That pair of control variables are the minimum controllable conditions for the longitudinal flight given the conditions of the problem and they are responsible of controlling speed and altitude, respectively -i.e \gls{uav} speed is controlled by variations in \gls{tps} while \gls{uav} altitude is controlled by $\delta_e$ variations-.
+The previous states are defined for a bidimensional (2D) frame using only longitudinal stability equations, as has been indicated before. Therefore, the controls that shall be used are no other ones but \gls{tps}, denoted as $\delta_{TPS}$, and elevator deflection, denoted as $\delta_e$. That pair of control variables are the minimum controllable conditions for the longitudinal flight given the conditions of the problem and they are responsible of controlling speed and altitude, respectively -i.e \gls{uav} speed is controlled by variations in \gls{tps} while \gls{uav} altitude is controlled by $\delta_e$ variations-.
 
 Eventually, the state and control vector can be constructed, followed by its form using state space notation -where $x_i$ are states and $u_i$ are controls-. Notice that the order followed to construct the vector has to be states variables followed by control variables; nevertheless, is indistinct which state or control goes first in each group. The order has been chosen by convenience for later \gls{nlp} formulation.
 
@@ -110,7 +110,7 @@ Eventually, the state and control vector can be constructed, followed by its for
     x \\
     z \\
     m \\
-    \delta_{tps} \\
+    \delta_{TPS} \\
     \delta_{e} \\
 \end{bmatrix}
 =
@@ -258,7 +258,36 @@ Eventually, the simple bounds for each state and control variable have to be dec
 \end{equation}
 
 \subsection{Cost functional}
-Third phase of an \gls{ocp} definition is defining which variables have to be optimised and below which optimisation criteria. For this benchmark case, 
+Third phase of an \gls{ocp} definition is defining which variables have to be optimised and below which optimisation criteria. For this benchmark case, five different criteria have been chosen. 
+
+\begin{itemize}
+    \item Firstly, the minimisation of the flight path angle ($\gamma$) is introduced as a quadratic penalty in the objective function rather than a hard equality constraint. This formulation encourages the solver to converge on a solution where $\gamma \approx 0$, effectively approximating a level-flight trajectory. This approach was chosen because enforcing $\gamma = 0$ as an equality constraint can lead to numerical stiffness, significantly increasing the difficulty of finding a feasible solution. By using it as a penalty, the solver can more efficiently negotiate the trade-offs between system dynamics and path objectives, leading to a more robust and faster convergence toward the optimal solution. The expression introduced in the running cost is the following one, where $\bar{\gamma}$ is the normalised $\gamma$ term using $\gamma_{max}$.
+    
+    \begin{equation}
+        J_{\gamma} \coloneqq \bar{\gamma}^2 = \left(\frac{\gamma}{\gamma_{max}}\right)^2 = \left(\frac{\theta - \alpha}{\gamma_{max}}\right)^2 = \left(\frac{x_4 - \alpha(x_1,x_2)}{\gamma_{max}}\right)^2
+    \end{equation}
+
+    \item Secondly, the minimisation of altitude error relative to the reference altitude ($h_{ref}$) is implemented as a quadratic penalty to promote a level-flight profile. Unlike the hard path constraints defined in \eqref{eq:Benchmark_Path_2}, which establish strict safety limits, the penalty allows for transient deviations during manoeuvres. This dual-layer approach—constraining the aircraft within a feasible corridor while penalizing deviations from the centerline—mimics real-world flight control laws. It allows the optimiser to prioritize control smoothness and actuator limits over rigid altitude tracking, resulting in a more physically realistic and numerically stable trajectory.
+
+    \begin{equation}
+        J_{h} \coloneqq (\bar{h} - 1)^2 = \left(\frac{h - h_{ref}}{h_{ref}}\right)^2 = \left(\frac{-x_6 - h_{ref}}{h_{ref}}\right)^2
+    \end{equation}
+
+    \item Thirdly, the minimisation of flight path angle rate ($\dot{\gamma}$) prevents the aircraft from rapidly oscillating up and down while forces the solver to find a solution that is not only level ($\gamma \approx 0$) but also steady ($\dot{\gamma} \approx 0$). The full derivation of the expression below can be found on annex \textcolor{red}{Annex:Gamma\_Dot}, since it involves partial derivatives and a large mathematical development.
+    
+    \begin{equation}
+        J_{\dot{\gamma}} \coloneqq \left(\frac{\dot{w}u - \dot{u}w}{u^2 + w^2}\right)^2 / \dot{\gamma}_{max}^2 = \left(\frac{\dot{x_2}x_1 - \dot{x_1}x_2}{x_1^2 + x_2^2}\right)^2 / \dot{\gamma}_{max}^2
+    \end{equation}
+
+    \item Eventually, control variable rates minimisation have been introduced using a quadratic penalty, in each case, for preventing a bang-bang -rapidly control changing- behaviour, since it is a non-feasible behaviour in real systems. Furthermore, control rate minimisation is the normal criteria for real pilots when facing low-altitude flight manoeuvres, also known as "lazy pilot" implementation. This implementation basically reduces pilot workload while preventing overcontrol risks, as stated by Stengel in \cite{stengel1994optimal}. The cost expressions for both \gls{tps} and elevator deflection are the following ones, respectively -$t_{k+1}$ and $t_{k}$, refer to next and actual time-instants-.
+    
+    \begin{equation}
+    J_{\delta_{TPS}} \coloneqq \frac{\left(\delta_{TPS}^{k+1} - \delta_{TPS}^{k}\right)^2}{\Delta t} = \frac{\left(u_1^{k+1} - u_1^{k}\right)^2}{\Delta t}
+    \end{equation}
+    \begin{equation}
+    J_{\delta_{e}} \coloneqq \frac{\left(\delta_{e}^{k+1} - \delta_{e}^{k}\right)^2}{\delta_{e, max}^2\Delta t} = \frac{\left(u_2^{k+1} - u_2^{k}\right)^2}{\delta_{e,max}^2\Delta t}
+    \end{equation}
+\end{itemize}
 
 \section{NLP Formulation and Implementation via CasADi}
 
