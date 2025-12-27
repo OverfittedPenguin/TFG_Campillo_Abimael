@@ -1,5 +1,5 @@
 \chapter{Benchmark Problem: A Level-Flight Cruise Trajectory}
-\textcolor{red}{This chapter introduces the reader to flight dynamics using a level-cruise flight trajectory. Also, that trajectory is formulated as an \gls{ocp} and solved via an implementation using CasADi. Therefore, a mathematical formulation on \gls{ocp} notation is presented right after the equations of motion and, right before presenting the results. Eventually, the free-end condition is applied to the problem, acting as a preamble of the following chapter.}
+This chapter introduces the reader to flight dynamics using a level-cruise flight trajectory. Also, that trajectory is formulated as an \gls{ocp} and solved via an implementation using CasADi. Therefore, a mathematical formulation on \gls{ocp} and \gls{nlp} notation is presented right after the equations of motion and, right before presenting the results. Eventually, the free-end condition is applied and solved, acting as a preamble of the following chapter.
 
 \section{UAV Kinematics and Equations of Motion}
 \label{sec:EOM}
@@ -8,8 +8,8 @@ Firstly, the flight dynamics for a general \gls{uav} flight trajectory had to be
 \begin{itemize}
     \item A bidimensional (2D) trajectory without tridimensional (3D) effects will be considered. Thus, all lateral stability and movements will be neglected and only longitudinal static stability will be considered -i.e $\mathcal{L} = 0$, $\mathcal{N}=0$, $\Phi = 0$, $\dot{\Phi} = 0$, $\Psi = 0$, $\dot{\Psi} = 0$, $y = const.$ and $\dot{y} = 0$-.
     \item All dynamic modes are neglected and only static stability phenomena will be included.
-    \item The atmospheric condistions shall be modelled using International Standard Atmoshpere (ISA) model. Only static bidimensional (2D) wind field could be sonsidered, which means that free-stream velocity has to be constant in all domain.
-    \item Bidimensional (2D) level-flight cruise trajectory implies a nul flight path angle and nul variation of the same -i.e $\gamma = 0$ and $\dot{\gamma} = 0$-.
+    \item The atmospheric condistions shall be modelled using International Standard Atmoshpere (ISA) model. Only static bidimensional (2D) wind field would be considered, which means that free-stream velocity has to be constant in all domain.
+    \item Bidimensional (2D) level-flight cruise trajectory implies a null flight path angle and null variation of the same -i.e $\gamma = 0$ and $\dot{\gamma} = 0$-.
 \end{itemize}
 
 Once the hypostheses have been written, its time to introduce the flight dynamics that are involved in bidimensional (2D) flight trajectories. The image below shows the free body diagram  and the relation between plane reference systems -i.e including body axes ($x_b$,$z_b$), wind axes ($x_w$,$z_w$) and local-horizon axes ($x_h$,$z_h$)-.
@@ -32,7 +32,7 @@ Applying Newton's second law, the equilibrium of forces and moments can be obtai
     \label{eq:Moment_Yb}
 \end{equation}
 
-Along to the dynamic equations, the \gls{uav} kinematics can be described using the rotation matrix between body and horizontal axes as follows.
+Along to the dynamic equations, the \gls{uav} kinematics can be described using the rotation matrix between body and local-horizon axes as follows.
 
 \begin{equation}
     \begin{bmatrix}
@@ -91,14 +91,14 @@ As a clarification on the equation terms, below are the complete formulation of 
 \end{equation}
 
 \section{Mathematical Formulation of the OCP}
-Next step is to transform the problem above into a set of equations using the \gls{oc} notation. To do so, the three phases of optimisation problems descriptions is used, which means that the problem has to be modelled, constrained and then optimised.
+Next step is to transform the problem above into a set of equations using the \gls{oc} notation. To do so, the three phases of optimisation problems descriptions are used, which means that the problem has to be modelled, constrained and then optimised.
 
 \subsection{States and controls}
 First step is modelisation, which means that state and control variables have to be defined for the problem. Since the benchmark problem is a level-flight cruise trajectory, the states involved in the previous equations of motion are: local-horizon position ($x$,$z$); body velocities ($u$,$w$); pitch ($\theta$); pitch rate ($q$); and mass ($m$). Those seven states are the ones that allow describing the trajectory and \gls{uav} condition through time, since they indicate position, attitude and mass.
 
 The previous states are defined for a bidimensional (2D) frame using only longitudinal stability equations, as has been indicated before. Therefore, the controls that shall be used are no other ones but \gls{tps}, denoted as $\delta_{TPS}$, and elevator deflection, denoted as $\delta_e$. That pair of control variables are the minimum controllable conditions for the longitudinal flight given the conditions of the problem and they are responsible of controlling speed and altitude, respectively -i.e \gls{uav} speed is controlled by variations in \gls{tps} while \gls{uav} altitude is controlled by $\delta_e$ variations-.
 
-Eventually, the state and control vector can be constructed, followed by its form using state space notation -where $x_i$ are states and $u_i$ are controls-. Notice that the order followed to construct the vector has to be states variables followed by control variables; nevertheless, is indistinct which state or control goes first in each group. The order has been chosen by convenience for later \gls{nlp} formulation.
+Eventually, the state and control vector can be constructed, followed by its form using state space notation -where $x_i$ are states and $u_i$ are controls-. Notice that the order followed to construct the vector has been states variables followed by control variables; nevertheless, is indistinct which state or control goes first in each group. The order has been chosen by convenience for later \gls{nlp} formulation.
 
 \begin{equation}
 \mathbf{w} \coloneqq 
@@ -175,7 +175,7 @@ After the state space is set, the constraints can be defined, following second s
 \label{eq:Benchmark_EOM_7}
 \end{equation}
 
-The set of equations above can be summarised to a reduced version if RHS is expressed as fucntionals of the states and controls involved only.
+The set of equations above can be summarised to a reduced version if RHS is expressed as functionals of the states and controls involved only.
 
 \begin{equation}
     \mathbf{g_{dyn}} \coloneqq
@@ -279,13 +279,13 @@ Eventually, the simple bounds for each state and control variable have to be dec
 Third phase of an \gls{ocp} definition is defining which variables have to be optimised and below which optimisation criteria. For this benchmark case, five different criteria have been chosen. 
 
 \begin{itemize}
-    \item Firstly, the minimisation of the flight path angle ($\gamma$) is introduced as a quadratic penalty in the objective function rather than a hard equality constraint. This formulation encourages the solver to converge on a solution where $\gamma \approx 0$, effectively approximating a level-flight trajectory. This approach was chosen because enforcing $\gamma = 0$ as an equality constraint can lead to numerical stiffness, significantly increasing the difficulty of finding a feasible solution. By using it as a penalty, the solver can more efficiently negotiate the trade-offs between system dynamics and path objectives, leading to a more robust and faster convergence toward the optimal solution. The expression introduced in the running cost is the following one, where $\bar{\gamma}$ is the normalised $\gamma$ term using $\gamma_{max}$.
+    \item Firstly, the minimisation of the flight path angle ($\gamma$) is introduced as a quadratic penalty in the objective function rather than a hard equality constraint. This formulation encourages the solver to converge on a solution where $\gamma \approx 0$, effectively approximating a level-flight trajectory. This approach was chosen because enforcing $\gamma = 0$ as an equality constraint could lead to numerical stiffness, significantly increasing the difficulty of finding a feasible solution. By using it as a penalty, the solver can more efficiently negotiate the trade-offs between system dynamics and path objectives, leading to a more robust and faster convergence toward the optimal solution. The expression introduced in the running cost is the following one, where $\bar{\gamma}$ is the normalised $\gamma$ term using $\gamma_{max}$.
     
     \begin{equation}
         J_{\gamma} \coloneqq \bar{\gamma}^2 = \left(\frac{\gamma}{\gamma_{max}}\right)^2 = \left(\frac{\theta - \alpha}{\gamma_{max}}\right)^2 = \left(\frac{x_4 - \alpha(x_1,x_2)}{\gamma_{max}}\right)^2
     \end{equation}
 
-    \item Secondly, the minimisation of altitude error relative to the reference altitude ($h_{ref}$) is implemented as a quadratic penalty to promote a level-flight profile. Unlike the hard path constraints defined in \eqref{eq:Benchmark_Path_2}, which establish strict safety limits, the penalty allows for transient deviations during manoeuvres. This dual-layer approach—constraining the aircraft within a feasible corridor while penalizing deviations from the centerline—mimics real-world flight control laws. It allows the optimiser to prioritize control smoothness and actuator limits over rigid altitude tracking, resulting in a more physically realistic and numerically stable trajectory.
+    \item Secondly, the minimisation of altitude error relative to the reference altitude ($h_{ref}$) is implemented as a quadratic penalty to promote a level-flight profile. Unlike the path constraints defined in \eqref{eq:Benchmark_Path_2}, which establish strict safety limits, the penalty allows for transient deviations during manoeuvres. This dual-layer approach —constraining the aircraft within a feasible corridor while penalizing deviations from the centerline— mimics real-world flight control laws. It allows the optimiser to prioritize control smoothness and actuator limits over rigid altitude tracking, resulting in a more physically realistic and numerically stable trajectory.
 
     \begin{equation}
         J_{h} \coloneqq (\bar{h} - 1)^2 = \left(\frac{h - h_{ref}}{h_{ref}}\right)^2 = \left(\frac{-x_6 - h_{ref}}{h_{ref}}\right)^2
@@ -294,7 +294,7 @@ Third phase of an \gls{ocp} definition is defining which variables have to be op
     \item Thirdly, the minimisation of flight path angle rate ($\dot{\gamma}$) prevents the aircraft from rapidly oscillating up and down while forces the solver to find a solution that is not only level ($\gamma \approx 0$) but also steady ($\dot{\gamma} \approx 0$). The full derivation of the expression below can be found on annex \textcolor{red}{Annex:Gamma\_Dot}, since it involves partial derivatives and a large mathematical development.
     
     \begin{equation}
-        J_{\dot{\gamma}} \coloneqq \left(\frac{\dot{w}u - \dot{u}w}{u^2 + w^2}\right)^2 / \dot{\gamma}_{max}^2 = \left(\frac{\dot{x_2}x_1 - \dot{x_1}x_2}{x_1^2 + x_2^2}\right)^2 / \dot{\gamma}_{max}^2
+        J_{\dot{\gamma}} \coloneqq \left(q - \frac{\dot{w}u - \dot{u}w}{u^2 + w^2}\right)^2 / \dot{\gamma}_{max}^2 = \left(x_3 - \frac{\dot{x_2}x_1 - \dot{x_1}x_2}{x_1^2 + x_2^2}\right)^2 / \dot{\gamma}_{max}^2
     \end{equation}
 
     \item Eventually, control variable rates minimisation have been introduced using a quadratic penalty, in each case, for preventing a bang-bang -rapidly control changing- behaviour, since it is a non-feasible behaviour in real systems. Furthermore, control rate minimisation is the normal criteria for real pilots when facing low-altitude flight manoeuvres, also known as "lazy pilot" implementation. This implementation basically reduces pilot workload while preventing overcontrol risks, as stated by Stengel in \cite{stengel1994optimal}. The cost expressions for both \gls{tps} and elevator deflection are the following ones, respectively -$t_{k+1}$ and $t_{k}$, refer to next and actual time-instants-.
@@ -315,7 +315,7 @@ Once all penalties have been defined, the whole cost functional ins its Lagrange
 \end{equation}
 
 \section{NLP Formulation and Implementation via CasADi}
-After defining the whole \gls{ocp}, it is time to discretise the equations using trapezoidal rule to achieve a \gls{nlp} problem formulation and, therefore, implement it into CasADi blocks. To do the discretisation it is important to remark two different points: firstly, the dynamic constraints will be evaluated for the actual time-instant and next time-instant -following trapezoidal integration scheme- while initial constraints will be enforced at time-instant $t_0$ only, and path constraints will be enforced at each time-instant $t_k$ separately; referring to Lagrangian cost term, it will be evaluated also following a trapezoidal scheme.
+After defining the whole \gls{ocp}, it is time to discretise the equations using trapezoidal rule to achieve a \gls{nlp} problem formulation and, therefore, implement it into CasADi blocks. To do the discretisation it is important to remark two different points: firstly, the dynamic constraints will be evaluated for the actual time-instant and next time-instant -following trapezoidal integration scheme- while initial constraints will be enforced at time-instant $t_0$ only, and path constraints will be enforced at each time-instant $t_k$ separately; referring to Lagrange cost term, it will be evaluated also following a trapezoidal scheme.
 
 These leads to the following constraints, simple bounds and cost terms. It has to be pinpointed that, in this case, end-time is known and, therefore, time-step is defined as $\Delta t = t_f / (N-1)$, where N is the number of collocation points -or nodes-. Moreover, its implementation in CasADi has to follow the statements done in section \ref{sec:CasADi}, which means to create state and controls, constraints and simple bounds vectors as large as the number of states and control variables per node -seven (7) states plus two (2) controls, per node-
 
@@ -387,13 +387,13 @@ Next, the \gls{nlp} problem can be defined properly using almost CasADi notation
     \label{eq:Benchmark_NLP}
 \end{equation}
 
-The algorithm that has been implemented to solve the \gls{nlp} problem using \gls{ipopt} solver is the reffered below. The whole structure of the implemented algorithm in Python can be seen in appendix \textcolor{red}{ANEXO CÓDIGO}, referring to benckmark problem code section.
+The algorithm that has been implemented to solve the \gls{nlp} problem using \gls{ipopt} solver is the refered below. The whole structure of the implemented algorithm in Python can be seen in appendix \textcolor{red}{ANEXO CÓDIGO}, referring to benckmark problem code section.
 
 \begin{algorithm}[H]
 \caption{Trajectory Optimisation Algorithm for Level-Cruise Flight}
 \begin{algorithmic}
 \STATE \textbf{1. Initialise Parameters:} 
-\STATE \quad Define $N$ nodes, end-time $t_F$, $\Delta t$, and symbolic vectors for $\mathbf{x}, \mathbf{u}$.
+\STATE \quad Define $N$ nodes, end-time $t_F$, time-step $\Delta t$, and symbolic vectors for $\mathbf{x}, \mathbf{u}$.
 \STATE \quad Obtain trim state $\mathbf{x}_{trim}$ via static NLP solver.
 \STATE \quad Construct initial guess $\mathbf{w}_0$ using $\mathbf{w}_{trim}$ and linear propagation.
 
@@ -401,9 +401,9 @@ The algorithm that has been implemented to solve the \gls{nlp} problem using \gl
 \STATE \quad Formulate $\mathbf{w} \coloneqq [\mathbf{x}^0, \mathbf{u}^0, \dots, \mathbf{x}^{N}, \mathbf{u}^{N}]^\top \in \mathbb{R}^{9N}$.
 \STATE \quad Apply variable bounds: $\mathbf{w} \in [\mathbf{1}_{N+1} \otimes \mathbf{lbx}, \ \mathbf{1}_{N+1} \otimes \mathbf{ubx}]$.
 
-\FOR{$k = 0$ \TO $N$}
+\FOR{$i = 0$ \TO $N_{iter}$}
     \STATE \textbf{3. Evaluate NLP Functions:}
-    \STATE \quad Compute trapezoidal Cost: $J(\mathbf{w}) = \frac{\Delta t}{2}\sum_{k=0}^{N-2} (L^k + L^{k+1})$.
+    \STATE \quad Compute trapezoidal Cost: $J(\mathbf{w}) = \frac{\Delta t}{2}\sum_{k=0}^{N-1} (L^k + L^{k+1})$.
     \STATE \quad Evaluate dynamics $\mathbf{d}^k$ and path Constraints $\mathbf{h}^k$.
     \STATE \quad Stack constraints: $\mathbf{g}(\mathbf{w}) \coloneqq [\mathbf{d}^0, \dots, \mathbf{d}^{N-1}, \mathbf{h}^0, \dots, \mathbf{h}^N, \mathbf{\varphi}_0]^\top$.
 
@@ -412,11 +412,11 @@ The algorithm that has been implemented to solve the \gls{nlp} problem using \gl
         \STATE \textbf{STOP:} Optimal trajectory found.
     \ENDIF
 
-    \STATE \textbf{5. Compute Step (KKT System):} Form the Lagrangian $\mathcal{L}(\mathbf{w}, \lambda, z)$ and solve the linearised primal-dual system for search direction $d_k$.
+    \STATE \textbf{5. Compute Step (KKT System):} Form the Lagrangian $\mathcal{L}(\mathbf{w}, \lambda, z)$ and solve the linearised primal-dual system for search direction $d_i$.
     
-    \STATE \textbf{6. Filter Line-Search:} Determine step size $\alpha_k$ to ensure decrease in $J$ or constraint violation $\|\mathbf{g}\|$.
+    \STATE \textbf{6. Filter Line-Search:} Determine step size $\alpha_i$ to ensure decrease in $J$ or constraint violation $\|\mathbf{g}\|$.
     
-    \STATE \textbf{7. Update Iterates:} $\mathbf{w}_{k+1} = \mathbf{w}_k + \alpha_k d_k^w$.
+    \STATE \textbf{7. Update Iterates:} $\mathbf{w}_{i+1} = \mathbf{w}_i + \alpha_i d_i^w$.
     
 \ENDFOR
 \STATE \textbf{8. Post-processing:} Extract state and control trajectories for plotting.
