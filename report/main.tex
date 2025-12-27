@@ -43,17 +43,20 @@
 \newglossarystyle{nomenclaturestyle}{
   \setglossarystyle{long3col}
   \renewenvironment{theglossary}%
-    {\begin{longtable}{@{}l p{0.7\textwidth} r@{}}
-     \rmfamily\bfseries Symbol & \rmfamily\bfseries Description & \rmfamily\bfseries Units \\ \hline \vspace{1pt}
+    {\begin{longtable}{@{}l p{0.65\textwidth} r@{}}
+     \rmfamily\bfseries Symbol & \rmfamily\bfseries Description & \rmfamily\bfseries Units \\ 
+     \noalign{\smallskip} \hline \noalign{\vspace{8pt}} % Space before and after line
      \endhead}%
     {\end{longtable}}
   
   \renewcommand*{\glossentry}[2]{%
-    \rmfamily \glstarget{##1}{\glossentryname{##1}} & 
-    \rmfamily \glossentrydesc{##1} & 
-    \rmfamily \glossentrysymbol{##1} \\
+    \glstarget{##1}{\glossentryname{##1}} & 
+    \glossentrydesc{##1} & 
+    \glossentrysymbol{##1} \\[1.5ex] 
   }
 }
+
+\glsaddall[types={symbolslist}]
 
 \setglossarystyle{list}
 \renewcommand*{\glsnamefont}[1]{\rmfamily\bfseries #1}

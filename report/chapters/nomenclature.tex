@@ -1,6 +1,174 @@
+\newglossaryentry{bodyaxes}{
+  name={$F_b$},
+  description={Body-fixed reference frame with origin at the CG, $x_b$ along the fuselage, and $z_b$ pointing down},
+  symbol={$-$},
+  type=symbolslist
+}
+
+\newglossaryentry{windaxes}{
+  name={$F_w$},
+  description={Wind reference frame, $x_w$ aligned with the velocity vector $V$},
+  symbol={$-$},
+  type=symbolslist
+}
+
+\newglossaryentry{localhorizon}{
+  name={$F_h$},
+  description={Local horizon reference frame (North-East-Down)},
+  symbol={$-$},
+  type=symbolslist
+}
+
+\newglossaryentry{weight}{
+  name={$W$},
+  description={Weight force, force projected into positive z-local-horizon axis ($z_h$). Its is the product of mass ($m$) per gravity's constant ($g$)},
+  symbol={$[N]$},
+  type=symbolslist
+}
+
+\newglossaryentry{mass}{
+  name={$m$},
+  description={Aircraft mass},
+  symbol={$[kg]$},
+  type=symbolslist
+}
+
+\newglossaryentry{iy}{
+  name={$I_y$},
+  description={Moment of inertia about the pitch axis},
+  symbol={$[kg \cdot m^2]$},
+  type=symbolslist
+}
+
+\newglossaryentry{bodyvel}{
+  name={$u, v, w$},
+  description={Velocity components in the body-fixed frame},
+  symbol={$[m/s]$},
+  type=symbolslist
+}
+
+\newglossaryentry{pitchrate}{
+  name={$q$},
+  description={Pitch rate, angular velocity about the y-body axis},
+  symbol={$[rad/s]$},
+  type=symbolslist
+}
+
+\newglossaryentry{pitch}{
+  name={$\theta$},
+  description={Pitch angle, angle between $x_b$ and the horizontal plane},
+  symbol={$[rad]$},
+  type=symbolslist
+}
+
+\newglossaryentry{fpa}{
+  name={$\gamma$},
+  description={Flight path angle, angle between the velocity vector and the horizontal plane},
+  symbol={$[rad]$},
+  type=symbolslist
+}
+
 \newglossaryentry{aoa}{
   name={$\alpha$},
   description={Angle of Attack, angle between the aircraft's x-body axis ($x_b$) and the projection of the velocity vector onto the aircraft's plane of symmetry ($x_b-z_b$) plane},
   symbol={$[rad]$},
+  type=symbolslist
+}
+
+\newglossaryentry{lift}{
+  name={$L$},
+  description={Lift force, force projected into negative z-wind axis ($z_w$)},
+  symbol={$[N]$},
+  type=symbolslist
+}
+
+\newglossaryentry{drag}{
+  name={$D$},
+  description={Drag force, force projected into negative x-wind axis ($x_w$)},
+  symbol={$[N]$},
+  type=symbolslist
+}
+
+\newglossaryentry{cl_coeffs}{
+  name={$C_{L_0}, C_{L_\alpha}, C_{L_{\delta e}}$},
+  description={Lift coefficients: zero-alpha lift, lift-curve slope, and elevator effectiveness},
+  symbol={$[1], [rad^{-1}]$},
+  type=symbolslist
+}
+
+\newglossaryentry{cd_coeffs}{
+  name={$C_{D_0}, k$},
+  description={Drag coefficients: parasitic drag and induced drag factor},
+  symbol={$[1]$},
+  type=symbolslist
+}
+
+\newglossaryentry{cm_coeffs}{
+  name={$C_{m_0}, C_{m_\alpha}, C_{m_{\delta e}}$},
+  description={Pitching moment coefficients: static stability and control derivatives},
+  symbol={$[1], [rad^{-1}]$},
+  type=symbolslist
+}
+
+\newglossaryentry{thrust}{
+  name={$T$},
+  description={Thrust force, force projected into positive x-body axis ($x_w$)},
+  symbol={$[N]$},
+  type=symbolslist
+}
+
+\newglossaryentry{dist_ct_cg}{
+  name={$\Delta X_{CT}, \Delta Z_{CT}$},
+  description={Horizontal and vertical distances from the Center of Thrust to the Center of Gravity},
+  symbol={$[m]$},
+  type=symbolslist
+}
+
+\newglossaryentry{thrust_aoa}{
+  name={$\varepsilon$},
+  description={Thrust angle of attack, angle between thrust vector and $x_b$ axis},
+  symbol={$[rad]$},
+  type=symbolslist
+}
+
+\newglossaryentry{sfc}{
+  name={$SFC$},
+  description={Specific Fuel Consumption},
+  symbol={$[kg/(N \cdot s)]$},
+  type=symbolslist
+}
+
+\newglossaryentry{bem}{
+  name={$BEM$},
+  description={Basic Empty Mass},
+  symbol={$[kg]$},
+  type=symbolslist
+}
+
+\newglossaryentry{mtom}{
+  name={$MTOM$},
+  description={Maximum Take-Off Mass},
+  symbol={$[kg]$},
+  type=symbolslist
+}
+
+\newglossaryentry{tom}{
+  name={$TOM$},
+  description={Take-Off Mass},
+  symbol={$[kg]$},
+  type=symbolslist
+}
+
+\newglossaryentry{vtp}{
+  name={$V_{tp}$},
+  description={True airspeed of the tailplane (or True Path Velocity)},
+  symbol={$[m/s]$},
+  type=symbolslist
+}
+
+\newglossaryentry{href}{
+  name={$h_{ref}$},
+  description={Reference altitude},
+  symbol={$[m]$},
   type=symbolslist
 }
