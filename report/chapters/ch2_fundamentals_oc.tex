@@ -4,7 +4,7 @@ This chapter includes the mathematical formualtion of the \gls{ocp}, which is th
 \section{Introduction to Optimal Control Theory}
 The \gls{oct} is a control field related branch where an objective function has to be optimised -most of the times, it has to be minimised- in order to find the control trajectory for a determined dynamical system. This theory is historically realted with calculus of variations, where optimal points -either maxima or minima- are found using little variations in functions or functionals \cite{Courant1953}. This field of study, proposed by Isaac Newton, was developed as a solving approach for the brachistochrone problem, posed by Bernoulli in 1696. The brachistochrone curve is defined as the fastest descent path -most optimal path for minimising time- between two points A and B under a uniform gravitational field. Counterintuitively, it was found that the most optimal path was not but the cycloidal ramp, as can be seen in the image below.
 
-In essence, the \gls{oct} responds the need to solve continuous time optimisation problems, as the one presented. Thus, the \gls{ocp} can be understood as a n-dimensional extension of the \gls{nlp} problem. The NLP problem can be defined as the minimisation of a given function subject to a different set of equations or inequations that act as restrictions -also called constraints- and simple bounds \cite{Kirk2004}.
+In essence, the \gls{oct} responds the need to solve continuous time optimisation problems, as the brachistochrone one. Thus, the \gls{ocp} can be understood as a n-dimensional extension of the \gls{nlp} problem. The NLP problem can be defined as the minimisation of a given function subject to a different set of equations or inequations that act as restrictions -also called constraints- and simple bounds \cite{Kirk2004}. See its definition in expression \eqref{eq:NLP}.
 
 \begin{figure}[H]
     \centering
@@ -48,14 +48,14 @@ The previous description is the formal description for the \gls{ocp}, since it c
 \begin{itemize}
     \item \underline{State variables $y(t)$:} As explained before, state variables are time-continuous functions that describe the system condition and allow to predict its future coindition. This state variables are limited by lower and upper bounds, $y_{lb}$ and $y_{ub}$, respectively. Those bounds are the physical or operational limits that each state variable has; for example, on the brachistochrone problem, the horizontal position of the ball -when movement is restricted to the vertical plane- cannot be lower than the point A horizontal coordinate and bigger than the point B horizontal coordinate -those are the simple bounds for horizontal position state variable in that case-.
     \item \underline{Control variables $u(t)$:} Control variables are time-continuous functions that describe the changes on the system to achieve a determined state or condition through time. Similarly, they are simple bounded, in this case by lower bound $u_{lb}$ and upper bound $u_{ub}$; for example, for the flight trajectory previously described, control variable \gls{aoa} could be lower bounded by a null value and upper bounded by the stall angle, $\alpha_{stall}$ -those are the simple bounds for the \gls{aoa} control variable in that case-.
-    \item \underline{Time domain $t$:} Time domain is the closed interval of time, defined on real numbers, between initial time $t_0$ -where initial state condition is applied- and the time horizon $t_f$ -that can be fixed or free-. On \gls{ocp}, time horizon can be set to a known value if its a problem's parameter or can be free if it is set a decision variable -also called control variable- of the problem through end time constraints or inside the cost functional.
+    \item \underline{Time domain $t$:} Time domain is the closed interval of time, defined on real numbers, between initial time $t_0$ -where initial state condition is applied- and the time horizon $t_f$ -that can be fixed or free-. On \gls{ocp}, time horizon can be set to a known value if its a problem's parameter or can be free if it is set a decision variable -also called control variable- of the problem through end-time constraints or inside the cost functional.
     \item \underline{Dynamic constraints $\dot{y}$:} Dynamic equations are a set of \gls{ode}s equality constraints that describe the physics of the problem. This set of constraints are always active, which means that they apply for all time domain. 
     \item \underline{Path constraints $g[y(t),u(t),t]$:} Path contsraints are another set of expressions that apply for a given time domain and that could refer to any type of extra restrcitions to the problem. They could be equalities or inequalities that could both restrict state or controls in a determined way.
     \item \underline{Initial state conditions $\varphi[y(t_0),u(t_0),t_0]$:} The initial state constraints are a set of equalities that restrict the initial value of states variables to a known value -the initial condition of the system is known-. They can also include restrictions for the initial value of control variables; nevertheless, it is not a common practice because the problem could be overrestricted and the solver may be unable to found a feasible solution.
     \item \underline{Cost functional $J(y,u)$:} The cost functional is the cost objective function that has to be minimised to found the optimal solution. This cost is defined by two different terms that contribute differently to the whole objective: terminal and running costs. If both contributions are present, then the cost objective is defined as in its Bolza form. As clarified in \cite{BrysonHo1975}:
     \begin{itemize}
-        \item Terminal cost is the contribution that only penalises the final value of state variables. Is represented by $\Phi[y(t_f),u(t_f),t_f]$ and, if cost objective $J(y,u) = \Phi[y(t_f),t_f]$, is it said that the whole cost functional is in its Mayer form.
-        \item Running cost is the contribution that penalises each state and control variable trough time and, therefore, accumulates the whole penalisation. Is represented by $\int _{t_0}^{t_f} L[ y(t),u(t),t] \ dt$ and, if cost objective $J(y,u) = \int _{t_0}^{t_f} L[ y(t),u(t),t] \ dt$, is it said that the whole cost functional is in its Lagrange form.
+        \item Terminal cost is the contribution that only penalises the final value of state variables. Is represented by $\Phi[y(t_f),u(t_f),t_f]$ and, if cost objective $J(y,u) = \Phi[y(t_f),t_f]$, it is said that the whole cost functional is in its Mayer form.
+        \item Running cost is the contribution that penalises each state and control variable trough time and, therefore, accumulates the whole penalisation. Is represented by $\int _{t_0}^{t_f} L[ y(t),u(t),t] \ dt$ and, if cost objective $J(y,u) = \int _{t_0}^{t_f} L[ y(t),u(t),t] \ dt$, it is said that the whole cost functional is in its Lagrange form.
     \end{itemize}
 \end{itemize}
 
@@ -67,7 +67,7 @@ Once the basic problem has been set, is has to be noticed that although the vari
 \end{itemize}
 
 \subsection{Direct collocation method as direct method}
-Direct collocation methods are a direct method in which the functions are discretised in a set of predefined points called collocation points. These collocation points are part of a collocation grid that is set along the domain in both state and control variables. It has to be pinpointed that between collocation methods two different types can be distinguished: low-order collocation methods, applied to solve \gls{ode}s, and pseudospectral methods, applied to solve \gls{pde}s. Since this bachelor thesis adresses the flight mechanics of an aircraft for low-flight manoeuvres, which dynamic equations consists on different \gls{ode}s, the wording will focus on low-order collocation methods (\gls{dcm} from now on) \cite{Becerra2012}.
+Direct collocation methods are a type of direct method in which the functions are discretised in a set of predefined points called collocation points. These collocation points are part of a collocation grid that is set along the domain in both state and control variables. It has to be pinpointed that between collocation methods two different types can be distinguished: low-order collocation methods, applied to solve \gls{ode}s, and pseudospectral methods, applied to solve \gls{pde}s. Since this bachelor thesis adresses the flight mechanics of an aircraft for low-flight manoeuvres, which dynamic equations consists on different \gls{ode}s, the wording will focus on low-order collocation methods (\gls{dcm} from now on) \cite{Becerra2012}.
 
 Essentially, in the \gls{dcm} the state and the control variables are both discretised in different collocation points. This collocation points are a set of N time-instants that form the collocation grid (in an equivalent way, the reader can think about the collocation grid as the element grid usually made for finite element purposes). On this points, the dynamic of the problem will be evaluated, or forced, to solve the equations and, therefore, the whole problem. Thus, the \gls{dcm} for the control variables is defined as follows, extracted from \cite{Bohme2017}.
 
@@ -103,7 +103,7 @@ For a better comprehension, the mathematical formulation behind discretisation c
     \end{aligned}
 \end{equation*}
 
-At this point, a trapezoidal scheme is proposed to be used on the numerical approach since it takes into account not only the present time-instant but the following time-instant for the function evaulation and its integration. This numerical integration scheme is preferred above others such Runge-Kutta or Hermite-Simpson because of its simplicity, its easy applicability and its precision, which is enough for the scope of this project. The trapezoidal integration scheme for the running cost, adapted from \cite{Becerra2012} and \cite{Jackson2018}, can be state as:
+At this point, a trapezoidal scheme is proposed to be used on the numerical approach since it takes into account not only the present time-instant but the following time-instant for the function evaulation and its integration. This numerical integration scheme is preferred above others such as Runge-Kutta or Hermite-Simpson because of its simplicity, its easy applicability and its precision, which is enough for the scope of this project. The trapezoidal integration scheme for the running cost, adapted from \cite{Becerra2012} and \cite{Jackson2018}, can be state as:
 
 \begin{equation}
     \begin{aligned}
@@ -117,7 +117,7 @@ At this point, a trapezoidal scheme is proposed to be used on the numerical appr
     \label{eq:DCM_Running_Cost}
 \end{equation}
 
-Furthermore, the trapezoidal rule has to be applied to the constraints of the problem, now called collocation constraints. For the simple bounds, path cosntraints and initial state constraints, the application of the discretisation scheme is easy to reach because the equations have to be evaluated at the given colocation points directly, without need of trapezoidal rule. About the dynamic equations, which are the only ones that have to be integrated by applying the fundamental theorem of calculus, the following development can be obtained, extracted from \cite{Jackson2018}.
+Furthermore, the trapezoidal rule has to be applied to the constraints of the problem, now called collocation constraints. For the simple bounds, path cosntraints and initial state constraints, the application of the discretisation scheme is easy to reach because the equations have to be evaluated at the given collocation points directly, without need of trapezoidal rule. About the dynamic equations, which are the only ones that have to be integrated by applying the fundamental theorem of calculus, the following development can be obtained, extracted from \cite{Jackson2018}.
 
 \begin{equation*}
     \begin{aligned}
@@ -132,7 +132,7 @@ Resulting in:
     \begin{aligned}
         & y_{k+1} - y_{k} =\frac{1}{2} h_{k} \cdotp (f_{k} +f_{k+1} )\\
         where & \\
-        & f_{k} =f(y_{k} ,u_{k} ,t_{k} )\text{ for each } k\in [0,N]
+        & f_{k} =f(y_{k} ,u_{k} ,t_{k} )\text{ for each } k\in [0,N-1]
     \end{aligned}
     \label{eq:DCM_ODEs}
 \end{equation}
@@ -142,7 +142,7 @@ Eventually, the terminal cost can be added taking into account its contribution 
 \begin{equation}
     \begin{aligned}
         \min_{y,u} \ \  & J(y,u) \coloneqq \Phi[ y(t_{N} ),u(t_{N} ),t_{N}] +\sum _{k=0}^{N-1}\frac{1}{2} h_{k} \cdotp ( L_{k} +L_{k+1})\\
-        \text{s.t.} \ \  & y_{k+1} =y_{k} + \frac{1}{2} h_{k} \cdotp (f_{k} +f_{k+1} )\\
+        \text{s.t.} \ \  & y_{k+1} =y_{k} + \frac{1}{2} h_{k} \cdotp (f_{k} +f_{k+1} ) \text{ for } k \in [0,N-1]\\
         & g[y(t_k),u(t_k),t_k] \leq 0 \text{ for } \forall k\\
         & \varphi [y(t_0 ),u(t_0),t_0] =0\\
         & y_{lb} \leq y(t_k)\leq y_{ub}\\
@@ -244,7 +244,7 @@ Eventually, the \gls{pmp} is a fundamental result of optimal control theory, sin
     \label{eq:PMP_Problem}
 \end{equation}
 
-Therefore, the \gls{pmp} can be expressed as the minimisation of the Hamiltonian with respect to the control variables, as indicated in equation \eqref{eq:PMP}. This formulation arises because the original statement of \gls{pmp} is given as a maximisation problem, but it can be equivalently rewritten in minimisation form by changing the sign of the Hamiltonian \cite{BrysonHo1975_Blaisdell} -also called Pontryagin's Minimum Principle-. In essence, the principle reformulates the original optimal control problem into an equivalent system involving the state and an adjoint -or costate- system. The optimal control trajectory is then obtained by ensuring that, at each instant of time, the Hamiltonian is minimised with respect to the admissible controls.
+Therefore, the \gls{pmp} can be expressed as the minimisation of the Hamiltonian with respect to the control variables, as indicated in equation \eqref{eq:PMP}. This formulation arises because the original statement of \gls{pmp} is given as a maximisation problem, but it can be equivalently rewritten in minimisation form by changing the sign of the Hamiltonian \cite{BrysonHo1975_Blaisdell} -also called Pontryagin's Minimum Principle-. In essence, the principle reformulates the original optimal control problem into an equivalent system involving the state and an adjoint -or co-state- system. The optimal control trajectory is then obtained by ensuring that, at each instant of time, the Hamiltonian is minimised with respect to the admissible controls.
 
 \begin{equation}
     \begin{aligned}
@@ -320,7 +320,7 @@ The expression above is used on each iteration of the \gls{ipopt} algorithm to c
     \label{eq:BP_Mu}
 \end{equation}
 
-As said before, the \gls{ipopt} is based on a primal-dual framework that iterates between variables and multipliers by solving a linearised set of the \gls{kkt} conditions via Newton's method. This method allows to find gradients for each variable or multiplier, as stated below.
+As said before, the \gls{ipopt} is based on a primal-dual framework that iterates between variables and multipliers by solving a linearised set of the \gls{kkt} conditions via Newton's method. This method allows to find gradients for each variable or multiplier, as stated below -with $A_k \coloneqq \nabla c(x_k)$ and $W_k \coloneqq \nabla_{xx} \mathcal{L}(x_k,\lambda_k,z_k)$ and k the inner-loop counter-.
 
 \begin{equation}
     \begin{bmatrix}
@@ -341,7 +341,7 @@ As said before, the \gls{ipopt} is based on a primal-dual framework that iterate
     \label{eq:BP_Newton_System}
 \end{equation}
 
-From the previous expression, gradients could be computed. Thus, the update on variables and multipliers will be set following the set of equations \eqref{eq:BP_Mu} once the step size parameter $\alpha_k$ is determined by a filter search or filter method. A deep explanation of filther methods used can be found on \cite{Waechter2004} and \cite{Fletcher2002}.
+From the previous expression, gradients could be computed. Thus, the update on variables and multipliers will be set following the set of equations \eqref{eq:BP_Mu} once the step size parameter $\alpha_k$ is determined by a filter search or filter method. A deep explanation of the filther methods used can be found on \cite{Waechter2004} and \cite{Fletcher2002}.
 
 \begin{subequations}
     \begin{align}
@@ -368,7 +368,7 @@ Eventually, a summarised version of the general \gls{ipopt} algorithm has been a
     \ENDIF
     \STATE \textbf{4. Solve KKT System:} Compute search directions $d_k$ via expression \eqref{eq:BP_Newton_System}.
     \STATE \textbf{5. Filter Line-Search:} Determine $\alpha_k$ via the filter method.
-    \STATE \textbf{6. Update Iterates:} $x_{k+1} = x_k + \alpha_k d_k^x$, etc.
+    \STATE \textbf{6. Update Iterates:} Compute them using equations \eqref{eq:BP_Updated_Steps}.
 \ENDFOR
 \IF{$k = N$}
     \STATE \textbf{Exit:} Maximum iterations reached without convergence.
@@ -393,7 +393,7 @@ The guidelines for the creation of \gls{nlp} problem dictionary are:
 
 \begin{itemize}
     \item \underline{State and control vector $w$}. The state and control vector has to contain all the states and controls in symbolic notation for each collocation point, from the first to the last, following an order. On the example set, since there is a unique collocation point and there are three variables, the definition will be $w = (x,y,z)$ -in the case there were more than one collocation point, $w=(x_0,y_0,z_0, x_1,y_1,z_1 \dotsc x_N,y_n,z_N)$-.
-    \item \underline{Cost function $f(x,z)$:} The cost function has to include the penalties defined for each variable when needed. In the example, there is a unique cost defined. Nevertheless, if it was defined for more than one collocation point it would be translated into \textit{ca.nlpsol()} needs like stated in \eqref{eq:CasADi_NLP_Cost}.
+    \item \underline{Cost function $f(x,z)$:} The cost function has to include the penalties defined for each variable when needed. In the example, there is a unique cost defined. Nevertheless, if it was defined for more than one collocation point it would be translated into \textit{ca.nlpsol()} needs, like stated in \eqref{eq:CasADi_NLP_Cost}.
 
     \begin{equation}
         F(x,z) \coloneqq x_0^2 + 100z_0^2 + x_1^2 + 100z_1^2 + \dotsc + x_N^2 + 100z_N^2
@@ -412,4 +412,4 @@ nlp = {'x':vertcat(x,y,z), 'f':x**2+100*z**2, 'g':z+(1-x)**2-y}
 S = ca.nlpsol('S', 'ipopt', nlp)
 \end{lstlisting}
 
-Another important remark lays into the formulation of numeric initial guess, which has to be initialised in each variable defined on state and control vector $w$. In other words, solver would need an analogue initial state and control vector $w_0$. Furthermore, constraints are defined following the order provided in discretised \gls{ocp} definition, see \eqref{eq:DCM_OCP}, which is: dynamic constraints, path constraints and initial state constraints. As state before, those remarks apply for all variables and would have to be defined following the same order that has been defined in $w$. CasADi does not accept matrices easily, which means that constraints vector $g$ will need $g_{lb}$ and $g_{ub}$ provided as a vector -noted as \textit{lbg} and \textit{ubg} through all thesis and provided code-. That last remark also applies to simple bounds $x_{lb}$ and $x_{ub}$, noted as \textit{lbx} and \textit{ubx}, respectively.
+Another important remark lays into the formulation of numeric initial guess, which has to be initialised in each variable defined on state and control vector $w$. In other words, solver would need an analogue initial state and control vector $w_0$. Furthermore, constraints are defined following the order provided in discretised \gls{ocp} definition, see \eqref{eq:DCM_OCP}, which is: dynamic constraints, path constraints and initial state constraints. As state before, those remarks apply for all variables and would have to be defined following the same order that has been defined in $w$. CasADi does not accept matrices easily, which means that constraints vector $g$ will need $g_{lb}$ and $g_{ub}$ provided as vectors too -noted as \textit{lbg} and \textit{ubg} through all thesis and provided code-. That last remark also applies to simple bounds $x_{lb}$ and $x_{ub}$, which also have to be provided as vectors and which are noted as \textit{lbx} and \textit{ubx}, respectively.

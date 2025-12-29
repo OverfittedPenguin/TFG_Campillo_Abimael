@@ -17,7 +17,7 @@ Once the hypostheses have been written, its time to introduce the flight dynamic
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\linewidth]{images/benchmark_fbd.png}
-    \caption{Free-body diagram of an aircraft bidimensional (2D) flight trajectory involved forces and moments. Own source.}
+    \caption{Free-body diagram of an aircraft bidimensional (2D) flight trajectory, involving forces and moments. Own source.}
     \label{fig:Benchmark}
 \end{figure}
 
@@ -68,7 +68,7 @@ Along to the dynamic equations, the \gls{uav} kinematics can be described using 
     \label{eq:Inertial_Velocities}
 \end{equation}
 
-Eventually, pitch and mass variations have to be considered to complete the full dynamic and kinematics set of equations. It has to be pinpointed that for this benchmark problem, only specific fuel consuption is considered on mass variation equation.
+Eventually, pitch and mass variations have to be considered to complete the full dynamic and kinematics set of equations. It has to be pinpointed that for this benchmark problem, only specific fuel consumption is considered on mass variation equation.
 
 \begin{equation}
     \frac{d\theta}{dt} \coloneqq \dot{\theta} = q
@@ -83,27 +83,27 @@ Eventually, pitch and mass variations have to be considered to complete the full
 As a clarification on the equation terms, below are the complete formulation of aerodynamic forces and moments, with all proper aerodynamic coefficients considered. 
 
 \begin{equation}
-    L \coloneqq \frac{1}{2}\bar{q}SC_L = \frac{1}{2}\bar{q}S\left(C_{L,0} + C_{L,\alpha}\alpha + C_{L,\delta_e}\delta_e\right)
+    L \coloneqq \frac{1}{2}\bar{q}SC_L = \frac{1}{2}\bar{q}S\left(C_{L_0} + C_{L_\alpha}\alpha + C_{L_{\delta_e}}\delta_e\right)
     \label{eq:Lift}
 \end{equation}
 
 \begin{equation}
-    D \coloneqq \frac{1}{2}\bar{q}SC_D = \frac{1}{2}\bar{q}S\left[C_{D,0} + k\left(C_{L,0} + C_{L,\alpha}\alpha + C_{L,\delta_e}\delta_e\right)^2\right]
+    D \coloneqq \frac{1}{2}\bar{q}SC_D = \frac{1}{2}\bar{q}S\left[C_{D_0} + k\left(C_{L_0} + C_{L_\alpha}\alpha + C_{L_{\delta_e}}\delta_e\right)^2\right]
     \label{eq:Drag}
 \end{equation}
 
 \begin{equation}
-    C_m \coloneqq C_{m,0} + C_{m,\alpha}\alpha + C_{m,\delta_e}\delta_e
+    C_m \coloneqq C_{m_0} + C_{m_\alpha}\alpha + C_{m_{\delta_e}}\delta_e
     \label{eq:Moment}
 \end{equation}
 
 \section{Mathematical Formulation of the OCP}
-Next step is to transform the problem above into a set of equations using the \gls{oc} notation. To do so, the three phases of optimisation problems descriptions are used, which means that the problem has to be modelled, constrained and then optimised.
+Next step is to transform the problem above into a set of equations using the \gls{oc} notation. To do so, the three phases of optimisation problems description are used, which means that the problem has to be modelled, constrained and then optimised.
 
 \subsection{States and controls}
 First step is modelisation, which means that state and control variables have to be defined for the problem. Since the benchmark problem is a level-flight cruise trajectory, the states involved in the previous equations of motion are: local-horizon position ($x$,$z$); body velocities ($u$,$w$); pitch ($\theta$); pitch rate ($q$); and mass ($m$). Those seven states are the ones that allow describing the trajectory and \gls{uav} condition through time, since they indicate position, attitude and mass.
 
-The previous states are defined for a bidimensional (2D) frame using only longitudinal stability equations, as has been indicated before. Therefore, the controls that shall be used are no other ones but \gls{tps}, denoted as $\delta_{TPS}$, and elevator deflection, denoted as $\delta_e$. That pair of control variables are the minimum controllable conditions for the longitudinal flight given the conditions of the problem and they are responsible of controlling speed and altitude, respectively -i.e \gls{uav} speed is controlled by variations in \gls{tps} while \gls{uav} altitude is controlled by $\delta_e$ variations-.
+The previous states are defined for a bidimensional (2D) frame using only longitudinal stability equations, as has been indicated before. Therefore, the controls that shall be used are no other ones but \gls{tps}, denoted as $\delta_{TPS}$, and elevator deflection, denoted as $\delta_e$. That pair of control variables are the minimum controllable conditions for the longitudinal flight given the conditions of the problem and they are responsible of controlling speed and altitude, respectively -i.e \gls{uav} speed is controlled by $\delta_{TPS}$ variations while \gls{uav} altitude is controlled by $\delta_e$ variations-.
 
 Eventually, the state and control vector can be constructed, followed by its form using state space notation -where $x_i$ are states and $u_i$ are controls-. Notice that the order followed to construct the vector has been states variables followed by control variables; nevertheless, is indistinct which state or control goes first in each group. The order has been chosen by convenience for later \gls{nlp} formulation.
 
@@ -136,7 +136,7 @@ Eventually, the state and control vector can be constructed, followed by its for
 \end{equation}
 
 \subsection{Constraints and bounds}
-After the state space is set, the constraints can be defined, following second step on \gls{ocp} definition. At this point, previous remarks on constraint definition towards \gls{ocp} notation could be recovered. That means that constraints are described following the prestablished order, which starts by dynamic constraints. Since dynamic constraints have been defined in section \ref{sec:EOM}, they have to be transcribed using state space notation, which led to the following set of expressions.\footnote{From now on, sine operation $\sin()$ is denoted as $s$ and, cosine operation $\cos()$ is denoted as $c$, as clarified in nomenclature section This has been done for an easy readability of some equations and operations.}
+After the state space is set, the constraints can be defined, following the second step on \gls{ocp} definition. At this point, previous remarks on constraint definition towards \gls{ocp} notation could be recovered. That means that constraints are described following the prestablished order, which starts by dynamic constraints. Since dynamic constraints have been defined in section \ref{sec:EOM}, they have to be transcribed using state space notation, which led to the following set of expressions.\footnote{From now on, sine operation $\sin()$ is denoted as $s$ and, cosine operation $\cos()$ is denoted as $c$, as clarified in nomenclature section This has been done for an easy readability of some equations and operations.}
 
 \begin{equation}
 \begin{split}
@@ -200,7 +200,7 @@ The set of equations above can be summarised to a reduced version if RHS is expr
 \label{eq:Benchmark_Dynamic_Constraints}
 \end{equation}
 
-Once dynamic constraints have been fully described, its time to set the path constraints and define them using state space notation. As said before, path constraints are the ones that could affect state and control trajectories during all time domain. For a level-flight cruise trajectory it is important to introduce a target speed ($V_{tp}$) and a target altitude ($h_{ref}$) as a constraints, see expressions below. It has to be pinpointed that flight path angle could be introduced as a constraint, but it has been chosen to introduce it later as a penalty into cost functional definition. Both constraints for target speed and target altitude are introduced using inequality expressions, so as not to be too restrictive with the problem -i.e the expressions has to introduce some margins with target constant values-.
+Once dynamic constraints have been fully described, its time to set the path constraints and define them using state space notation. As said before, path constraints are the ones that could affect state and control trajectories during all time domain. For a level-flight cruise trajectory it is important to introduce a target speed ($V_{tp}$) and a target altitude ($h_{ref}$) as a constraints, see expressions below. It has to be pinpointed that flight path angle ($\gamma$) could be introduced as a constraint, but it has been chosen to introduce it later as a penalty into cost functional definition. Both constraints for target speed and target altitude are introduced using inequality expressions, so as not to be too restrictive with the problem -i.e the expressions have to introduce some margins with target constant values-.
 
 \begin{equation}
     \begin{cases}
@@ -232,7 +232,7 @@ Transcribing the equations using state space notation led to the following set o
     \label{eq:Benchmark_Path_Constraints}
 \end{equation}
 
-At this point, the only remaining constraints are initial state conditions, which will be enforced to a known state value. Thus, the following equations will have to be enforced also.
+At this point, the only remaining constraints are initial state conditions, which will be enforced to a known state value. Thus, the following equations will have to be enforced.
 
 \begin{equation}
     \mathbf{\varphi_{0}} \coloneqq
@@ -304,7 +304,7 @@ Third phase of an \gls{ocp} definition is defining which variables have to be op
         J_{\dot{\gamma}} \coloneqq \left(q - \frac{\dot{w}u - \dot{u}w}{u^2 + w^2}\right)^2 / \dot{\gamma}_{max}^2 = \left(x_3 - \frac{\dot{x_2}x_1 - \dot{x_1}x_2}{x_1^2 + x_2^2}\right)^2 / \dot{\gamma}_{max}^2
     \end{equation}
 
-    \item Eventually, control variable rates minimisation have been introduced using a quadratic penalty, in each case, for preventing a bang-bang -rapidly control changing- behaviour, since it is a non-feasible behaviour in real systems. Furthermore, control rate minimisation is the normal criteria for real pilots when facing low-altitude flight manoeuvres, also known as "lazy pilot" implementation. This implementation basically reduces pilot workload while preventing overcontrol risks, as stated by Stengel in \cite{stengel1994optimal}. The cost expressions for both \gls{tps} and elevator deflection are the following ones, respectively -$t_{k+1}$ and $t_{k}$, refer to next and actual time-instants-.
+    \item Eventually, control variable rates minimisation have been introduced using a quadratic penalty, in each case, for preventing a bang-bang -rapidly control changing- behaviour, since it is a non-feasible behaviour in real systems. Furthermore, control rate minimisation is the normal criteria for real pilots when facing low-altitude flight manoeuvres, also known as the "lazy pilot" implementation. This implementation basically reduces pilot workload while preventing overcontrol risks, as stated by Stengel in \cite{stengel1994optimal}. The cost expressions for both \gls{tps} and elevator deflection are the following ones, respectively -$t_{k+1}$ and $t_{k}$, refer to next and actual time-instants-.
     
     \begin{equation}
     J_{\dot{\delta}_{TPS}} \coloneqq \frac{\left(\delta_{TPS}^{k+1} - \delta_{TPS}^{k}\right)^2}{\Delta t} = \frac{\left(u_1^{k+1} - u_1^{k}\right)^2}{\Delta t}
@@ -431,14 +431,14 @@ The algorithm that has been implemented to solve the \gls{nlp} problem using \gl
 \section{Results}
 
 \section{Addition of the Free-End Condition}
-Next step in \gls{ocp} formulation is to set the free-end condition to the problem stated before. Free-end condition implies adding end time ($t_f$) as a control variable and to let the solver compute its value as part of the dynamic constraints, path constraints -if needed specific end-time conditions- and as part of the cost functional -at this point, terminal cost or Mayer term, has to be remembered-. 
+Next step in \gls{ocp} formulation is to set the free-end condition to the problem stated before. Free-end condition implies adding end-time ($t_f$) as a control variable and to let the solver compute its value as part of the dynamic constraints, path constraints -if needed specific end-time conditions- and as part of the cost functional -at this point, terminal cost or Mayer term, has to be remembered-. 
 
-To do so, the following section will include the modifciation on the \gls{nlp} formulation and in the implementation made. Afterwards, the results of the state and control trajectories for a free-end condition will be presented.
+To do so, the following section will include the modification on the \gls{nlp} formulation and on the implementation made. Afterwards, the results of the state and control trajectories for a free-end condition will be presented.
 
 \subsection{NLP formualtion and implementation}
-As said before, end time participates in all trapezoidal schemes -so it participates in all dynamic equations-, can participate as path constraints when a terminal state condition is set and, participates into the cost functional implicitly at running cost, because there is also a trapezoidal scheme integrated, and explicitly as a terminal cost. In this case, it would be implemented as both implicit and explicit forms into cost functional. 
+As said before, end-time participates in all trapezoidal schemes -so it participates in all dynamic equations-, can participate as path constraints when a terminal state condition is set and, participates into the cost functional implicitly at running cost, because there is also a trapezoidal scheme integrated, and explicitly as a terminal cost. In this case, it would be implemented as both implicit and explicit forms into cost functional. 
 
-Firstly, the state and control vector will incorporate a unique symbolic term or control variable that will refer to the final time ($u_{t_F}$). It would also have lower and upper bounds associated, so the modification rest like this:
+Firstly, the state and control vector will incorporate a unique symbolic term or control variable that will refer to the final time ($t_F$). It would also have lower and upper bounds associated, so the modification rest like this:
 
 \begin{equation}
     \mathbf{w} \coloneqq 
@@ -458,7 +458,7 @@ Firstly, the state and control vector will incorporate a unique symbolic term or
     \label{eq:Benchmark_Plus_NLP_w}
 \end{equation}
 
-Secondly, the constraints could add some path constraints referring to final state conditions. Those, would only be evaluated at final node N. In this case, the following equations have been added tot the path constraints block of constraints as they indicate the minimum and maximum distance to perform the level-flight cruise trajectory -the expressions are also expressed along to previous path constraints and integrated with all \gls{nlp} constraints vector-. 
+Secondly, the constraints could add some path constraints referring to final state conditions. Those, would only be evaluated at final node N. In this case, the following equations have been added to the path constraints block of constraints as they indicate the minimum and maximum distance to perform the level-flight cruise trajectory -the expressions are also expressed along to previous path constraints and integrated with all \gls{nlp} constraints vector-. 
 
 \begin{equation}
     \mathbf{h}_{dist} \coloneqq 
@@ -494,7 +494,7 @@ Secondly, the constraints could add some path constraints referring to final sta
     \label{eq:Benchmark_Plus_NLP_g}
 \end{equation}
 
-Next, the cost functional integrates terminal cost term, only applies to end time, and running cost term, corrected by adding $t_F$ and restringing the problem to $N-1$ time-intervals with a fixed value of nodes, since time-step is now defined as $\Delta t = 1 / (N-1)$.
+Next, the cost functional integrates terminal cost term, only applies to end-time, and running cost term, corrected by adding $t_F$ and restringing the problem to $N-1$ time-intervals with a fixed value of nodes, since time-step is defined as $\Delta t = 1 / (N-1)$.
 
 \begin{equation}
     J(\mathbf{w}) \coloneqq \frac{\Delta t \cdot t_F}{2}\sum_{k=0}^{N-1} \left(L^k + L^{k+1}\right) + w_{t_F} \cdot t_F
