@@ -1,20 +1,49 @@
-\chapter{Firefighting Manoeuvre: Description and Implementation}
+\chapter{Firefighting Manoeuvre: Modelling and Implementation}
+The following chapter includes a brief description of the firefighting manoeuvre that has to be modelled as a \gls{ocp} in order to find the optimal trajectory to perform the water-discharge. Consequently, the \gls{nlp} formulation and implementation is also included right after the \gls{ocp} definition. Eventually, the whole algorithm's framework is presented.
 
-\section{CONOPS and User Case}
+\section{User Case and CONOPS}
+Firstly, the user case has to be presented. As stated on the thesis' motivations, this project arises from internal needs in Singular Aircraft, specifically from the necessity to implement a more autonomous and safer planification of the water-discharge that Flyox has to follow during routinaire firefighting operations. These leads to the algorithm that is defined along all the chapter, starting from the following \gls{conops} diagram. 
 
-\section{OCP Formulation}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.66\linewidth]{images/conops_manoeuvre.jpg}
+    \caption{CONOPS of the firefighting manoeuvre for Flyox operations. Own source.}
+    \label{fig:CONOPS}
+\end{figure}
+
+ As can be seen, the \gls{uav} starts from a cruising level at 2000ft \gls{asl} from the \gls{sp}. First stage is a descent stage (STG1) from cruising level to reference altitude ($h_{ref}$), which is the altitude from where the discharge will be done to extinguish the flames, located at \gls{tp}. Once the aircraft is levelled at reference altitude, the discharge is performed along a pre-defined distance named discharge distance ($d_{d}$). \gls{tp} is located at a known fraction $f_{TP}$ of this pre-defined distance. During the water-drop stage (STG2), the aircraft levels it flight, performs the discharge and correct its attitude to reach level-flight condition again. Thirdly, the \gls{uav} enters the climb stage (STG3) and climbs safely to cruising level 2000ft \gls{asl}, eventually reaching the \gls{ep} where the firefighting manoeuvre ends. It has to be pinpointed that the horizontal distance where \gls{sp} and \gls{ep} are located are defined radially from \gls{tp} using an entry ($R_{ENTRY}$) and exit radius ($R_{EXIT}$), respectively.
+
+All the mentioned parameters have been summarised in the following table. It should be noted that these parameters can be modified to accommodate any feasible scenario, supporting the main objective: a path planning algorithm designed to perform firefighting operations safely and with a higher autonomous grade.
+
+\begin{table}[H]
+    \centering
+    \caption{Summary of the firefighting manoeuvre involved parameters per stages. Own source.}
+    \begin{tabular}{llcc}
+    \hline
+        Parameter & Description & Stage & Units \\ \hline
+        $t_{d,min}$ & \begin{tabular}[c]{@{}l@{}}Minimum time needed to perform the water-discharge \\ safely.\end{tabular} & 2 & {[}s{]} \\
+        $t_{d,max}$ & \begin{tabular}[c]{@{}l@{}}Maximum time needed to perform the water-discharge \\ safely.\end{tabular} & 2 & {[}s{]} \\
+        $t_d$ & \begin{tabular}[c]{@{}l@{}}Discharge time. Bounded by $t_{d,min}$ and $t_{d,max}$.\\ $t_{d,min} \leq t_d \leq t_{d,max}$\end{tabular} & 2 & {[}s{]} \\
+        $V_{TP}$ & Desired velocity to discharge with safe and accurately. & 2 & {[}m/s{]} \\
+        $d_d$ & \begin{tabular}[c]{@{}l@{}}Discharge distance. Bounded by $d_{d,min}$ and $d_{d,max}$. \\ $d_{d,min} \leq d_d \leq d_{d,max}$\end{tabular} & 2 & {[}m{]} \\
+        $d_{d,min}$ & Minimum discharge distance needed. & 2 & {[}m{]} \\
+        $d_{d,max}$ & Maximum discharge distance. & 2 & {[}m{]} \\
+        $f_{TP}$ & Fraction of $d_{d,min}$ where TP is located. & 2 & {[}-{]} \\
+        $h_{cruise}$ & Cruising level altitude. & - & {[}m{]} \\
+        $h_{ref}$ & Level-flight altitude from where water is discharged. & - & {[}m{]} \\
+        $R_{ENTRY}$ & Horizontal distance between TP and SP. & 1 \& 2 & {[}m{]} \\
+        $R_{EXIT}$ & Horizontal distance between TP and EP. & 2 \& 3 & {[}m{]} \\
+        TP & Target Point. & 2 & {[}-{]} \\
+        SP & Starting Point. & 1 & {[}-{]} \\
+        EP & Exit Point. & 3 & {[}-{]} \\ \hline
+    \end{tabular}
+    \label{tab:FFM_Parameters}
+\end{table}
+\section{OCP Formulation and NLP Implementation}
 
 \subsection{Descent stage (STG1)}
 
-\subsection{Cruise stage with water-discharge (STG2)}
-
-\subsection{Climb stage (STG3)}
-
-\section{NLP Formulation}
-
-\subsection{Descent stage (STG1)}
-
-\subsection{Cruise stage with water-discharge (STG2)}
+\subsection{Level-flight stage with water-discharge (STG2)}
 
 \subsection{Climb stage (STG3)}
 
