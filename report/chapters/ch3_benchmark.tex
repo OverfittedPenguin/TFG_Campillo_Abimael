@@ -83,12 +83,12 @@ Eventually, pitch and mass variations have to be considered to complete the full
 As a clarification on the equation terms, below are the complete formulation of aerodynamic forces and moments, with all proper aerodynamic coefficients considered. 
 
 \begin{equation}
-    L \coloneqq \frac{1}{2}\bar{q}SC_L = \frac{1}{2}\bar{q}S\left(C_{L_0} + C_{L_\alpha}\alpha + C_{L_{\delta_e}}\delta_e\right)
+    L \coloneqq \bar{q}SC_L = \bar{q}S\left(C_{L_0} + C_{L_\alpha}\alpha + C_{L_{\delta_e}}\delta_e\right)
     \label{eq:Lift}
 \end{equation}
 
 \begin{equation}
-    D \coloneqq \frac{1}{2}\bar{q}SC_D = \frac{1}{2}\bar{q}S\left[C_{D_0} + k\left(C_{L_0} + C_{L_\alpha}\alpha + C_{L_{\delta_e}}\delta_e\right)^2\right]
+    D \coloneqq \bar{q}SC_D = \bar{q}S\left[C_{D_0} + k\left(C_{L_0} + C_{L_\alpha}\alpha + C_{L_{\delta_e}}\delta_e\right)^2\right]
     \label{eq:Drag}
 \end{equation}
 
@@ -298,7 +298,7 @@ Third phase of an \gls{ocp} definition is defining which variables have to be op
         J_{h} \coloneqq (\bar{h} - 1)^2 = \left(\frac{h - h_{ref}}{h_{ref}}\right)^2 = \left(\frac{-x_6 - h_{ref}}{h_{ref}}\right)^2
     \end{equation}
 
-    \item Thirdly, the minimisation of flight path angle rate ($\dot{\gamma}$) prevents the aircraft from rapidly oscillating up and down while forces the solver to find a solution that is not only level ($\gamma \approx 0$) but also steady ($\dot{\gamma} \approx 0$). The full derivation of the expression below can be found on annex \textcolor{red}{Annex:Gamma\_Dot}, since it involves partial derivatives and a large mathematical development.
+    \item Thirdly, the minimisation of flight path angle rate ($\dot{\gamma}$) prevents the aircraft from rapidly oscillating up and down while forces the solver to find a solution that is not only level ($\gamma \approx 0$) but also steady ($\dot{\gamma} \approx 0$). The full derivation of the expression below can be found on appendix \ref{app:Gamma_Dot}, since it involves partial derivatives and a large mathematical development.
     
     \begin{equation}
         J_{\dot{\gamma}} \coloneqq \left(q - \frac{\dot{w}u - \dot{u}w}{u^2 + w^2}\right)^2 / \dot{\gamma}_{max}^2 = \left(x_3 - \frac{\dot{x_2}x_1 - \dot{x_1}x_2}{x_1^2 + x_2^2}\right)^2 / \dot{\gamma}_{max}^2

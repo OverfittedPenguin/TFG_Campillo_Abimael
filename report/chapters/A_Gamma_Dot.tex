@@ -1,0 +1,52 @@
+\chapter{Mathematical Derivation of $\dot{\gamma}$ Expression}
+\label{app:Gamma_Dot}
+
+This appendix section includes the formal mathematical derivation of the flight path angle variation ($\dot{\gamma}$), used in the definition of cost functional during benchmark problem and firefighting manoeuvre problem.
+
+Firstly, the flight path angle ($\gamma$) can be defined as the difference between the pitch angle ($\theta$) and the angle of attack -AoA- ($\alpha$), as stated below.
+
+\begin{equation}
+    \gamma \coloneqq \theta - \alpha
+    \label{eq:A_Gamma}
+\end{equation}
+
+This leads to the definition of flight path angle variation ($\dot{\gamma}$) as the time derivative of the expression above. Since both angles, pitch and AoA are defined in the same frame, the derivative can be easily defined as the difference between time derivatives.
+
+\begin{equation}
+    \dot{\gamma} \coloneqq \frac{d}{dt}(\theta - \alpha) = \frac{d \theta}{dt} - \frac{d \alpha}{dt} = \dot{\theta} - \dot{\alpha} = q - \dot{\alpha}
+    \label{eq:A_Gamma_Dot}
+\end{equation}
+
+Then $\alpha$ is defined as the $\arctan$ relation between aerodynamic velocity components ($u_a$,$w_a$), which are defined as the difference between the body velocity and the wind velocity. Nevertheless, for the application that concerns this thesis, wind velocity has been neglected on aerodynamic velocity definition and, therefore, the expression for $\alpha$ can be written as follows.
+
+\begin{equation}
+    \alpha (u_a,w_a) \coloneqq \arctan (w_a,u_a) \approx \arctan (w,u)
+    \label{eq:A_Alpha}
+\end{equation}
+
+As stated above, AoA has a relation with the body velocities ($u,w$) which implies the use of chain rule during time derivatives. Thus:
+
+\begin{equation}
+    \dot{\alpha} \coloneqq \frac{\partial \alpha}{\partial u}\frac{\partial u}{\partial t} + \frac{\partial \alpha}{\partial w}\frac{\partial w}{\partial t} = \frac{\partial \alpha}{\partial u}\dot{u} + \frac{\partial \alpha}{\partial w}\dot{w}
+    \label{eq:A_Alpha_Dot}
+\end{equation}
+
+Deriving AoA respect to the body velocities ($u,w$), the following expressions can be found.
+
+\begin{subequations}
+    \begin{align}
+        \frac{\partial \alpha}{\partial u} &\coloneqq \frac{\partial}{\partial u} \arctan (w,u) = \frac{-w}{u^2 + w^2} \\
+        \frac{\partial \alpha}{\partial w} &\coloneqq \frac{\partial}{\partial w} \arctan (w,u) = \frac{u}{u^2 + w^2}
+    \end{align}
+\end{subequations}
+
+Eventually, the relations can be substituted into the whole expression and flight path angle variation ($\dot{\gamma}$) can be written as:
+
+\begin{equation*}
+    \dot{\gamma} \coloneqq \dot{\theta} - \dot{\alpha} = q - \left(\frac{-w}{u^2 + w^2}\dot{u} + \frac{u}{u^2 + w^2}\dot{w}\right) = q - \frac{u\dot{w} - w\dot{u}}{u^2 + w^2}\dot{u}
+\end{equation*}
+
+\begin{equation}
+    \dot{\gamma} \coloneqq q - \frac{\dot{w}u - \dot{u}w}{u^2 + w^2}
+    \label{eq:A_Gamma_Dot_Final}
+\end{equation}
