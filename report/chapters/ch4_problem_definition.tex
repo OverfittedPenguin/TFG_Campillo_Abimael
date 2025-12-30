@@ -2,7 +2,7 @@
 The following chapter includes a brief description of the firefighting manoeuvre that has to be modelled as an \gls{ocp} in order to find the optimal trajectory to perform the water-discharge. Consequently, the \gls{nlp} formulation and implementation is also included right after the \gls{ocp} definition. Eventually, the whole algorithm's framework is presented.
 
 \section{User Case and CONOPS}
-Firstly, the user case has to be presented. As stated on the thesis' motivations, this project arises from internal needs in Singular Aircraft, specifically from the necessity to implement a more autonomous and safer planification of the water-discharge that the \gls{uav} Flyox has to follow during routinaire firefighting operations. This leads to the algorithm that is defined at the end of this chapter, starting from the following \gls{conops} diagram. 
+Firstly, the user case has to be presented. As stated on the thesis' motivations, this project arises from internal needs in Singular Aircraft, specifically from the need to implement a more autonomous and safer planification of the water-discharge that the \gls{uav} Flyox has to follow during routinaire firefighting operations. This leads to the algorithm that is defined at the end of this chapter, starting from the following \gls{conops} diagram. 
 
 \begin{figure}[H]
     \centering
@@ -13,7 +13,7 @@ Firstly, the user case has to be presented. As stated on the thesis' motivations
 
  As can be seen, the \gls{uav} starts from a cruising level at 2000ft \gls{asl} from the \gls{sp}. First stage is a descent stage (STG1) from cruising level to reference altitude ($h_{ref}$), which is the altitude from where the discharge will be done to extinguish the flames, located at \gls{tp}. Once the aircraft is levelled at reference altitude, the discharge is performed along a pre-defined distance named discharge distance ($d_{d}$). \gls{tp} is located at a known fraction $f_{TP}$ of this pre-defined distance. During the water-drop stage (STG2), the aircraft levels its flight, performs the discharge and correct its attitude to reach level-flight condition again. Thirdly, the \gls{uav} enters the climb stage (STG3) and climbs safely to cruising level 2000ft \gls{asl}, eventually reaching the \gls{ep} where the firefighting manoeuvre ends. It has to be pinpointed that the horizontal distances where \gls{sp} and \gls{ep} are located are defined radially from \gls{tp} using an entry ($R_{ENTRY}$) and exit radius ($R_{EXIT}$), respectively.
 
-All the mentioned parameters have been summarised in the following table. It should be noted that these parameters can be modified to accommodate any feasible scenario, supporting the main objective: a path planning algorithm designed to perform firefighting operations safely and with a higher autonomous grade.
+All the mentioned parameters have been summarised in the following table. It should be noted that these parameters can be modified to accommodate any feasible scenario, supporting the main objective: a path planning algorithm designed to perform firefighting operations safely and with a higher grade of autonomy.
 
 \begin{table}[H]
     \centering
@@ -43,12 +43,12 @@ All the mentioned parameters have been summarised in the following table. It sho
 \section{OCP Formulation and NLP Implementation}
 This section contains the formulation of each manoeuvre's stage as an \gls{ocp} and the subsequent implementation as \gls{nlp} separated problems. This means that for each stage a \gls{nlp} problem will be defined and solved. Initial conditions for STG2 and STG3 will be the linking conditions for the overall manoeuvre, since they will be enforced to be the end-state from previous stage.
 
-It has to be pinpointed that any of the stages dedicated sections will contain the definition of the dynamic equations, because they are the same as the ones defined for the benchmark case, in section \ref{sec:Benchmark_Constraints_Bounds} see from expression \eqref{eq:Benchmark_EOM_1} to \eqref{eq:Benchmark_EOM_7}. In case of initial state constraints, its definition does not change and therefore, they will not be added on this section. Specifically, the only change is the initial value for state and control vector, which will be the linking condition between stages, but not its formal definition. Moreover, states and controls vectors -and simple bounds by extension- will not be specified, since they are the same as the ones explained for free-end benchmark addition; see expression \eqref{eq:Benchmark_Plus_NLP_w}. 
+It has to be pinpointed that any of the stages dedicated sections will not contain the definition of the dynamic equations, because they are the same as the ones defined for the benchmark case, referring section \ref{sec:Benchmark_Constraints_Bounds} from expression \eqref{eq:Benchmark_EOM_1} to \eqref{eq:Benchmark_EOM_7}. In case of the initial state constraints, its definition does not change and therefore, they will not be added on this section. Specifically, the only change is the initial value for state and control vector, which will be the linking condition between stages, but not its formal definition. Moreover, state and control vectors -and simple bounds by extension- will not be specified, since they are the same as the ones explained for free-end addition to benchmark problem; see expression \eqref{eq:Benchmark_Plus_NLP_w}. 
 
-Alternatively, the path constraints and cost functionals are the major changes per stage. Eventually, new constraints vector, constraint bounds vectors and cost functionals will be defined per stage. Wording will focus on that. Eventually, each stage constitutes a free-end \gls{nlp} problem using expression \eqref{eq:Benchmark_Plus_NLP}.
+Alternatively, the path constraints and cost functionals are the major changes per stage. Eventually, new constraint vector, constraint bounds vectors and cost functionals will be defined per stage. Wording will focus on that. Eventually, each stage constitutes a free-end \gls{nlp} problem using expression \eqref{eq:Benchmark_Plus_NLP}.
 
 \subsection{Descent stage (STG1)}
-Descent stage is characterised by a ngeative flight path angle ($\gamma \leq 0$) that enforces the aircraft to decrease its altitude. In terms of the manoeuvre, it is also characterised by initial state -given by the user initial conditions- and end state at known altitude and horizontal distance. Initial state computation will be introduced at section \ref{sec:General_Framework} because, as said before, it does not have effect on mathematical formulation.
+Descent stage is characterised by a negative flight path angle ($\gamma \leq 0$) that enforces the aircraft to decrease its altitude. In terms of the manoeuvre, it is also characterised by initial state -given by the user initial conditions- and end state at known altitude and horizontal distance. Initial state computation will be introduced at section \ref{sec:General_Framework} because, as said before, it does not have effect on mathematical formulation.
 
 Then, path constraints for the descent stage are related with aerodynamic velocity limits -stall velocity $V_S$ and never-operate velocity $V_{NO}$- and with end-time altitude and horizontal distance, which have to be proper, respectively. Translating to expressions it can be written like:
 
@@ -63,7 +63,7 @@ g_{path,1} \coloneqq
     \label{eq:STG1_Path_OCP}
 \end{equation}
 
-Converting the expressions to \gls{nlp} notation using the state space previously defined, the equations can be stated as follows. It has to be remarked that $\mathbf{d}$ and $\mathbf{\varphi_0}$ are the dynamic constraints vector and initial state constraints vector, respectively -see expression \eqref{eq:Benchmark_NLP_g} and its meaning-.
+Converting the expressions to \gls{nlp} notation, the equations can be stated as follows. In addition, $\mathbf{d}$ and $\mathbf{\varphi_0}$ are the dynamic constraints vector and initial state constraints vector, respectively -see expression \eqref{eq:Benchmark_NLP_g} and its meaning-.
 
 \begin{equation}
     \mathbf{h}_{1} \coloneqq 
@@ -110,10 +110,10 @@ Converting the expressions to \gls{nlp} notation using the state space previousl
     \label{eq:STG1_NLP_g}
 \end{equation}
 
-Once the constraints have been defined, it is time to express the cost functional that governs descent stage. In this case, it includes both running and terminal cost terms. Terminal cost only includes the end-time penalisation, as expressed in equation \eqref{eq:STG1_Cost}. Referring to running cost, it is made by four(4) different penalties, which are the following ones.
+Once the constraints have been defined, it is time to express the cost functional that governs descent stage. In this case, it includes both running and terminal cost terms. Terminal cost only includes the end-time penalisation, as expressed in equation \eqref{eq:STG1_Cost}. Referring to running cost, it is made by four (4) different penalties, which are the following ones.
 
 \begin{itemize}
-    \item Firstly, the minimisation of error between the current and desired flight path angle ($\gamma$) is introduced as a quadratic penalty in the objective function. This penalty encourages the solver to mantain the desired descent rate whenever possible. The expression introduced in the running cost is the following one, where $\bar{\gamma}$ is the normalised $\gamma$ term using $\gamma_{d}$ -which is in fact $\gamma_{min}$-.
+    \item Firstly, the minimisation of error between the current and desired flight path angle ($\gamma - \gamma_d$) is introduced as a quadratic penalty in the objective function. This penalty encourages the solver to mantain the desired descent rate whenever possible. The expression introduced in the running cost is the following one, where $\bar{\gamma}$ is the normalised $\gamma$ term using $\gamma_{d}$ -which is in fact $\gamma_{min}$-.
     
     \begin{equation}
         J_{\gamma} \coloneqq (\bar{\gamma}-1)^2 = \left(\frac{\gamma - \gamma_{d}}{\gamma_{d}}\right)^2 = \left(\frac{\theta - \alpha - \gamma_{d}}{\gamma_{d}}\right)^2 = \left(\frac{x_4 - \alpha(x_1,x_2)}{\gamma_{d}}-1\right)^2
@@ -151,9 +151,9 @@ Then, the formal expression of running cost and overall cost objective for desce
 \end{equation}
 
 \subsection{Level-flight stage with water-discharge (STG2)}
-The second stage is charcaterised by a level-flight cruise stage where a sudden change of mass is produced -water is discharge over the fire flames-. The rest of properties of this stage are the ones defined on benchmark problem, which was essentially levelled flight ($\gamma =0$). Thus, no changes have been made to the \gls{nlp} formulation, in terms of path constraints or cost objective function. 
+The second stage is characterised by a level-flight cruise stage where a sudden change of mass is produced -water is discharged over the fire flames-. The rest of properties of this stage are the ones defined on benchmark problem, which was essentially level-flight condition ($\gamma =0$). Thus, no changes have been made to the \gls{nlp} formulation, in terms of path constraints or cost objective function. 
 
-The only change is produced at mass related dynamic constraint, all other dynamic constraints remain equal. Since there is a sudden mass variation, the dynamic equation associated to $\dot{m}$ has to reflect this variation. After testing multiple solutions and approaches, it was decided to introduce a piecewise-defined function that incorporates water discharge only in a specific section defined based on the detection that the aircraft is above the discharge point. It can be mathematically defined as:
+The only change is produced at mass related dynamic constraint, all other dynamic constraints remain equal. Since there is a sudden mass variation, the dynamic equation associated to $\dot{m}$ has to reflect this variation. After testing multiple solutions and approaches, it has been decided to introduce a piecewise-defined function that incorporates water discharge only based on the detection that the aircraft is above the discharge point. It can be mathematically defined as:
 
 \begin{equation}
     \dot{x}_7 \coloneqq 
@@ -165,12 +165,12 @@ The only change is produced at mass related dynamic constraint, all other dynami
     \label{eq:STG2_Dynamic_Mass_Variation}
 \end{equation}
 
-Function above can be explained using distances because each stage has been defined as a separated problem and, therefore, distances are realtive. Esentially, the mass variation is only \gls{sfc} when the \gls{uav} is not discharging water. In addition, discharge rate is applied only when target point (TP) is detected and only for a period equal to discharge time ($t_d$). In other words, once the problem starts, discharge is initiated at a distance equal to TP and it is finalised once the open-gates distance is over, defining this distance as the flying distance from $t = f_{TP}\cdot t_{2,min}$ to $t = f_{TP}\cdot t_{2,min} + t_d$.
+Function above can be explained using distances because each stage has been defined as a separated problem and, therefore, distances are realtive. Essentially, the mass variation is only \gls{sfc} when the \gls{uav} is not discharging water. In addition, discharge rate is applied only when target point (TP) is detected and only for a period equal to discharge time ($t_d$). In other words, once the problem starts, discharge is initiated at a distance equal to TP and it is finalised once the open-gates distance is over, defining this distance as the flying distance from $t = f_{TP}\cdot t_{2,min}$ to $t = f_{TP}\cdot t_{2,min} + t_d$.
 
 \subsection{Climb stage (STG3)}
 Climb stage is the antagonist of descent stage; thus, it is defined by a positive flight path angle ($\gamma \geq 0$) that enforces gaining altitude. As happened in the previous two stages, it is also characterised by a end state. In addition, it has to be pinpointed that climb stage is the most sensitive stage in the whole manoeuvre because velocity can easily be near the stall velocity and sometimes controls tend to the limit in order to achieve the objective.
 
-Similarly to descent stage, the major changes have been produced in path constraints and in cost objective function. Therefore, state and control vector, dynamic constraints and initial state constraints remain equal to the ones defined in section \ref{sec:Benchmark_Constraints_Bounds} and they will only appear reffered on this section.
+Similarly to descent stage, the major changes that have been produced in path constraints and in cost objective function. Therefore, state and control vector, dynamic constraints vector and initial state constraints vector remain equal to the ones defined in section \ref{sec:Benchmark_Constraints_Bounds} and they will only appear reffered on this section.
 
 In this case, the path constraints are similar to the ones defined in descent stage but with minor changes in end-time constraints. Following the structure previously used, the path constraints in \gls{ocp} notation are:
 
@@ -233,16 +233,16 @@ Then, applying the transformation into \gls{nlp} notation it rests like the expr
     \label{eq:STG3_NLP_g}
 \end{equation}
 
-Next, the terms that form part of the running cost are explained. In this case, running cost is made up to five (5) different penalties. By order of appearance:
+Next, the terms that form part of the running cost are explained. In this case, running cost is made up to five (5) different penalties. 
 
 \begin{itemize}
-    \item In first place, the minimisation of flight path angle rate ($\dot{\gamma}$) has been added too in order to prevent huge oscillations and to provide smoothness on flight angle profile, as done in the previous stages. In this case, normalisation of gamma has been done using $\gamma_{max}$, as done in benchmark problem and in level-flight stage (STG2).
+    \item In first place, the minimisation of flight path angle rate ($\dot{\gamma}$) has been added too in order to prevent huge oscillations and to provide smoothness on flight angle profile, as done in the previous stages. In this case, normalisation of flight path angle rate has been done using $\gamma_{max}$, as done in benchmark problem and in level-flight stage (STG2).
     
     \begin{equation}
         J_{\dot{\gamma}} \coloneqq \left(q - \frac{\dot{w}u - \dot{u}w}{u^2 + w^2}\right)^2 / \dot{\gamma}_{max}^2 = \left(x_3 - \frac{\dot{x_2}x_1 - \dot{x_1}x_2}{x_1^2 + x_2^2}\right)^2 / \dot{\gamma}_{max}^2
     \end{equation}
 
-    \item In second place, an extra protection has been added in terms of the stall angle ($\alpha_{stall}$. In this case, $\alpha$ has been penalised quadratically once it enters the warning zone -defined using a 25\% safety margin in stall angle-. To prevent and avoid angle-of-attack stall, the solver is forced to prioritise lift-force over aggressive manoeuvring. It ensures the aircraft maintains a sufficient margin from the aerodynamic stall regime during the ascent stage. For the penalty defined below, margin is $\alpha_{mg} \coloneqq 0.25\cdot\theta_{max}$ and safe angle is $\alpha_{sf} \coloneqq 0.75\cdot\theta_{max}$ -in this case $\theta_{max}$ has been used as $\alpha_{stall}$ for simplicity-.
+    \item In second place, an extra protection has been added in terms of the stall angle ($\alpha_{stall}$). In this case, $\alpha$ has been penalised quadratically once it enters the warning zone -defined using a 25\% safety margin in stall angle-. To prevent and avoid angle-of-attack stall, the solver is forced to prioritise lift-force over agressive manoeuvres. It ensures the aircraft maintains a sufficient margin from the aerodynamic stall regime during the ascent stage. For the penalty defined below, margin is $\alpha_{mg} \coloneqq 0.25\cdot\theta_{max}$ and safe angle is $\alpha_{sf} \coloneqq 0.75\cdot\theta_{max}$ -in this case $\theta_{max}$ has been used as $\alpha_{stall}$ for simplicity-.
     
     \begin{equation} 
         J_{sp} \coloneqq \left( \frac{\max[0, \alpha(u,w) - \alpha_{sf}]}{\alpha_{mg}} \right)^2  = \left( \frac{\max[0, \alpha(x_1,x_2) - \alpha_{sf}]}{\alpha_{mg}} \right)^2

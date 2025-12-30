@@ -51,7 +51,7 @@ The previous description is the formal description for the \gls{ocp}, since it c
     \item \underline{Time domain $t$:} Time domain is the closed interval of time, defined on real numbers, between initial time $t_0$ -where initial state condition is applied- and the time horizon $t_f$ -that can be fixed or free-. On \gls{ocp}, time horizon can be set to a known value if its a problem's parameter or can be free if it is set a decision variable -also called control variable- of the problem through end-time constraints or inside the cost functional.
     \item \underline{Dynamic constraints $\dot{y}$:} Dynamic equations are a set of \gls{ode}s equality constraints that describe the physics of the problem. This set of constraints are always active, which means that they apply for all time domain. 
     \item \underline{Path constraints $g[y(t),u(t),t]$:} Path contsraints are another set of expressions that apply for a given time domain and that could refer to any type of extra restrcitions to the problem. They could be equalities or inequalities that could both restrict state or controls in a determined way.
-    \item \underline{Initial state conditions $\varphi[y(t_0),u(t_0),t_0]$:} The initial state constraints are a set of equalities that restrict the initial value of states variables to a known value -the initial condition of the system is known-. They can also include restrictions for the initial value of control variables; nevertheless, it is not a common practice because the problem could be overrestricted and the solver may be unable to found a feasible solution.
+    \item \underline{Initial state conditions $\varphi[y(t_0),u(t_0),t_0]$:} The initial state constraints are a set of equalities that restrict the initial value of state variables to a known value -the initial condition of the system is known-. They can also include restrictions for the initial value of control variables; nevertheless, it is not a common practice because the problem could be overrestricted and the solver may be unable to found a feasible solution.
     \item \underline{Cost functional $J(y,u)$:} The cost functional is the cost objective function that has to be minimised to found the optimal solution. This cost is defined by two different terms that contribute differently to the whole objective: terminal and running costs. If both contributions are present, then the cost objective is defined as in its Bolza form. As clarified in \cite{BrysonHo1975}:
     \begin{itemize}
         \item Terminal cost is the contribution that only penalises the final value of state variables. Is represented by $\Phi[y(t_f),u(t_f),t_f]$ and, if cost objective $J(y,u) = \Phi[y(t_f),t_f]$, it is said that the whole cost functional is in its Mayer form.
@@ -112,7 +112,7 @@ At this point, a trapezoidal scheme is proposed to be used on the numerical appr
         & h_{k} \coloneqq t_{k+1} -t_{k}\\
         & L_{k} \coloneqq L[ y(t_{k} ),u(t_{k} ),t_{k}]\\
         & L_{k+1} \coloneqq L[ y(t_{k+1} ),u(t_{k+1} ),t_{k+1}]\\
-        & t_{k} \ \text{for each} \ k\in [0,N-1]
+        & k\in [0,N-1]
     \end{aligned}
     \label{eq:DCM_Running_Cost}
 \end{equation}
@@ -212,7 +212,7 @@ The \gls{kkt} conditions are stationarity, complementary slackness, primal feasa
     \label{eq:KKT_Dual_Inf}
 \end{equation}
 
-On its part, the transversality conditions are the boundary conditions for the co-state variables $\lambda$. They are a necessary condition for optimisation in state free-end problems, which means that there's no end known for the trajectory. These transversality conditions can be defined as the existence of a n-vectorial function of the co-state variables $\lambda (t)$ and a m-vectorial function $\nu (t)$ such that the Hamiltonian function $ H(\lambda,\nu,t)$, see equation \eqref{eq:Hamiltonian}, can be defined like in a boundary value problem in his canonical form with \gls{ode}s in all time domain $t_{0} \leq t\leq t_f$ \cite{Stryk1992}\cite{Leonard1992}.
+On its part, the transversality conditions are the boundary conditions for the co-state variables $\lambda$. They are a necessary condition for optimisation in state free-end problems, which means that there is no end known for the trajectory. These transversality conditions can be defined as the existence of a n-vectorial function of the co-state variables $\lambda (t)$ and a m-vectorial function $\nu (t)$ such that the Hamiltonian function $ H(\lambda,\nu,t)$, see equation \eqref{eq:Hamiltonian}, can be defined like in a boundary value problem in his canonical form with \gls{ode}s in all time domain $t_{0} \leq t\leq t_f$ \cite{Stryk1992}\cite{Leonard1992}.
 
 \begin{equation}
     H\ (\lambda ,\nu ,t)\coloneqq\lambda ^{T} f+\nu ^{T} g
@@ -303,7 +303,7 @@ At this point, optimality error of the barrier problem can be defined using \gls
     \label{eq:BP_Error}
 \end{equation}
 
-The expression above is used on each iteration of the \gls{ipopt} algorithm to compute the optimality error and, therefore, check local convergence before stepping onto the following point. The checks for local and global convergence are the following, respectively. As can be seen, these checks use approximate solution and an approximation to multipliers ($\tilde{x}^*, \tilde{\lambda}^*, \tilde{z}^*$). It also has to be pinpointed that each iteration, the update in barrier parameter is obtained following the expression \eqref{eq:BP_Mu}. All three expresions are computed for given constants $\kappa_\epsilon$, $\kappa_\mu$, $\theta_\mu$ and $\epsilon_{tol}$, as indicated in \cite{Waechter2004}.
+The expression above is used on each iteration of the \gls{ipopt} algorithm to compute the optimality error and, therefore, check local convergence before stepping onto the following point. The checks for local and global convergence are the following, respectively. As can be seen, these checks use an approximate solution and an approximation to multipliers ($\tilde{x}^*, \tilde{\lambda}^*, \tilde{z}^*$). It also has to be pinpointed that each iteration, the update in barrier parameter is obtained following the expression \eqref{eq:BP_Mu}. All three expresions are computed for given constants $\kappa_\epsilon$, $\kappa_\mu$, $\theta_\mu$ and $\epsilon_{tol}$, as indicated in \cite{Waechter2004}.
 
 \begin{equation}
     E_{\mu, j}(\tilde{x}^*_{j+1}, \tilde{\lambda}^*_{j+1}, \tilde{z}^*_{j+1}) \leq \kappa_\epsilon \mu_j
@@ -320,7 +320,7 @@ The expression above is used on each iteration of the \gls{ipopt} algorithm to c
     \label{eq:BP_Mu}
 \end{equation}
 
-As said before, the \gls{ipopt} is based on a primal-dual framework that iterates between variables and multipliers by solving a linearised set of the \gls{kkt} conditions via Newton's method. This method allows to find gradients for each variable or multiplier, as stated below -with $A_k \coloneqq \nabla c(x_k)$ and $W_k \coloneqq \nabla_{xx} \mathcal{L}(x_k,\lambda_k,z_k)$ and k the inner-loop counter-.
+As said before, the \gls{ipopt} is based on a primal-dual framework that iterates between variables and multipliers by solving a linearised set of the \gls{kkt} conditions via Newton's method. This method allows to find gradients for each variable or multiplier, as stated below -with $A_k \coloneqq \nabla c(x_k)$, $W_k \coloneqq \nabla_{xx} \mathcal{L}(x_k,\lambda_k,z_k)$ and k the inner-loop counter-.
 
 \begin{equation}
     \begin{bmatrix}
@@ -379,7 +379,7 @@ Eventually, a summarised version of the general \gls{ipopt} algorithm has been a
 \subsection{Implementation of IPOPT using CasADi}\label{sec:CasADi}
 \gls{ipopt} is one of the integrated solvers provided by CasADi inside the \textit{ca.nlpsol()} block. This solver blocks needs from a very specific definition of the problem initial guess, its variables, constraints and simple bounds using symbolic notation. This specific definition has to end in the creation of a \textit{nlp\{\}} dictionary that contains all the discretised symbolic variables that form the \gls{nlp} problem. In other words, from the \gls{ocp}, a discretisation has to be applied to reach a fesaible \gls{nlp} definition with initial guess, constraints and simple bounds defined for each variable at each collocation point -all those defined using symbolic notation-. In addition, this dictionary has to include the definition of the cost function as the sum of all variables, when needed.
 
-Since the needs explained above, suppose a simple problem directly extracted from \gls{nlp} CasADi documentation section \cite{Andersson2018}. In this problem, there are three different variables, an objective function and an equality cosntraint.
+Since the needs explained above, suppose a simple problem directly extracted from \gls{nlp} CasADi documentation section \cite{Andersson2018}. In this problem, there are three different variables, an objective function and an equality constraint.
 
 \begin{equation}
     \begin{aligned}
@@ -400,7 +400,7 @@ The guidelines for the creation of \gls{nlp} problem dictionary are:
         \label{eq:CasADi_NLP_Cost}
     \end{equation}
 
-    \item \underline{Constraint $g(x,y,z)$:} The constraint vector has to the different constraints by order of appearance and, following the remarks on cost function, they would have to be defined for each collocation point variables when needed.
+    \item \underline{Constraint vector $g$:} The constraint vector has to the different constraints by order of appearance and, following the remarks on cost function, they would have to be defined for each collocation point variables when needed.
 \end{itemize}
 
 From the remarks above, the dictionary for \textit{ca.nlpsol()} can be defined. Its definition is inserted inside an end-to-end example of programming implementation. The bases set are the ones that would be later used for the thesis problem definition and implementation.
