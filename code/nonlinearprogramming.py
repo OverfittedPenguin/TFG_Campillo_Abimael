@@ -1159,8 +1159,8 @@ class NLP_STG3:
         VS = ac.lb_USER[0]
         gmax = np.asin(sim.ub[4] / VS)
         g_dot_max = gmax**2 / (dT*tF)
-        asf = 0.60*ac.ub[3]
-        amg = 0.40*ac.ub[3]
+        asf = 0.75*ac.ub[3]
+        amg = 0.25*ac.ub[3]
         de_max = ac.ub[8]
         
         for k in range(N-1):
