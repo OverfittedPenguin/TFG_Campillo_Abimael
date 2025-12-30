@@ -352,13 +352,13 @@ After defining the whole \gls{ocp}, it is time to discretise the equations using
         \end{bmatrix}, \quad
         \mathbf{g}_{lb} \coloneqq
         \begin{bmatrix} 
-            \mathbf{0}_{7N} \\ 
+            \mathbf{0}_{7(N-1)} \\ 
             -\mathbf{\infty}_{4(N+1)} \\ 
             \mathbf{0}_{7} 
         \end{bmatrix}, \quad
         \mathbf{g}_{ub} \coloneqq
         \begin{bmatrix} 
-            \mathbf{0}_{7N} \\ 
+            \mathbf{0}_{7(N-1)} \\ 
             \mathbf{0}_{4(N+1)} \\ 
             \mathbf{0}_{7} 
         \end{bmatrix}
@@ -480,15 +480,15 @@ Secondly, the constraints could add some path constraints referring to final sta
     \end{bmatrix}, \quad
     \mathbf{g}_{lb} \coloneqq
     \begin{bmatrix} 
-        \mathbf{0}_{7N} \\ 
-        -\mathbf{\infty}_{4(N+1)} \\ 
+        \mathbf{0}_{7(N-1)} \\ 
+        -\mathbf{\infty}_{4N} \\ 
         -\mathbf{\infty}_{2} \\
         \mathbf{0}_{7} 
     \end{bmatrix}, \quad
     \mathbf{g}_{ub} \coloneqq
     \begin{bmatrix} 
-        \mathbf{0}_{7N} \\ 
-        \mathbf{0}_{4(N+1)} \\ 
+        \mathbf{0}_{7(N-1)} \\ 
+        \mathbf{0}_{4N} \\ 
         \mathbf{0}_{2} \\
         \mathbf{0}_{7} 
     \end{bmatrix}

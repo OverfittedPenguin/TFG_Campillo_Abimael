@@ -569,7 +569,7 @@ class NLP_STG2:
         qk = Mb_total / Iyy
         thetak = x3
         mk = ca.if_else(x7 > (ac.BEM + ac.PM), -ac.SFC,0.0) # SFC.
-        mk += ca.if_else(ca.logic_and(x5 > (sim.Vtp*sim.lb[1]*sim.f_tp),x5 <= (sim.Vtp*(sim.lb[1]*sim.f_tp + sim.td))), -ac.PM/sim.td, 0.0) # Mass discharge.
+        mk += ca.if_else(ca.logic_and(x5 > (sim.Vtp*(sim.lb[1]*sim.f_tp - sim.td/2)),x5 <= (sim.Vtp*(sim.lb[1]*sim.f_tp + sim.td/2))), -ac.PM/sim.td, 0.0) # Mass discharge.
         
         # KINEMATICS. Inertial velocities computation.
         inertial_vel = ca.mtimes(Rhb, ca.vertcat(x1, x2))

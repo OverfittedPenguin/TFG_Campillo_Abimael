@@ -5,7 +5,7 @@ import os
 class Plotter:
     def GENERATE_MANOEUVRE_TRAJECTORIES(t,stg1,stg2,stg3,ac,sim,path):
         # Colors palette.
-        colors_hex = ['#001233', '#003874', '#007FFF',  "#4DB6AC", '#A9B7C7', '#ef233c']
+        colors_hex = ['#001233', '#003874', '#007FFF',  "#4DB6AC", '#A9B7C7', '#ef233c','#9D4EDD','#5A189A']
 
         # States and controls storage vectors per stage.
         x1_1 = []
@@ -145,6 +145,10 @@ class Plotter:
             left=0.15,  
             right=0.85, 
             )
+        
+        # OPEN GATES TIME VECTORS
+        t_d0 = t[sim.N + 1] + sim.lb[1] * sim.f_tp - sim.td/2
+        t_df = t[sim.N + 1] + sim.lb[1] * sim.f_tp + sim.td/2
 
         # VELOCITIES
         axs[0,0].plot(t,x1,label="u",color=colors_hex[4],linestyle="--",linewidth=1.5)
@@ -157,6 +161,15 @@ class Plotter:
         axs[0,0].plot(t,V_NO,label=r"$V_{NO}$",color=colors_hex[5],linestyle="--",linewidth=1.5)
         axs[0,0].plot(t,V_S,label=r"$V_{S}$",color=colors_hex[5],linestyle="-.",linewidth=1.5)
 
+        axs[0,0].axvline(x=t_d0,color=colors_hex[6],linestyle="--",linewidth=1)
+        axs[0,0].axvline(x=t_df,color=colors_hex[6],linestyle="--",linewidth=1)
+        axs[0,0].text(t_d0 - 3.0, axs[0,0].get_ylim()[1] * 0.3, 'Gates Open', 
+              color=colors_hex[7], 
+              fontsize=10, 
+              rotation=90, 
+              verticalalignment='center',
+              horizontalalignment='center')
+
         # Titles, grid and legend.
         axs[0,0].set_xlabel("Time [s]",fontsize = 14,fontstyle='italic',fontfamily='serif')
         axs[0,0].set_ylabel("Velocity [m/s]",fontsize = 14, fontstyle='italic', fontfamily='serif')
@@ -168,7 +181,7 @@ class Plotter:
         # ANGLES
         axs[0,1].plot(t,x4,label=r"$\theta$",color=colors_hex[3],linestyle="--",linewidth=1.5)
         axs[0,1].plot(t,alpha,label=r"$\alpha$",color=colors_hex[2],linestyle="-.",linewidth=1.5)
-        axs[0,1].plot(t,g,label=r"$\gamma$",color=colors_hex[1],linestyle="-",linewidth=1.5)
+        axs[0,1].plot(t,g,label=r"$\gamma$",color=colors_hex[1],linestyle="-",linewidth=1.5)   
 
         # Bounds.
         th_max= np.ones(len(alpha))*ac.ub[3]
@@ -177,6 +190,15 @@ class Plotter:
         axs[0,1].plot(t,th_max,label=r"$\theta_{ub}$",color=colors_hex[5],linestyle="--",linewidth=1.5)
         axs[0,1].plot(t,th_min,label=r"$\theta_{lb}$",color=colors_hex[5],linestyle="-.",linewidth=1.5)
         axs[0,1].plot(t,astall,label=r"$\alpha_{stall}$",color=colors_hex[0],linestyle="-.",linewidth=1.2)
+
+        axs[0,1].axvline(x=t_d0,color=colors_hex[6],linestyle="--",linewidth=1)
+        axs[0,1].axvline(x=t_df,color=colors_hex[6],linestyle="--",linewidth=1)
+        axs[0,1].text(t_d0 - 3.0, axs[0,1].get_ylim()[0] * 0.55, 'Gates Open', 
+              color=colors_hex[7], 
+              fontsize=10, 
+              rotation=90, 
+              verticalalignment='center',
+              horizontalalignment='center')    
 
         # Titles, grid and legend.
         axs[0,1].set_xlabel("Time [s]",fontsize = 14,fontstyle='italic',fontfamily='serif')
@@ -195,6 +217,15 @@ class Plotter:
         axs[1,0].plot(t,m_max,label=r"$MTOM$",color=colors_hex[5],linestyle="--",linewidth=1.5)
         axs[1,0].plot(t,m_min,label=r"$BEM$",color=colors_hex[5],linestyle="-.",linewidth=1.5)
 
+        axs[1,0].axvline(x=t_d0,color=colors_hex[6],linestyle="--",linewidth=1)
+        axs[1,0].axvline(x=t_df,color=colors_hex[6],linestyle="--",linewidth=1)
+        axs[1,0].text(t_d0 - 3.0, axs[1,0].get_ylim()[1] * 0.9, 'Gates Open', 
+              color=colors_hex[7], 
+              fontsize=10, 
+              rotation=90, 
+              verticalalignment='center',
+              horizontalalignment='center')
+
         # Titles, grid and legend.
         axs[1,0].set_xlabel("Time [s]",fontsize = 14,fontstyle='italic',fontfamily='serif')
         axs[1,0].set_ylabel("Mass [kg]",fontsize = 14, fontstyle='italic', fontfamily='serif')
@@ -207,6 +238,9 @@ class Plotter:
         axs[1,1].plot(x5,-x6,label="Trajectory",color=colors_hex[0],linestyle="-",linewidth=1.5)
 
         # Bounds.
+        x_TP = x5_1[sim.N-1] + sim.Vtp * (sim.f_tp * sim.lb[1] + sim.td/2)
+        x_d0 = x5_1[sim.N-1] + sim.Vtp * (sim.f_tp * sim.lb[1])
+        x_df = x5_1[sim.N-1] + sim.Vtp * (sim.f_tp * sim.lb[1] + sim.td)
         h_max = np.ones(len(x5))*ac.ub[5]
         h_min = np.ones(len(x5))*ac.lb[5]
         h_ref = np.ones(len(x5))*sim.ub[3]
@@ -215,6 +249,15 @@ class Plotter:
         axs[1,1].plot(x5,-h_min,label=r"$h_{ub}$",color=colors_hex[5],linestyle="--",linewidth=1.5)
         axs[1,1].plot(x5,-h_cruise,label=r"$h_{cruise}$",color=colors_hex[3],linestyle="--",linewidth=1)
         axs[1,1].plot(x5,-h_ref,label=r"$h_{ref}$",color=colors_hex[3],linestyle="-.",linewidth=1)
+        axs[1,1].scatter(x_TP, -sim.ub[3], label="TP", color=colors_hex[5], s=25)
+        axs[1,1].axvline(x=x_d0,color=colors_hex[6],linestyle="--",linewidth=1)
+        axs[1,1].axvline(x=x_df,color=colors_hex[6],linestyle="--",linewidth=1)
+        axs[1,1].text(x_d0 - 75.0, axs[1,1].get_ylim()[1] * 0.7, 'Gates Open', 
+              color=colors_hex[7], 
+              fontsize=10, 
+              rotation=90, 
+              verticalalignment='center',
+              horizontalalignment='center')
 
         # Titles, grid and legend.
         axs[1,1].set_xlabel("Horizontal distance [m]",fontsize = 14,fontstyle='italic',fontfamily='serif')
@@ -248,6 +291,14 @@ class Plotter:
         TPS_min = np.zeros(len(t))
         axs[0].plot(t,TPS_max,label=r"$TPS_{ub}$",color=colors_hex[5],linestyle="--",linewidth=1.5)
         axs[0].plot(t,TPS_min,label=r"$TPS_{lb}$",color=colors_hex[5],linestyle="-.",linewidth=1.5)
+        axs[0].axvline(x=t_d0,color=colors_hex[6],linestyle="--",linewidth=1)
+        axs[0].axvline(x=t_df,color=colors_hex[6],linestyle="--",linewidth=1)
+        axs[0].text(t_d0 - 3.0, axs[0].get_ylim()[1] * 0.8, 'Gates Open', 
+              color=colors_hex[7], 
+              fontsize=10, 
+              rotation=90, 
+              verticalalignment='center',
+              horizontalalignment='center')   
 
         # Titles, grid and legend.
         axs[0].set_xlabel("Time [s]",fontsize = 14,fontstyle='italic',fontfamily='serif')
@@ -265,6 +316,15 @@ class Plotter:
         de_min = np.ones(len(t))*ac.lb[8]
         axs[1].plot(t,de_max,label=r"$\delta_{e,ub}$",color=colors_hex[5],linestyle="--",linewidth=1.5)
         axs[1].plot(t,de_min,label=r"$\delta_{e,lb}$",color=colors_hex[5],linestyle="-.",linewidth=1.5)
+
+        axs[1].axvline(x=t_d0,color=colors_hex[6],linestyle="--",linewidth=1)
+        axs[1].axvline(x=t_df,color=colors_hex[6],linestyle="--",linewidth=1)
+        axs[1].text(t_d0 - 3.0, axs[1].get_ylim()[1] * 0.6, 'Gates Open', 
+              color=colors_hex[7], 
+              fontsize=10, 
+              rotation=90, 
+              verticalalignment='center',
+              horizontalalignment='center')  
 
         # Titles, grid and legend.
         axs[1].set_xlabel("Time [s]",fontsize = 14,fontstyle='italic',fontfamily='serif')
