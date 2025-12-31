@@ -1,0 +1,38 @@
+\chapter{Flyox and Flyox I/VI Parameters}
+
+This chapter contains the geometrical, physical and operational parameters of the \gls{uav}s used in the different simulations. This parameters have been provided by Singular Aircraft and are subjected to a confidentiality agreement. Any any misuse, unauthorised dissemination or commercialisation may be subject to legal actions.
+
+\begin{table}[H]
+\caption{Geometrical, physical and operational parameters of aircraft model Flyox MAQ I/VI. Provided by Singular Aircraft.}
+\resizebox{\textwidth}{!}{
+    \begin{tabular}{lcc}
+    \hline
+    \textbf{Parameter} & \textbf{Value} & \textbf{Units} \\ \hline
+        BEM & 18.00 & kg \\
+        MTOM & 25.00 & kg \\
+        FM & 0.00 & kg \\
+        PM & 2.00 & kg \\
+        SFC & 0.00 & g/s \\
+        AR & 7.00 & - \\
+        S & 0.78 & $m^2$ \\
+        b & 2.33 & m \\
+        $\bar{c}$ & 0.33 & m \\
+        e & 0.84 & - \\
+        $I_y$ & 3.99 & $kg\cdot m^4$ \\
+        {[}$CG_x,CG_z${]} & {[}-0.1140, -0.0019{]} & m \\
+        {[}$CP_x,CP_z${]} & {[}-0.0722, -0.1760{]} & m \\
+        $C_{L_0}$ , $C_{L_\alpha}$, $C_{D_0}$ & \begin{tabular}[c]{@{}c@{}}F0: {[}0.410, 3.650, 0.068{]}\\ F15: {[}0.510, 4.584, 0.085{]}\\ F40: {[}0.700, 6.303, 0.112{]}\end{tabular} & -, $1/rad$,- \\
+        $C_{m_0}$, $C_{m_\alpha}$ & {[}-0.079, -1.430{]} & -, $1/rad$ \\
+        $C_{L_{\delta e}}$, $C_{m_{\delta e}}$ & {[}0.600, -2.160{]} & $1/rad$, $1/rad$ \\
+        {[}$CT_x,CT_z${]} & {[}0.000, -0.1760{]} & m \\
+        Engines & 2 & - \\
+        Propeller Diameter ($D_p$) & 0.38 & m \\
+        Initial thrust AoA ($\varepsilon_0$) & 0.00 & rad \\
+        Thrust Coeffs. {[}$C_{T_0}, C_{T_1},C_{T_2},C_{T_3}${]} & {[}0.112, 0.012, -0.086, 0.056{]} & - \\
+        Efficiency Coeffs. {[}$C_{\eta_0}, C_{\eta_1}${]} & {[}1.000, 0.000{]} & - \\
+        Operational Limits {[}$V,\theta,x,z,\delta_{TPS},\delta_e${]} & \begin{tabular}[c]{@{}c@{}}LBX: {[}16.70, -0.21, 0.00, -105.00, 0.00, -0.21{]}\\ UBX: {[}33.40, 0.21, 15000.00, -5.00, 1.00, 0.21{]}\end{tabular} & {[}m/s,  rad, m, m, -, rad{]} \\
+        Mission Specifications {[}$\delta_{FLAPS}, RPM${]} & {[}0, 6000{]} & {[}-,  rpm{]} \\ \hline
+    \end{tabular}
+}
+\label{tab:Flyox_IVI_Parameters}
+\end{table}
