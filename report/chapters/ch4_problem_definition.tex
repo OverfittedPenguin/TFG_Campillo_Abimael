@@ -45,7 +45,7 @@ This section contains the formulation of each manoeuvre's stage as an \gls{ocp} 
 
 It has to be pinpointed that any of the stages dedicated sections will not contain the definition of the dynamic equations, because they are the same as the ones defined for the benchmark case, referring section \ref{sec:Benchmark_Constraints_Bounds} from expression \eqref{eq:Benchmark_EOM_1} to \eqref{eq:Benchmark_EOM_7}. In case of the initial state constraints, its definition does not change and therefore, they will not be added on this section. Specifically, the only change is the initial value for state and control vector, which will be the linking condition between stages, but not its formal definition. Moreover, state and control vectors -and simple bounds by extension- will not be specified, since they are the same as the ones explained for free-end addition to benchmark problem; see expression \eqref{eq:Benchmark_Plus_NLP_w}. 
 
-Alternatively, the path constraints and cost functionals are the major changes per stage. Eventually, new constraint vector, constraint bounds vectors and cost functionals will be defined per stage. Wording will focus on that. Eventually, each stage constitutes a free-end \gls{nlp} problem using expression \eqref{eq:Benchmark_Plus_NLP}.
+Alternatively, the path constraints and cost functionals are the major changes per stage. Eventually, new constraint vector, constraint bounds vectors and cost functional will be defined per stage. Wording will focus on that. Eventually, each stage constitutes a free-end \gls{nlp} problem using expression \eqref{eq:Benchmark_Plus_NLP}.
 
 \subsection{Descent stage (STG1)}
 Descent stage is characterised by a negative flight path angle ($\gamma \leq 0$) that enforces the aircraft to decrease its altitude. In terms of the manoeuvre, it is also characterised by initial state -given by the user initial conditions- and end state at known altitude and horizontal distance. Initial state computation will be introduced at section \ref{sec:General_Framework} because, as said before, it does not have effect on mathematical formulation.
@@ -158,7 +158,7 @@ The only change is produced at mass related dynamic constraint, all other dynami
 \begin{equation}
     \dot{x}_7 \coloneqq 
     \begin{cases}
-        -SFC & x_5 < (V_{TP}\cdot f_{TP}\cdot t_{2,min} - t_d/2) \\
+        -SFC & x_5 < [V_{TP}\cdot (f_{TP}\cdot t_{2,min} - t_d/2)] \\
         -SFC & x_5 > [V_{TP}\cdot (f_{TP}\cdot t_{2,min} + t_d/2)] \\
         -SFC - \frac{PM}{t_d} & \text{otherwise} 
     \end{cases}
@@ -282,65 +282,66 @@ Then, the formal expression of running cost and overall cost objective for climb
 \section{Algorithm General Framework}
 \label{sec:General_Framework}
 
-Finally, the algorithm developed can be summarised in the following algorithm lines, see next page. As can be seen, the main structure consists in different files and functions. Essentially, it is possible to distinguish between:
+Finally, the algorithm developed can be summarised in the following algorithm lines, see next page. As can be seen, the main structure consists of different files and functions. Essentially, it is possible to distinguish between:
 
 \begin{itemize}
-    \item \textit{simulation.py}, which is the function that extracts the information storaged in JSON file \textit{Simulation.json}. This file contains the information and problem parameters defined in \ref{fig:CONOPS}, as well as the mission bounds to the defined problem. In addition, numerical values as the number of nodes can be modified, every simulation. In the JSON file, the aircraft model can be selected and this will load automatically all geometrical, physical and operational information about the aircraft. Eventually, wind conditions could be added -they have been not used in any of the results for this thesis, which means that all results have been generated in a calm atmosphere-. 
-    \item \textit{aircraft.py} is a function that loads and process all information storage in a determined aircraft model JSON file. It is called by \textit{Simulation.py} using the JSON file path of the aircraft model. It also contains a function to compute maximum thrust and torque at each iteration when the solver is running.
+    \item \textit{simulation.py} is the function that extracts the information storaged in JSON file \textit{Simulation.json}. This file contains the information and problem parameters defined in \ref{fig:CONOPS}, as well as the mission bounds. In addition, numerical values and the aircraft model can be selected. Eventually, wind conditions could be added -they have been not used in any of the results for this thesis, which means that all results have been generated in a calm atmosphere-. 
+    \item \textit{aircraft.py} is a function that loads and process all information storage in a determined aircraft model JSON file. It is called by \textit{simulation.py} using the JSON file path of the aircraft model. It also contains a function to compute maximum thrust and torque at each iteration when the solver is running.
     \item \textit{atmosphere.py} is another function that loads atmospheric conditions from \textit{Atmos.json} and that contains an ISA density computation function used during the solver iterations.
-    \item \textit{plotterfunction.py} is the postprocessing function to generate all trajectories and cost plots. It is made up by different functions to plot the whole manoeuvre trajectories and cost objective or, individual trajectories and costs per stage. It is a clean solution used to not overload main function with postprocessing activities.
-    \item \textit{nonlinearprogramming.py} is the function where all \gls{nlp} dictionaries are created. Essentially, there are different functions to create state and control vectors, constraints vectors, bounds vectors and cost objective function for all symbolic variables. For each stage, a class has been created with the different functions and they only had to be called from main algorithm to create the vectors and dictionaries succesfully.
+    \item \textit{plotterfunction.py} is the postprocessing function to generate all trajectories and cost plots. It is made by different functions to plot the whole manoeuvre trajectories and cost objective or, individual trajectories and cost per stage. It is a clean solution used to not overload main function with postprocessing activities.
+    \item \textit{nonlinearprogramming.py} is the function where all \gls{nlp} dictionaries are created. Essentially, there are different functions to create state and control vectors, constraints vectors, bounds vectors and cost objective function for all symbolic variables. For each stage, a class has been created with the different functions and they only had to be called from main algorithm to create the vectors and dictionaries.
 \end{itemize}
 
 \begin{algorithm}[H]
 \label{alg:MAIN}
-\caption{Main algorithm, \textit{main\_IPOPT.py}.}
+\caption{Main algorithm (\textit{main\_IPOPT.py})}
 \begin{algorithmic}
 \STATE \textbf{1. Problem's Configuration:} 
 \STATE Using \textit{Simulation.json}.
 \STATE \quad Define initial conditions, mission parameters, mission bounds and aircraft file.
-\STATE \quad Define number of nodes $N$ and weights for each stage penalty.
-\STATE \quad Aircaft and atmosphere parameters retrieving by \textit{aircarft.py} and \textit{atmosphere.py} calls.
+\STATE \quad Define number of nodes $N$ and penalty weights for each stage.
+\STATE \quad Retrieving of aircraft and atmosphere parameters.
 
 \STATE \textbf{2. Compute initial conditions at SP:}  
 \STATE Computation of initial state and control vector $\mathbf{w_0}$.
 \STATE \quad ($V_0,\theta_0) \longrightarrow u_0, w_0, \theta_0$. 
-\STATE \quad Fix $q_0 = 0$, $x_0 = 0$, $z_0 = -h_{cruise}$ and $m_0 = TOM$. $\mathbf{x_0}\coloneqq [u_0,w_0,q_0,\theta_0,x_0,z_0,m_0]$
-\STATE \quad Using a static NLP solver obtain initial controls $\mathbf{u_0}\coloneqq [\delta_{TPS,0}, \delta_{e,0}]$
-\STATE \quad Stack variables to create STG1 $\mathbf{w_0} \coloneqq [\mathbf{x}_0^0, \mathbf{u}_0^0, \dots, \mathbf{x}_0^N,\mathbf{u}_0^N,t_1^0]$
+\STATE \quad Fix $q_0 = 0$, $x_0 = 0$, $z_0 = -h_{cruise}$ and $m_0 = TOM$. $\mathbf{x_0}\coloneqq [u_0,w_0,q_0,\theta_0,x_0,z_0,m_0]$.
+\STATE \quad Using a static NLP solver obtain initial controls $\mathbf{u_0}\coloneqq [\delta_{TPS,0}, \delta_{e,0}]$.
+\STATE \quad Stack variables to create STG1 $\mathbf{w_0} \coloneqq [\mathbf{x}_0^0, \mathbf{u}_0^0, \dots, \mathbf{x}_0^N,\mathbf{u}_0^N,t_1^0]$.
 
 \STATE \textbf{3. NLP Creation for STG1:} 
 \STATE \quad Formulate $\mathbf{w} \coloneqq [\mathbf{x}^0, \mathbf{u}^0, \dots, \mathbf{x}^{N}, \mathbf{u}^{N}, t_F]^\top \in \mathbb{R}^{9N+1}$.
 \STATE \quad Apply variable bounds: $\mathbf{w} \in \left[ \begin{smallmatrix} \mathbf{1}_{N} \otimes \mathbf{lbx} \\ t_{F,min} \end{smallmatrix} \right], \left[ \begin{smallmatrix} \mathbf{1}_{N} \otimes \mathbf{ubx} \\ t_{F,max} \end{smallmatrix} \right]$.
 \STATE \quad Compute trapezoidal Cost: $J(\mathbf{w}) = \frac{\Delta t \cdot t_F}{2}\sum_{k=0}^{N-1} (L^k + L^{k+1}) + w_{t_F} \cdot t_F$.
-\STATE \quad Evaluate scaled dynamics $\mathbf{d}^k$ and path Constraints $\mathbf{h}^k$.
-\STATE \quad Stack constraints: $\mathbf{g}(\mathbf{w}) \coloneqq [\mathbf{d}^0, \dots, \mathbf{d}^{N-1}, \mathbf{h}^0, \dots, \mathbf{h}^N, \mathbf{h_{dist}}, \mathbf{\varphi}_0]^\top$.
+\STATE \quad Evaluate scaled dynamics $\mathbf{d}^k$ and path constraints $\mathbf{h}^k$.
+\STATE \quad Stack constraints: $\mathbf{g}(\mathbf{w}) \coloneqq [\mathbf{d}^0, \dots, \mathbf{d}^{N-1}, \mathbf{h}^0, \dots, \mathbf{h}^N, \mathbf{\varphi}_0]^\top$.
 
 \STATE \textbf{4. Solve STG1:} 
 \STATE \quad IPOPT solver using $N_{iter} = 3000$, $\epsilon_{tol} = 10^{-6}$ and $\epsilon_{acc. tol.} = 10^{-6}$.
-\STATE \quad Extract state and control trajectories, cost objective per iteration and final computation time.
+\STATE \quad Extract state and control trajectories and cost objective per iteration.
 
 \STATE \textbf{5. NLP Creation for STG2:} 
-\STATE \quad Extract end-state from STG1 $\mathbf{x_f} \coloneqq \mathbf{w_1^N} \in \mathbb{R}^7 $.
-\STATE \quad Using a static NLP solver obtain initial controls $\mathbf{u_0}\coloneqq [\delta_{TPS,0}, \delta_{e,0}]$
-\STATE \quad Generate linking condition $\mathbf{w_0} \coloneqq [\mathbf{x_f}^0,\mathbf{u}_0^0, \dots, \mathbf{x_f}^N,\mathbf{u}_0^N,t_2^0] $
-\STATE \quad Create $\mathbf{w}$, $\mathbf{g}$, $J(\mathbf{w})$ and bounds using NLP\_STG2 class and \textbf{Step 3}.
+\STATE \quad Extract end states from STG1 $\mathbf{x_f} \coloneqq \mathbf{w_1^N} \in \mathbb{R}^7 $.
+\STATE \quad Using a static NLP solver obtain initial controls $\mathbf{u_0}\coloneqq [\delta_{TPS,0}, \delta_{e,0}]$.
+\STATE \quad Generate linking condition $\mathbf{w_0} \coloneqq [\mathbf{x_f}^0,\mathbf{u}_0^0, \dots, \mathbf{x_f}^N,\mathbf{u}_0^N,t_2^0] $.
+\STATE \quad Create $\mathbf{w}$, $\mathbf{g}$, $J(\mathbf{w})$ and bounds using NLP\_STG2 class. Repeat Step 3.
 
 \STATE \textbf{6. Solve STG2:} 
-\STATE \quad Repeat \textbf{Step 4} but with STG2 NLP dictionary.
+\STATE \quad Repeat Step 4 but with STG2 NLP dictionary.
 
 \STATE \textbf{7. NLP Creation for STG3:} 
-\STATE \quad Extract end-state from STG2 $\mathbf{x_f} \coloneqq \mathbf{w_2^N} \in \mathbb{R}^7 $.
-\STATE \quad Using a static NLP solver obtain initial controls $\mathbf{u_0}\coloneqq [\delta_{TPS,0}, \delta_{e,0}]$
-\STATE \quad Generate linking condition $\mathbf{w_0} \coloneqq [\mathbf{x_f}^0,\mathbf{u}_0^0, \dots, \mathbf{x_f}^N,\mathbf{u}_0^N,t_2^0] $
-\STATE \quad Create $\mathbf{w}$, $\mathbf{g}$, $J(\mathbf{w})$ and bounds using NLP\_STG3 class. Repeat \textbf{Step 3}.
+\STATE \quad Extract end states from STG2 $\mathbf{x_f} \coloneqq \mathbf{w_2^N} \in \mathbb{R}^7 $.
+\STATE \quad Using a static NLP solver obtain initial controls $\mathbf{u_0}\coloneqq [\delta_{TPS,0}, \delta_{e,0}]$.
+\STATE \quad Generate linking condition $\mathbf{w_0} \coloneqq [\mathbf{x_f}^0,\mathbf{u}_0^0, \dots, \mathbf{x_f}^N,\mathbf{u}_0^N,t_3^0] $.
+\STATE \quad Create $\mathbf{w}$, $\mathbf{g}$, $J(\mathbf{w})$ and bounds using NLP\_STG3 class. Repeat Step 3.
 
-\STATE \textbf{6. Solve STG2:} 
-\STATE \quad Repeat \textbf{Step 4} but with STG3 NLP dictionary.
+\STATE \textbf{6. Solve STG3:} 
+\STATE \quad Repeat Step 4 but with STG3 NLP dictionary.
 
 \STATE \textbf{7. Post-processing:}
-\STATE \quad Reconstruction of whole manoeuvre state and control trajectories. Stack all states and controls except from horizontal position which has to be stacked as follows: 
-\STATE \quad \quad $\mathbf{x_5} = [\mathbf{x_{5,STG1}},\mathbf{x_{5,STG2}} + x_{5,STG1}^N, \mathbf{x_{5,STG3}} + x_{5,STG2}^N ]$
+\STATE Reconstruction of whole manoeuvre state and control trajectories. 
+\STATE \quad Stack all states and controls.
+\STATE \quad Horizontal position: $\mathbf{x_5} = [\mathbf{x_{5,STG1}},\mathbf{x_{5,STG2}} + x_{5,STG1}^N, \mathbf{x_{5,STG3}} + x_{5,STG2}^N ]$.
 \STATE \quad Generate time vectors using end-time values and linspace function.
 \STATE \quad Generate trajectories and cost objectives plots using \textit{plotterfunction.py}.
 \end{algorithmic}

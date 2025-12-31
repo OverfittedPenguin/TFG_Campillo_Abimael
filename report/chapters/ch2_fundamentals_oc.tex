@@ -54,16 +54,16 @@ The previous description is the formal description for the \gls{ocp}, since it c
     \item \underline{Initial state conditions $\varphi[y(t_0),u(t_0),t_0]$:} The initial state constraints are a set of equalities that restrict the initial value of state variables to a known value -the initial condition of the system is known-. They can also include restrictions for the initial value of control variables; nevertheless, it is not a common practice because the problem could be overrestricted and the solver may be unable to found a feasible solution.
     \item \underline{Cost functional $J(y,u)$:} The cost functional is the cost objective function that has to be minimised to found the optimal solution. This cost is defined by two different terms that contribute differently to the whole objective: terminal and running costs. If both contributions are present, then the cost objective is defined as in its Bolza form. As clarified in \cite{BrysonHo1975}:
     \begin{itemize}
-        \item Terminal cost is the contribution that only penalises the final value of state variables. Is represented by $\Phi[y(t_f),u(t_f),t_f]$ and, if cost objective $J(y,u) = \Phi[y(t_f),t_f]$, it is said that the whole cost functional is in its Mayer form.
+        \item Terminal cost is the contribution that only penalises the final value of state variables. Is represented by $\Phi[y(t_f),u(t_f),t_f]$ and, if cost objective $J(y,u) = \Phi[y(t_f),u(t_f),t_f]$, it is said that the whole cost functional is in its Mayer form.
         \item Running cost is the contribution that penalises each state and control variable trough time and, therefore, accumulates the whole penalisation. Is represented by $\int _{t_0}^{t_f} L[ y(t),u(t),t] \ dt$ and, if cost objective $J(y,u) = \int _{t_0}^{t_f} L[ y(t),u(t),t] \ dt$, it is said that the whole cost functional is in its Lagrange form.
     \end{itemize}
 \end{itemize}
 
 \section{Direct and Indirect Methods}
-Once the basic problem has been set, is has to be noticed that although the variables are time-continuous, they have to be discretised in order to solve the problem. This discretisation is necessary because the problem is not affordable analytically and it has to be treated numerically. This implicates to discretise the time domain, converting the infinite-dimensional treatment inherited from the running cost into a sum of different time-instants. There are two different types of approaches, as stated by John T. Betts on \cite{Betts2010}:
+Once the basic problem has been set, is has to be noticed that although the variables are time-continuous, they have to be discretised in order to solve the problem. This discretisation is necessary because the problem is not affordable analytically and it has to be treated numerically. This implies a discretisation of the time domain, converting the infinite-dimensional treatment inherited from the running cost into a sum of different time-instants. There are two different types of approaches, as stated by John T. Betts on \cite{Betts2010}:
 \begin{itemize}
 \item {Direct methods, which are based in the evaluation of the images from a function and the comparison between different values at different instants to find the derivative -p.e Direct collocation method-.}
-\item {Indirect methods, which are based on direct evaluation of the derivative and its proximity to zero value. In this case, there is need to explicit derivation of the equations and is a method subjected to initial conditions -p.e Pontryagin's maximum principle-.}
+\item {Indirect methods, which are based on direct evaluation of the derivative and its proximity to zero value. In this case, there is need of explicit derivation of the equations and is a method subjected to initial conditions -p.e Pontryagin's maximum principle-.}
 \end{itemize}
 
 \subsection{Direct collocation method as direct method}
@@ -121,7 +121,7 @@ Furthermore, the trapezoidal rule has to be applied to the constraints of the pr
 
 \begin{equation*}
     \begin{aligned}
-        & \dot{y} =f(y,u,t)\\
+        & \dot{y} \coloneqq f(y,u,t)\\
         & \int _{t_{k}}^{t_{k+1}}\dot{y} \ dt=\int _{t_{k}}^{t_{k+1}} f(y,u,t)\ dt
     \end{aligned}
 \end{equation*}
@@ -132,7 +132,7 @@ Resulting in:
     \begin{aligned}
         & y_{k+1} - y_{k} =\frac{1}{2} h_{k} \cdotp (f_{k} +f_{k+1} )\\
         where & \\
-        & f_{k} =f(y_{k} ,u_{k} ,t_{k} )\text{ for each } k\in [0,N-1]
+        & f_{k} \coloneqq f(y_{k} ,u_{k} ,t_{k} )\text{ for each } k\in [0,N-1]
     \end{aligned}
     \label{eq:DCM_ODEs}
 \end{equation}
@@ -239,7 +239,7 @@ Eventually, the \gls{pmp} is a fundamental result of optimal control theory, sin
         & \lambda (t_f)=\frac{\partial \Phi }{\partial y(t_f)}\\
         where & \\
         & H(y,u,\lambda ,t)\coloneqq L(y,u,t)+\lambda ^{T} f(y,u,t)\\
-        & \dot{y} (t)=f(y,u,t)
+        & \dot{y} (t)\coloneqq f(y,u,t)
     \end{aligned}
     \label{eq:PMP_Problem}
 \end{equation}
