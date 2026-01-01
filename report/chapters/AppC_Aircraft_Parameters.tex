@@ -1,6 +1,6 @@
 \chapter{Flyox and Flyox I/VI Parameters}
 
-This chapter contains the geometrical, physical and operational parameters of the \gls{uav}s used in the different simulations. This parameters have been provided by Singular Aircraft and are subjected to a confidentiality agreement. Any any misuse, unauthorised dissemination or commercialisation may be subject to legal actions.
+This chapter contains the geometrical, physical and operational parameters of the \gls{uav}s used in the different simulations. This parameters have been provided by Singular Aircraft and are subjected to a confidentiality agreement. Thus, any misuse, unauthorised dissemination or commercialisation may be subject to legal actions. In case of there is any doubt on an aircraft parameter, reader can refer to nomenclature's section.
 
 \begin{table}[H]
 \caption{Geometrical, physical and operational parameters of aircraft model Flyox. Provided by Singular Aircraft.}
@@ -21,16 +21,16 @@ This chapter contains the geometrical, physical and operational parameters of th
         $I_y$ & $2.098\cdot 10^4$ & $kg\cdot m^2$ \\
         {[}$CG_x,CG_z${]} & {[}0.759, -0.090{]} & m \\
         {[}$CP_x,CP_z${]} & {[}0.537, -1.100{]} & m \\
-        $C_{L_0}$ , $C_{L_\alpha}$, $C_{D_0}$ & \begin{tabular}[c]{@{}c@{}}F0: {[}0.410, 3.340, 0.048{]}\\ F15: {[}0.510, 4.584, 0.060{]}\\ F40: {[}0.700, 5.730, 0.080{]}\end{tabular} & -, $1/rad$,- \\
-        $C_{m_0}$, $C_{m_\alpha}$ & {[}0.052, -1.030{]} & -, $1/rad$ \\
-        $C_{L_{\delta e}}$, $C_{m_{\delta e}}$ & {[}0.750, -2.640{]} & $1/rad$, $1/rad$ \\
+        $C_{L_0}$ , $C_{L_\alpha}$, $C_{D_0}$ & \begin{tabular}[c]{@{}c@{}}F0: {[}0.410, 3.340, 0.048{]}\\ F15: {[}0.510, 4.584, 0.060{]}\\ F40: {[}0.700, 5.730, 0.080{]}\end{tabular} & [-, $1/rad$,-] \\
+        $C_{m_0}$, $C_{m_\alpha}$ & {[}0.052, -1.030{]} & [-, $1/rad$] \\
+        $C_{L_{\delta e}}$, $C_{m_{\delta e}}$ & {[}0.750, -2.640{]} & [$1/rad$, $1/rad$] \\
         {[}$CT_x,CT_z${]} & {[}0.000, -1.010{]} & m \\
         Engines & 2 & - \\
         Propeller Diameter ($D_p$) & 2.03 & m \\
         Initial thrust AoA ($\varepsilon_0$) & 0.00 & rad \\
         Thrust Coeffs. {[}$C_{T_0}, C_{T_1},C_{T_2},C_{T_3}${]} & {[}0.156, 0.036, -0.201, 0.093{]} & - \\
         Efficiency Coeffs. {[}$C_{\eta_0}, C_{\eta_1}${]} & {[}1.000, 0.000{]} & - \\
-        Operational Limits {[}$V,\theta,x,z,\delta_{TPS},\delta_e${]} & \begin{tabular}[c]{@{}c@{}}LBX: {[}33.40, -0.17, 0.00, -3000.00, 0.00, -0.21{]}\\ UBX: {[}61.70, 0.26, 100000.00, -5.00, 1.00, 0.21{]}\end{tabular} & {[}m/s,  rad, m, m, -, rad{]} \\
+        Operational Limits {[}$V,\theta,x,z,\delta_{TPS},\delta_e${]} & \begin{tabular}[c]{@{}c@{}}LBX: {[}33.40, -0.17, 0.00, -3000.00, 0.00, -0.21{]}\\ UBX: {[}61.70, 0.26, 50000.00, -5.00, 1.00, 0.21{]}\end{tabular} & {[}m/s,  rad, m, m, -, rad{]} \\
         Mission Specifications {[}$\delta_{FLAPS}, RPM${]} & {[}0, 2700{]} & {[}-,  rpm{]} \\ \hline
     \end{tabular}
 }
@@ -55,18 +55,18 @@ This chapter contains the geometrical, physical and operational parameters of th
         e & 0.84 & - \\
         $I_y$ & 3.99 & $kg\cdot m^2$ \\
         {[}$CG_x,CG_z${]} & {[}-0.1140, -0.0019{]} & m \\
-        {[}$CP_x,CP_z${]} & {[}-0.0722, -0.1760{]} & m \\
-        $C_{L_0}$ , $C_{L_\alpha}$, $C_{D_0}$ & \begin{tabular}[c]{@{}c@{}}F0: {[}0.410, 3.650, 0.068{]}\\ F15: {[}0.510, 4.584, 0.085{]}\\ F40: {[}0.700, 6.303, 0.112{]}\end{tabular} & -, $1/rad$,- \\
-        $C_{m_0}$, $C_{m_\alpha}$ & {[}-0.079, -1.430{]} & -, $1/rad$ \\
-        $C_{L_{\delta e}}$, $C_{m_{\delta e}}$ & {[}0.600, -2.160{]} & $1/rad$, $1/rad$ \\
-        {[}$CT_x,CT_z${]} & {[}0.000, -0.1760{]} & m \\
+        {[}$CP_x,CP_z${]} & {[}-0.0772, -0.1760{]} & m \\
+        $C_{L_0}$ , $C_{L_\alpha}$, $C_{D_0}$ & \begin{tabular}[c]{@{}c@{}}F0: {[}0.410, 3.650, 0.068{]}\\ F15: {[}0.510, 4.584, 0.085{]}\\ F40: {[}0.700, 6.303, 0.112{]}\end{tabular} & [-, $1/rad$,-] \\
+        $C_{m_0}$, $C_{m_\alpha}$ & {[}-0.079, -1.430{]} & [-, $1/rad$] \\
+        $C_{L_{\delta e}}$, $C_{m_{\delta e}}$ & {[}0.600, -2.160{]} & [$1/rad$, $1/rad$] \\
+        {[}$CT_x,CT_z${]} & {[}0.0000, -0.1760{]} & m \\
         Engines & 2 & - \\
         Propeller Diameter ($D_p$) & 0.38 & m \\
         Initial thrust AoA ($\varepsilon_0$) & 0.00 & rad \\
         Thrust Coeffs. {[}$C_{T_0}, C_{T_1},C_{T_2},C_{T_3}${]} & {[}0.112, 0.012, -0.086, 0.056{]} & - \\
         Efficiency Coeffs. {[}$C_{\eta_0}, C_{\eta_1}${]} & {[}1.000, 0.000{]} & - \\
         Operational Limits {[}$V,\theta,x,z,\delta_{TPS},\delta_e${]} & \begin{tabular}[c]{@{}c@{}}LBX: {[}16.70, -0.21, 0.00, -200.00, 0.00, -0.21{]}\\ UBX: {[}33.40, 0.21, 15000.00, -5.00, 1.00, 0.21{]}\end{tabular} & {[}m/s,  rad, m, m, -, rad{]} \\
-        Mission Specifications {[}$\delta_{FLAPS}, RPM${]} & {[}0, 6000{]} & {[}-,  rpm{]} \\ \hline
+        Mission Specifications {[}$\delta_{FLAPS}, RPM${]} & {[}0, 6500{]} & {[}-,  rpm{]} \\ \hline
     \end{tabular}
 }
 \label{tab:Flyox_IVI_Parameters}

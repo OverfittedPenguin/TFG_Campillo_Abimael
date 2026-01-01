@@ -11,7 +11,7 @@ Firstly, the user case has to be presented. As stated on the thesis' motivations
     \label{fig:CONOPS}
 \end{figure}
 
- As can be seen, the \gls{uav} starts from a cruising level at 2000ft \gls{asl} from the \gls{sp}. First stage is a descent stage (STG1) from cruising level to reference altitude ($h_{ref}$), which is the altitude from where the discharge will be done to extinguish the flames, located at \gls{tp}. Once the aircraft is levelled at reference altitude, the discharge is performed along a pre-defined distance named discharge distance ($d_{d}$). \gls{tp} is located at a known fraction $f_{TP}$ of this pre-defined distance. During the water-drop stage (STG2), the aircraft levels its flight, performs the discharge and correct its attitude to reach level-flight condition again. Thirdly, the \gls{uav} enters the climb stage (STG3) and climbs safely to cruising level 2000ft \gls{asl}, eventually reaching the \gls{ep} where the firefighting manoeuvre ends. It has to be pinpointed that the horizontal distances where \gls{sp} and \gls{ep} are located are defined radially from \gls{tp} using an entry ($R_{ENTRY}$) and exit radius ($R_{EXIT}$), respectively.
+ As can be seen, the \gls{uav} starts from a cruising level at 2000ft \gls{asl} from the \gls{sp}. First stage is a descent stage (STG1) from cruising level to reference altitude ($h_{ref}$), which is the altitude from where the discharge will be done to extinguish the flames, located at \gls{tp}. Once the aircraft is levelled at reference altitude, the discharge is performed along a pre-defined distance named discharge distance ($d_{d}$). \gls{tp} is located at a known fraction $f_{TP}$ of this preset distance. During the water-drop stage (STG2), the aircraft levels its flight, performs the discharge and correct its attitude to reach level-flight condition again. Thirdly, the \gls{uav} enters the climb stage (STG3) and climbs safely to cruising level 2000ft \gls{asl}, eventually reaching the \gls{ep} where the firefighting manoeuvre ends. It has to be pinpointed that the horizontal distances where \gls{sp} and \gls{ep} are located are defined radially from \gls{tp} using an entry ($R_{ENTRY}$) and exit radius ($R_{EXIT}$), respectively.
 
 All the mentioned parameters have been summarised in the following table. It should be noted that these parameters can be modified to accommodate any feasible scenario, supporting the main objective: a path planning algorithm designed to perform firefighting operations safely and with a higher grade of autonomy.
 
@@ -58,7 +58,7 @@ g_{path,1} \coloneqq
     V_S - \sqrt{(u-V_{x_w})^2 + (w-V_{z_w})^2} \leq 0\\
     \sqrt{(u-V_{x_w})^2 + (w-V_{z_w})^2} - V_{NO} \leq 0\\
     -z^N - h_{ref} = 0\\
-    (x^N -x^0) - (R_{ENTRY} - f_{TP}\cdot d_{2,min}) = 0
+    (x^N -x^0) - (R_{ENTRY} - f_{TP}\cdot d_{2,min}) \leq 0
     \end{cases}
     \label{eq:STG1_Path_OCP}
 \end{equation}
@@ -78,10 +78,9 @@ Converting the expressions to \gls{nlp} notation, the equations can be stated as
 \begin{equation}
     \mathbf{h}_{1,end} \coloneqq 
     \begin{bmatrix}
-        -x_6^N - h_{ref}\\
-        (x_5^N -x_5^0) - (R_{ENTRY} - f_{TP}\cdot d_{2,min})
+        -x_6^N - h_{ref} = 0\\
+        (x_5^N -x_5^0) - (R_{ENTRY} - f_{TP}\cdot d_{2,min}) \leq 0
     \end{bmatrix}
-    = 0
     \label{eq:STG1_NLP_Path_2}
 \end{equation}
 
@@ -97,14 +96,16 @@ Converting the expressions to \gls{nlp} notation, the equations can be stated as
     \begin{bmatrix} 
         \mathbf{0}_{7(N-1)} \\ 
         -\mathbf{\infty}_{2N} \\ 
-        \mathbf{0}_{2} \\
+        \mathbf{0}_{1} \\
+        -\mathbf{\infty}_1 \\
         \mathbf{0}_{7} 
     \end{bmatrix}, \quad
     \mathbf{g}_{ub} \coloneqq
     \begin{bmatrix} 
         \mathbf{0}_{7(N-1)} \\ 
         \mathbf{0}_{2N} \\ 
-        \mathbf{0}_{2} \\
+        \mathbf{0}_{1} \\
+        \mathbf{0}_{1} \\
         \mathbf{0}_{7} 
     \end{bmatrix}
     \label{eq:STG1_NLP_g}
@@ -180,7 +181,7 @@ g_{path,3} \coloneqq
     V_S - \sqrt{(u-V_{x_w})^2 + (w-V_{z_w})^2} \leq 0\\
     \sqrt{(u-V_{x_w})^2 + (w-V_{z_w})^2} - V_{NO} \leq 0\\
     -z^N - h_{ref} = 0\\
-    (x^N -x^0) - [R_{EXIT} - (1 - f_{TP})\cdot d_{2,min}] = 0
+    (x^N -x^0) - [R_{EXIT} - (1 - f_{TP})\cdot d_{2,min}] \leq 0
     \end{cases}
     \label{eq:STG3_Path_OCP}
 \end{equation}
@@ -201,10 +202,9 @@ Then, applying the transformation into \gls{nlp} notation it rests like the expr
 \begin{equation}
     \mathbf{h}_{3,end} \coloneqq 
     \begin{bmatrix}
-        -x_6^N - h_{ref}\\
-        (x_5^N -x_5^0) - [R_{EXIT} - (1 -f_{TP})\cdot d_{2,min}]
+        -x_6^N - h_{ref} = 0\\
+        (x_5^N -x_5^0) - [R_{EXIT} - (1 -f_{TP})\cdot d_{2,min}]\leq 0
     \end{bmatrix}
-    = 0
     \label{eq:STG3_NLP_Path_2}
 \end{equation}
 
@@ -220,14 +220,16 @@ Then, applying the transformation into \gls{nlp} notation it rests like the expr
     \begin{bmatrix} 
         \mathbf{0}_{7(N-1)} \\ 
         -\mathbf{\infty}_{2N} \\ 
-        \mathbf{0}_{2} \\
+        \mathbf{0}_{1} \\
+        -\mathbf{\infty}_{1} \\
         \mathbf{0}_{7} 
     \end{bmatrix}, \quad
     \mathbf{g}_{ub} \coloneqq
     \begin{bmatrix} 
         \mathbf{0}_{7(N-1)} \\ 
         \mathbf{0}_{2N} \\ 
-        \mathbf{0}_{2} \\
+        \mathbf{0}_{1} \\
+        \mathbf{0}_{1} \\
         \mathbf{0}_{7} 
     \end{bmatrix}
     \label{eq:STG3_NLP_g}
@@ -242,7 +244,7 @@ Next, the terms that form part of the running cost are explained. In this case, 
         J_{\dot{\gamma}} \coloneqq \left(q - \frac{\dot{w}u - \dot{u}w}{u^2 + w^2}\right)^2 / \dot{\gamma}_{max}^2 = \left(x_3 - \frac{\dot{x_2}x_1 - \dot{x_1}x_2}{x_1^2 + x_2^2}\right)^2 / \dot{\gamma}_{max}^2
     \end{equation}
 
-    \item In second place, an extra protection has been added in terms of the stall angle ($\alpha_{stall}$). In this case, $\alpha$ has been penalised quadratically once it enters the warning zone -defined using a 25\% safety margin in stall angle-. To prevent and avoid angle-of-attack stall, the solver is forced to prioritise lift-force over agressive manoeuvres. It ensures the aircraft maintains a sufficient margin from the aerodynamic stall regime during the ascent stage. For the penalty defined below, margin is $\alpha_{mg} \coloneqq 0.25\cdot\theta_{max}$ and safe angle is $\alpha_{sf} \coloneqq 0.75\cdot\theta_{max}$ -in this case $\theta_{max}$ has been used as $\alpha_{stall}$ for simplicity-.
+    \item In second place, an extra protection has been added in terms of the stall angle ($\alpha_{stall}$). In this case, $\alpha$ has been penalised quadratically once it enters the warning zone -defined using a 25\% safety margin in stall angle-. To prevent and avoid angle-of-attack stall, the solver is forced to prioritise lift-force over agressive manoeuvres. It ensures the aircraft maintains a sufficient margin from the aerodynamic stall regime during the ascent stage. For the penalty defined below, margin angle is $\alpha_{mg} \coloneqq 0.25\cdot\theta_{max}$ and safe angle is $\alpha_{sf} \coloneqq 0.75\cdot\theta_{max}$ -in this case $\theta_{max}$ has been used as $\alpha_{stall}$ for simplicity-.
     
     \begin{equation} 
         J_{sp} \coloneqq \left( \frac{\max[0, \alpha(u,w) - \alpha_{sf}]}{\alpha_{mg}} \right)^2  = \left( \frac{\max[0, \alpha(x_1,x_2) - \alpha_{sf}]}{\alpha_{mg}} \right)^2
