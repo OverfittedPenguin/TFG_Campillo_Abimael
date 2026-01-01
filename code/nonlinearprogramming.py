@@ -230,7 +230,7 @@ class NLP_STG1:
 
         # Path constraint. Equality constraint.
         g_path.append((xf - x0) - xref)
-        lbg_path.append(0)
+        lbg_path.append(-1e20)
         ubg_path.append(0)   
 
         return g_path, lbg_path, ubg_path
@@ -1039,7 +1039,7 @@ class NLP_STG3:
 
         # Path constraint. Inequality constraint.
         g_path.append((xf - x0) - xref)
-        lbg_path.append(0)
+        lbg_path.append(-1e20)
         ubg_path.append(0)   
 
         return g_path, lbg_path, ubg_path
