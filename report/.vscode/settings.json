@@ -1,0 +1,12 @@
+{
+    "latex-workshop.view.pdf.external.synctex.args": [
+        "%LINE%",
+        "%PDF%",
+        "%TEX%",
+        "%SVG%"
+    ],
+    "latex-workshop.view.pdf.external.viewer.args": [
+        "%PDF%",
+        "%SVG%"
+    ]
+}

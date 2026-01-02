@@ -1,1 +1,23 @@
 \chapter{Firefighting Manoeuvre: Results}
+Next chapter includes a comprehensive analysis of the results obtained for different simulation performed. Since the firefighting manoeuvre is a multi-parameter optimisation problem, only a few set of parameter variants have been tried. Then, a full review has been done and some remarks of the results have been added.
+
+\section{Simulations}
+In order to compare a few things among the different simulations, it is important to describe a base set of parameters to stablish later comparisons. The following table summarises the value of the parameters set on \textit{Simulation.json}. The aircraft used for this simulation and the following ones has been the \gls{uav} Flyox, which parameters can be seen on appendix \ref{app:AircraftParameters} table \ref{tab:Flyox_Parameters}. In addition, all simulations have been performed with 150 collocation point -or nodes-, wich is enough to capture water-discharge stage.
+
+SIMULATION PARAMETERS TAB
+
+Once all parameters have been properly set, the state and control trajectories are the following ones. As can be seen on figure \ref{fig:Base_STATES}
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{images/manoeuvre/CASE_0/STATES} 
+    \caption{State trajectories, base case. States included are velocities, angles, mass and \gls{uav} trajectory. Own source.}
+    \label{fig:base_STATES}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{images/manoeuvre/CASE_0/CONTROLS} 
+    \caption{Control trajectories, base case. Controls included are \gls{tps} and elevator. Own source.}
+    \label{fig:base_CONTROLS}
+\end{figure}

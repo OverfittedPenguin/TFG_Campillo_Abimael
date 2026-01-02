@@ -142,8 +142,8 @@ class Plotter:
             gridspec_kw={'hspace': 0.30, 'wspace': 0.70}
             )
         fig1.subplots_adjust(
-            left=0.15,  
-            right=0.85, 
+            left=0.05,  
+            right=0.95, 
             )
         
         # OPEN GATES TIME VECTORS
@@ -278,9 +278,9 @@ class Plotter:
             )
         fig2.subplots_adjust(
             left=0.10, 
-            bottom=0.25, 
-            right=0.85, 
-            top=0.80
+            bottom=0.10, 
+            right=0.90, 
+            top=0.90
             )
 
         # TPS
@@ -605,9 +605,9 @@ class Plotter:
             )
         fig2.subplots_adjust(
             left=0.10, 
-            bottom=0.25, 
-            right=0.85, 
-            top=0.80
+            bottom=0.10, 
+            right=0.90, 
+            top=0.90
             )
 
         # TPS
@@ -651,9 +651,9 @@ class Plotter:
         plt.figure(figsize=(10,6))
         plt.subplots_adjust(
             left=0.10, 
-            bottom=0.20, 
-            right=0.85, 
-            top=0.85
+            bottom=0.10, 
+            right=0.90, 
+            top=0.90
             )
         
         # Cost plot.
