@@ -432,7 +432,7 @@ class Plotter:
         axs1[2].legend(fontsize=10, prop={'family': 'serif'}, loc="upper right")
         axs1[2].grid(which='minor', linestyle=':', linewidth=0.75, color='gray', alpha=0.75)
 
-        fig2.savefig(os.path.join(path, "CONTSRAINTS_OPTIMALITY.svg"))
+        fig2.savefig(os.path.join(path, "CONSTRAINTS_OPTIMALITY.svg"))
         plt.show()
     
     def GENERATE_RESULTS_PLOT(t,x,ac,sim,path):
