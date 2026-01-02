@@ -421,7 +421,7 @@ class Plotter:
         # Titles, grid and legend.
         axs1[1].set_xlabel("Iterations [-]",fontsize = 14,fontstyle='italic',fontfamily='serif')
         axs1[1].set_ylabel("Magnitude [-]",fontsize = 14, fontstyle='italic', fontfamily='serif')
-        axs1[1].set_title("Infesabilities (STAGE 2, discharge)",fontsize = 14, fontweight='bold', fontfamily='serif', loc="left")
+        axs1[1].set_title("Infeasabilities (STAGE 2, discharge)",fontsize = 14, fontweight='bold', fontfamily='serif', loc="left")
         axs1[1].minorticks_on()
         axs1[1].legend(fontsize=10, prop={'family': 'serif'}, loc="upper right")
         axs1[1].grid(which='minor', linestyle=':', linewidth=0.75, color='gray', alpha=0.75)

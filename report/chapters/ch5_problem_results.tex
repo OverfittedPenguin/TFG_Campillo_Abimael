@@ -2,73 +2,252 @@
 Next chapter includes a comprehensive analysis of the results obtained for different simulation performed. Since the firefighting manoeuvre is a multi-parameter optimisation problem, only a few set of parameter variants have been tried. Then, a full review has been done and some remarks of the results have been added.
 
 \section{Simulations}
-In order to compare a few things among the different simulations, it is important to describe a base set of parameters to stablish later comparisons. The following table summarises the value of the parameters set on \textit{Simulation.json}. The aircraft used for this simulation and the following ones has been the \gls{uav} Flyox, which parameters can be seen on appendix \ref{app:AircraftParameters} table \ref{tab:Flyox_Parameters}. In addition, all simulations have been performed with 150 collocation point -or nodes-, wich is enough to capture water-discharge stage.
+In order to compare a few things among the different simulations, it is important to describe a base set of parameters to stablish later comparisons. The following table summarises the value of the parameters set on \textit{Simulation.json}. The aircraft used for this simulation and the following ones has been the \gls{uav} Flyox, which parameters can be seen on appendix \ref{app:AircraftParameters} table \ref{tab:Flyox_Parameters}. In addition, all simulations have been performed with 150 collocation points -or nodes-, which are enough to capture water-discharge stage.
 
-SIMULATION PARAMETERS TAB
+\begin{table}[H]
+    \centering
+    \caption{Base case simulation parameters. See reference in appendix \ref{app:Code}, \textit{simulation.json}. Own source.}
+    \begin{tabular}{lcc}
+        \hline
+        \textbf{Parameter} & \textbf{Value} & \textbf{Units} \\ \hline
+        N -collocation points- & 150 & {[}-{]} \\
+        \begin{tabular}[c]{@{}l@{}}Initial State -or\\ guesses-\end{tabular} & {[}50.00, 0.07, 20.00, 40.00, 60.00{]} & {[}m/s, rad, s, s, s{]} \\
+        Wind Speed & {[}0.00, 0.00{]} & {[}m/s{]} \\
+        \begin{tabular}[c]{@{}l@{}}Target Point \\ parameters\end{tabular} & {[}10.00, 10.00, 0.35, 45.00, 1.0{]} & {[}km, km, -, m/s, s{]} \\
+        Mission Bounds & \begin{tabular}[c]{@{}c@{}}LB: {[}5.00, 20.00, 40.00, -608.00, -5.08{]}\\ UB: {[}360.00, 180.00, 360.00, -15.00, 5.08{]}\end{tabular} & {[}s, s, s, m, m/s{]} \\
+        Weights STG1 & {[}0.0, 0.3, 0.2, 1.0, 1.5{]} & {[}-{]} \\
+        Weights STG2 & {[}0.0, 0.5, 0.3, 0.5, 1.0, 1.5{]} & {[}-{]} \\
+        Weights STG3 & {[}0.0, 0.2, 2.0, 1.0, 1.5, 1.0{]} & {[}-{]} \\ \hline
+    \end{tabular}
+    \label{tab:Base_Case_Parameters}
+\end{table}
+
+Once all parameters have been properly set, the state and control trajectories are the following ones. As can be seen on figure \ref{fig:Base_STATES}, the water-discharge has been modelled as a discontinuity for this base case -indeed, it is a one-second discharge but since \gls{PM} is two-hundred (200) kg, discharge can be suddenly interpreted-. Descent and climb stages are almost continuous, as can be seen by nearly constant value on flight path angle ($\gamma$) or directly on the \gls{uav} trajectory. In terms of velocity, its profile may be suprisingly, but it denotes a key aspect of Flyox behaviour: longitudinal stability is closely coupled, as can be seen on velocities subgraph -difference between body velocity along $x_b$-axis ($u$) and velocity modulus $V$-. Thus, the aircraft tends to align the descent or ascent path, provoking changes on velocity's module. In terms of controls, discontinuities are unavoidable because they correspond with the jump between stages; nevertheless, there are discontinuities affordable to a control feedback loop proper of an autopilot on an \gls{uav}. They will not be further mentioned on the report. Moreover, control seems smooth in each stage and they are far from the operational limits. Essentially, controls reach a trim point in each stage, more or less.
 
 \begin{figure}[H]
     \centering
-    \includesvg[width=\textwidth]{images/manoeuvre/CASE0/STATES} 
+    \includesvg[width=\textwidth]{images/manoeuvre/STATES_CASE0} 
     \caption{State trajectories, base case. States included are velocities, angles, mass and \gls{uav} trajectory. Own source.}
     \label{fig:Base_STATES}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includesvg[width=\textwidth]{images/manoeuvre/CASE0/CONTROLS} 
-    \caption{Control trajectories, base case. Controls included are \gls{tps} and elevator. Own source.}
+    \includesvg[width=0.9\textwidth]{images/manoeuvre/CONTROLS_CASE0} 
+    \caption{Control trajectories, base case. Controls included are \gls{tps} and elevator deflection. Own source.}
     \label{fig:Base_CONTROLS}
 \end{figure}
 
-Once all parameters have been properly set, the state and control trajectories are the following ones. As can be seen on figure \ref{fig:Base_STATES}, the water-discharge has been modelled as a discontinuity for this base case -indeed, it is a one-second discharge but since \gls{PM} is two-hundred (200) kg, discharge can be suddenly interpreted-. Descent and climb stages are almost continuous, as can be seen by nearly constant value on flight path angle ($\gamma$) or directly on the \gls{uav} trajectory. In terms of velocity, its profile may be suprisingly, but it denotes a key aspect of Flyox behaviour: longitudinal movements are closely coupled, as can be seen on velocities subgraph -difference between body velocity along $x_b$-axis $u$ and velocity modulus $V$-. Thus, the aircraft tends to align the descent or ascent path, provoking changes on velocity's module. In terms of controls, discontinuities are unavoidable because they correspond with the jump between stages; nevertheless, there are discontinuities affordable to a control feedback loop proper of an autopilot on an \gls{uav}. They will not be further mentioned on the report. Moreover, control seems smooth in each stage and they are far from the operational limits. Essentially, controls reach a trim point in each stage, more or less.
-
-Following figure shows the evolution of cost objective per iteration for each stage. As can be seen, the demanding stages in terms of cost are the most restrictive ones: descent and climb stages, specifically descent one. This means that some constraints have been breached or nearly breached -i.e the solution found in the iteration which cost is highest is not feasible, constraints or penalties have been not fulfilled and the control turns agressive to avoid constraint breach-.
+Following figure shows the evolution of cost objective per iteration for each stage. As can be seen, the demanding stages in terms of cost are the most restrictive ones: descent and climb stages, specifically descent one. This means that some constraints have been breached or nearly breached -i.e the solution found in the iteration which cost is highest is not feasible, constraints or penalties have been not fulfilled and the control turns agressive to avoid constraint breach-. After this, control variables tend to be smoother, because cost is slowly relaxed until reaching the final objective near zero value.
 
 \begin{figure}[H]
     \centering
-    \includesvg[width=\textwidth]{images/manoeuvre/CASE0/COST} 
+    \includesvg[width=\textwidth]{images/manoeuvre/COST_CASE0} 
     \caption{Cost objective per iteration, base case. Each stage cost has been added. Own source.}
     \label{fig:Base_COST}
 \end{figure}
 
 \subsection{Case 1: continuous water-discharge}
-This case has been done using the same parameters that have been indicated on table \ref{tab:FFM_Parameters} except for the discharge time ($t_d$), which has been incremented to perform a more continuous and controlled discharge above TP. The discharge time has been set to $t_d = 7.2\ s$, which is near to firefighting controlled drops -it has been specified by Singular Aircraft engineers-. 
+This case has been done using the same parameters that have been indicated on table \ref{tab:Base_Case_Parameters} except for the discharge time ($t_d$), which has been incremented to perform a more continuous and controlled discharge above TP. The discharge time has been set to $t_d = 7.2\ s$, which is near to firefighting controlled drops -as specified by Singular Aircraft engineers-. 
 
 \begin{figure}[H]
     \centering
-    \includesvg[width=\textwidth]{images/manoeuvre/CASE1/STATES} 
+    \includesvg[width=\textwidth]{images/manoeuvre/STATES_CASE1} 
     \caption{State trajectories, case 1. States included are velocities, angles, mass and \gls{uav} trajectory. Own source.}
     \label{fig:Case1_STATES}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includesvg[width=\textwidth]{images/manoeuvre/CASE1/CONTROLS} 
-    \caption{Control trajectories, case 1. Controls included are \gls{tps} and elevator. Own source.}
+    \includesvg[width=0.9\textwidth]{images/manoeuvre/CONTROLS_CASE1} 
+    \caption{Control trajectories, case 1. Controls included are \gls{tps} and elevator deflection. Own source.}
     \label{fig:Case1_CONTROLS}
 \end{figure}
 
-As can be seen on previous figures, there are no noticeable changes on state trajectories. However, there is a minor change in term of controls. Since the gates are open for a longer period of time, control corrections are soft and smooth than in the previous case. The following figure shows a comparison between the second stage control from base case -top- and this case -bottom-. 
+As can be seen on previous figures, there are no noticeable changes on state trajectories. However, there is a minor change in term of controls. Since the gates are open for a longer period of time, control corrections are soft and smooth than in the previous case. The following figure shows a comparison between the second stage control from base case -top- and this case -bottom-. Eventually, this smoother controls are traduced in a reduction of the flight path angle rate ($\dot{\gamma}$) during discharge phase because vertical speed ($w$) is more stable during the discharge, as can be seen in state comparison just after controls comparison.
 
 \begin{figure}[H]
     \centering
     \begin{subfigure}[b]{\textwidth}
         \centering
-        \includesvg[width=\textwidth]{images/manoeuvre/CASE0/STG2/CONTROLS}
-        \caption{Base case, discontinuous discharge.}
+        \includesvg[width=0.9\textwidth]{images/manoeuvre/CONTROLS_CASE0_STG2}
+        \caption{Base case, discontinuous discharge. $t_d = 1.0\ s$}
     \end{subfigure}
     
     \vspace{0.25cm}
     
     \begin{subfigure}[b]{\textwidth}
         \centering
-        \includesvg[width=\textwidth]{images/manoeuvre/CASE1/STG2/CONTROLS}
-        \caption{Case 1, continuous discharge.}
+        \includesvg[width=0.9\textwidth]{images/manoeuvre/CONTROLS_CASE1_STG2}
+        \caption{Case 1, continuous discharge. $t_d = 7.2\ s$}
     \end{subfigure}
-    \caption{Comparison between control trajectories during a two different discharge types. Own source.}
-    \label{fig:comparison_states}
+    \caption{Comparison between control trajectories during discharge stage for different $t_d$. Own source.}
+    \label{fig:CONTROLS_Comparison}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{\textwidth}
+        \centering
+        \includesvg[width=0.9\textwidth]{images/manoeuvre/STATES_CASE0_STG2}
+        \caption{Base case, discontinuous discharge. $t_d = 1.0\ s$}
+    \end{subfigure}
+    
+    \vspace{0.25cm}
+    
+    \begin{subfigure}[b]{\textwidth}
+        \centering
+        \includesvg[width=0.9\textwidth]{images/manoeuvre/STATES_CASE1_STG2}
+        \caption{Case 1, continuous discharge. $t_d = 7.2\ s$}
+    \end{subfigure}
+    \caption{Comparison between state trajectories during discharge stage for different $t_d$. Own source.}
+    \label{fig:STATES_Comparison}
 \end{figure}
 
 \subsection{Case 2: restrictive distances and end-time penalties}
+Next simulation tries to see which are the effects when entry and exit distances -i.e $R_{ENTRY}$ and $R_{EXIT}$- are constrained to the limit. From base case it has been seen that minimum needed distances for $f_{TP} = 0.35$ are $R_{ENTRY} = 6500\ m$ and $R_{EXIT} = 9800 \ m$, respectively. This simulation uses this values to restrict the movement and adds penalty weight to end-time penalisations -$w_{t_{F,1}} = w_{t_{F,2}} = w_{t_{F,3}} = 0.5$. 
 
-\subsection{Case 3: controls and, desired attitudes not penalised}
+As can be seen on the graph below, the huge change respect to base case appears during climb stage. In this case, it seems that transitions between stages are more abrupt in terms of velocity ($V$), flight path angle ($\gamma$) and angle-of-attack ($\alpha$) although stationary moudulus seems equal in all cases. The reason after this behaviour is \gls{tps} control, which experiments a quick change between stage 2 and stage 3. Specifically, it reaches upper bound, holds for a few seconds and then drops until it reaches trim point. Nevertheless, this peak was not present on base case and, the transition was smoother -see figure \ref{fig:Base_CONTROLS}-. In terms of elevator deflection, both trajectories from base case and this case are similar. Eventually, it could be said that pull-up manoeuvre at the begin of stage 3 is agressive because of the request to minimise end-time -the solver aims to reach exit point, \gls{ep}, the fastest-.
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{images/manoeuvre/STATES_CASE2} 
+    \caption{State trajectories, case 2. States included are velocities, angles, mass and \gls{uav} trajectory. Own source.}
+    \label{fig:Case2_STATES}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=0.9\textwidth]{images/manoeuvre/CONTROLS_CASE2} 
+    \caption{Control trajectories, case 2. Controls included are \gls{tps} and elevator deflection. Own source.}
+    \label{fig:Case2_CONTROLS}
+\end{figure}
+
+It has to be pinpointed that in this case, penalty weight on terminal cost has been added. Therefore, this has produced some changes in cost objective plots. The shape of the objective profile has changed for both stages 2, the discharge, and 3, the climb. This change could be due to the change in distance constraints when entry and exit distances have been modified. Despite the shape change in cost objective profiles, the most noticeable change is in cost objective magnitude for all stages, which is a result from adding a terminal penalty directly related to end-time value -usually a higher value-.
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{images/manoeuvre/COST_CASE2} 
+    \caption{Cost objective per iteration, case 2. Each stage cost has been added. Own source.}
+    \label{fig:Case2_COST}
+\end{figure}
+
+\subsection{Case 3: controls and desired attitudes not penalised}
+This section contains a simulation where all related control weights have been set to zero -$w_{\dot{\delta}_{TPS}} = 0.0$ and $w_{\dot{\delta}_{e}} = 0.0$- in all stages. In addition, the weight associated to the desired flight path angle error($\gamma - \gamma_d$) during descent stage and, stall protection and elevator deflection saturation weights during ascent stage have been set to zero too. In other words, this simulation is trying to minimise flight path angle rate ($\dot{\gamma}$) -during all stages- and altitude error ($h - h_{ref}$) -during second stage-. No terminal cost has been considered because end-time penalty weights are null this time. The rest of parameters remain equal as specified in table \ref{tab:Base_Case_Parameters} except from distances, which have been set to high values $R_{ENTRY} = R_{EXIT} = 20000 \ m$, and end-time upper bound, which have been set to $t_{F, ub} = 600 \ s$ for each stage. In this case, a $t_d = 7.2\ s$ has been used for visualisation purposes, so comparison will be done against case 1.
+
+The following states and control trajectories are very different from figures \ref{fig:Case1_STATES} and \ref{fig:Case1_CONTROLS}. Firstly, manoeuvre is longer in distance and time because of the new value set on entry and exit radii. Descent stage is more progressive as flight path angle ($\gamma$) descend smoother at the start. Velocity profile is also softer at the beggining. This is a result of more continuous profile on both controls, $\delta_{TPS}$ and $\delta_{e}$. Eventually, pull-up manoeuvre at the end of descent stage is more gentle and the union between stage trajectories is flatter -the discontinuous jump is of lesser magnitude, especially in elevator deflection-. Discharge stage is longer but has not noteworthy differences. Eventually, in climb stage there are some significant decreases in terms of magnitude, principally on flight path angle ($\gamma$), angle-of-attack ($\alpha$) and velocity module ($V$). It has to be pinpointed that all state trajectories seems more stable, continuous and softer than first case and the reason are more continuous and flatter control profiles -since there is no rush to achieve objectives, magnitude on all variables is lower and trim points are easy to find and mantain-.
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{images/manoeuvre/STATES_CASE3} 
+    \caption{State trajectories, case 3. States included are velocities, angles, mass and \gls{uav} trajectory. Own source.}
+    \label{fig:Case3_STATES}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=0.9\textwidth]{images/manoeuvre/CONTROLS_CASE3} 
+    \caption{Control trajectories, case 3. Controls included are \gls{tps} and elevator deflection. Own source.}
+    \label{fig:Case3_CONTROLS}
+\end{figure}
+
+There is no coincidence on the behaviour observed before. Controls are softer because the overall problem has seen an increment in optimal manoeuvrability - \gls{kkt} conditions have changed, see figure below-. 
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{\textwidth}
+        \centering
+        \includesvg[width=\textwidth]{images/manoeuvre/KKT_CASE1}
+        \caption{Case 1. With controls and desired attitude.}
+    \end{subfigure}
+    
+    \vspace{0.25cm}
+    
+    \begin{subfigure}[b]{\textwidth}
+        \centering
+        \includesvg[width=\textwidth]{images/manoeuvre/KKT_CASE3}
+        \caption{Case 3. No controls nor desired attitude.}
+    \end{subfigure}
+    \caption{Comparison between \gls{kkt} conditions per iteration for cases 1 and 3. Own source.}
+    \label{fig:KKT_Comparison}
+\end{figure}
+
+Essentially, the primal infeasability magnitude remained unchanged between case 1 and case 3. Primal infeasability refers to maximum violation of equality or inequality constraints, which means that if its value is high, the trajectories will be near a constraint wall -they will be facing constraint limits or simple bound limits-. On the other hand, there is dual infeasability, which is related to the violation of stationarity condition -see equation  \eqref{eq:KKT_Stationarity}- and which means how great is the capacity for change and optimisation without breaking the constraints. As can be seen in the comparison below, the dual infeasability value has increased noticeable between case 1 and case 3, remarking that there is more optimisation margin on this second problem -principally at stages 1 and 3-. Since there are less parameters to optimise, but with a bigger margin, the solver can choose smoother solutions. In other words, the problem has smooth solution because in some manners, is less cost constrained and controls are more free to adapt circumstances, apart from the fact that trajectories are longer.
+
+\subsection{Case 4: terminal cost only}
+Fourth case has been set to determine which is the effect on setting all running costs to zero and leaving only a terminal cost. Comparison is also done with case 1, since the parameters have been taken from previous case.
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{images/manoeuvre/STATES_CASE4} 
+    \caption{State trajectories, case 4. States included are velocities, angles, mass and \gls{uav} trajectory. Own source.}
+    \label{fig:Case4_STATES}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=0.9\textwidth]{images/manoeuvre/CONTROLS_CASE4} 
+    \caption{Control trajectories, case 4. Controls included are \gls{tps} and elevator deflection. Own source.}
+    \label{fig:Case4_CONTROLS}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{\textwidth}
+        \centering
+        \includesvg[width=0.9\textwidth]{images/manoeuvre/CONTROLS_CASE1_STG2}
+        \caption{Case 1. All running costs.}
+    \end{subfigure}
+    
+    \vspace{0.25cm}
+    
+    \begin{subfigure}[b]{\textwidth}
+        \centering
+        \includesvg[width=0.9\textwidth]{images/manoeuvre/CONTROLS_CASE4_STG2}
+        \caption{Case 4. Terminal cost only.}
+    \end{subfigure}
+    \caption{Comparison between control trajectories during discharge stage for different costs. Own source.}
+    \label{fig:CONTROLS_Comparison_Case4}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{\textwidth}
+        \centering
+        \includesvg[width=0.9\textwidth]{images/manoeuvre/STATES_CASE1_STG2}
+        \caption{Case 1. All running costs.}
+    \end{subfigure}
+    
+    \vspace{0.25cm}
+    
+    \begin{subfigure}[b]{\textwidth}
+        \centering
+        \includesvg[width=0.9\textwidth]{images/manoeuvre/STATES_CASE4_STG2}
+        \caption{Case 4. Terminal cost only.}
+    \end{subfigure}
+    \caption{Comparison between state trajectories during discharge stage for different costs. Own source.}
+    \label{fig:STATES_Comparison_Case4}
+\end{figure}
+
+As can be seen, there are no huge differences between state trajectories. Nonetheless, control trajectories are more unstable and spikey. Essentially, big differences seem to be at discharge stage. Figure \ref{fig:CONTROLS_Comparison_Case4} shows a deep comparison between control trajectories during discharge stage. As mentioned, \gls{tps} variations are accentuated and prolonged in time while elevator deflection ($\delta_{e}$) fluctuates considerably; in any case, it is not possible to find a trim point -perhaps the stage is short to find trim controls or, the sudden discharge is substantial this time that controls or states have not been penalised-. Eventually, fluctuations in control trajectories provoke oscillations in states, particularly in angles and altitude -although this last cannot be seen due to graph limits, which represent operational ceiling altitude-. Figure \ref{fig:STATES_Comparison_Case4} enhance those state differences and the mirror behaviour on state trajectories with changes in control variables for each case, respectively.
+
+\subsection{Case 5: constraints only}
+Eventually, a simulation has been set without any type of costs -all weights have been fixed to zero values-. Therefore, the purpose of this simulation is to observe the state and control trajectories in a problem without a cost function but with many constraints. It is about observing how would trajectories like when there are no optimisation variables. To do so, rest of parameters have been set as in case 3. 
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{images/manoeuvre/STATES_CASE5} 
+    \caption{State trajectories, case 5. States included are velocities, angles, mass and \gls{uav} trajectory. Own source.}
+    \label{fig:Case5_STATES}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=0.9\textwidth]{images/manoeuvre/CONTROLS_CASE5} 
+    \caption{Control trajectories, case 5. Controls included are \gls{tps} and elevator deflection. Own source.}
+    \label{fig:Case5_CONTROLS}
+\end{figure}
+
+In this case the \gls{uav} trajectory does not appear chaotic. However, the states are discontinuous and aggressive in all sections because the controls are neither smooth nor do they tend towards a trim point: they are oscillating, abrupt and discontinuous. In other words, if the trajectory were shorter, it would surely be a case of irrecoverable bang-bang control, physically impossible due to the inertia of the systems. Since there is no penalty on the control effort or state deviations, the solver has no incentive to produce smooth or efficient results. This leads to a scenario where the optimiser merely seeks "any" mathematical path that respects the constraints, regardless of physical or operational logic.
+
+\section{Summary of Observations}
