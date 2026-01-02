@@ -1,0 +1,286 @@
+\newglossaryentry{bodyaxes}{
+  name={$F_b(x_b,y_b,z_b)$},
+  description={Body-fixed reference frame with origin at the CG, $x_b$ along the fuselage, $y_b$ along right semi-wing and $z_b$ pointing down},
+  symbol={$-$},
+  type=symbolslist
+}
+
+\newglossaryentry{windaxes}{
+  name={$F_w(x_w,y_w,z_w)$},
+  description={Wind reference frame, $x_w$ aligned with the aerodynamic velocity vector, $y_w$ perpendicularly pointing rightwards and $z_w$ perpendicularly pointing down},
+  symbol={$-$},
+  type=symbolslist
+}
+
+\newglossaryentry{localhorizon}{
+  name={$F_h(x_h,y_h,z_h)$},
+  description={Local-horizon reference frame (North-East-Down)},
+  symbol={$-$},
+  type=symbolslist
+}
+
+\newglossaryentry{weight}{
+  name={$W$},
+  description={Weight force, force projected into positive z-local-horizon axis ($z_h$)},
+  symbol={$[N]$},
+  type=symbolslist
+}
+
+\newglossaryentry{mass}{
+  name={$m$},
+  description={Aircraft's mass},
+  symbol={$[kg]$},
+  type=symbolslist
+}
+
+\newglossaryentry{iy}{
+  name={$I_y$},
+  description={Moment of inertia about the y-body axis ($y_b$)},
+  symbol={$[kg \cdot m^2]$},
+  type=symbolslist
+}
+
+\newglossaryentry{bodyvel}{
+  name={$u, w$},
+  description={Velocity components in the body-fixed frame ($x_b,z_b$)},
+  symbol={$[m/s]$},
+  type=symbolslist
+}
+
+\newglossaryentry{pitchrate}{
+  name={$q$},
+  description={Pitch rate, angular velocity about the y-body axis ($y_b$)},
+  symbol={$[rad/s]$},
+  type=symbolslist
+}
+
+\newglossaryentry{pitch}{
+  name={$\theta$},
+  description={Pitch angle, angle between x-body axis ($x_b$) and the horizontal plane ($x_h-y_h$)},
+  symbol={$[rad]$},
+  type=symbolslist
+}
+
+\newglossaryentry{fpa}{
+  name={$\gamma$},
+  description={Flight path angle, angle between the aerodynamic velocity vector ($x_w$) and the horizontal plane ($x_h-y_h$)},
+  symbol={$[rad]$},
+  type=symbolslist
+}
+
+\newglossaryentry{aoa}{
+  name={$\alpha$},
+  description={Angle of Attack, angle between the aircraft's x-body axis ($x_b$) and the projection of the aerodynamic velocity vector onto the aircraft's plane of symmetry ($x_b-z_b$) plane},
+  symbol={$[rad]$},
+  type=symbolslist
+}
+
+\newglossaryentry{lift}{
+  name={$L$},
+  description={Lift force, force projected into negative z-wind axis ($z_w$)},
+  symbol={$[N]$},
+  type=symbolslist
+}
+
+\newglossaryentry{drag}{
+  name={$D$},
+  description={Drag force, force projected into negative x-wind axis ($x_w$)},
+  symbol={$[N]$},
+  type=symbolslist
+}
+
+\newglossaryentry{cl_coeffs}{
+  name={$C_{L_0}, C_{L_\alpha}, C_{L_{\delta e}}$},
+  description={Lift coefficients: zero-alpha lift, lift-curve slope, and elevator lift contribution},
+  symbol={$[-], [rad^{-1}], [rad^{-1}]$},
+  type=symbolslist
+}
+
+\newglossaryentry{cd_coeffs}{
+  name={$C_{D_0}, k$},
+  description={Drag coefficients: parasitic drag and induced drag factor -computed as $k = \frac{1}{\pi AR e}$}-,
+  symbol={$[-]$},
+  type=symbolslist
+}
+
+\newglossaryentry{cm_coeffs}{
+  name={$C_{m_0}, C_{m_\alpha}, C_{m_{\delta e}}$},
+  description={Pitching moment coefficients: static stability coefficients and elevator moment contribution},
+  symbol={$[-], [rad^{-1}],[rad^{-1}]$},
+  type=symbolslist
+}
+
+\newglossaryentry{thrust}{
+  name={$T$},
+  description={Thrust force, force projected into positive x-body axis ($x_w$)},
+  symbol={$[N]$},
+  type=symbolslist
+}
+
+\newglossaryentry{dist_ct_cg}{
+  name={$\Delta X_{CT}, \Delta Z_{CT}$},
+  description={Horizontal and vertical distances from CT to the CG},
+  symbol={$[m]$},
+  type=symbolslist
+}
+
+\newglossaryentry{thrust_aoa}{
+  name={$\varepsilon$, $\varepsilon_0$},
+  description={Thrust angle of attack and its initial value. They are the angle between aerodynamic velocity and the angle between thrust vector and x-body axis ($x_b$), repectively},
+  symbol={$[rad]$},
+  type=symbolslist
+}
+
+\newglossaryentry{sfc}{
+  name={$SFC$},
+  description={Specific Fuel Consumption},
+  symbol={$[kg/s]$},
+  type=symbolslist
+}
+
+\newglossaryentry{bem}{
+  name={$BEM$},
+  description={Basic Empty Mass},
+  symbol={$[kg]$},
+  type=symbolslist
+}
+
+\newglossaryentry{mtom}{
+  name={$MTOM$},
+  description={Maximum Take-Off Mass},
+  symbol={$[kg]$},
+  type=symbolslist
+}
+
+\newglossaryentry{tom}{
+  name={$TOM$},
+  description={Take-Off Mass},
+  symbol={$[kg]$},
+  type=symbolslist
+}
+
+\newglossaryentry{vtp}{
+  name={$V_{tp}$},
+  description={Target speed for level-flight cruise trajectory or water-discharge level-flight stage},
+  symbol={$[m/s]$},
+  type=symbolslist
+}
+
+\newglossaryentry{href}{
+  name={$h_{ref}$},
+  description={Reference altitude for level-flight cruise trajectory or water-discharge level-flight stage},
+  symbol={$[m]$},
+  type=symbolslist
+}
+
+\newglossaryentry{windfield_2d}{
+  name={$\mathbf{V}_w$},
+  description={Bidimensional wind field vector, defined by horizontal ($V_{x_w}$) and vertical ($V_{z_w}$) components in the local-horizon frame},
+  symbol={$[m/s]$},
+  type=symbolslist
+}
+
+\newglossaryentry{qbar}{
+  name={$\bar{q}$},
+  description={Dynamic pressure, computed as $\bar{q}=\frac{1}{2}\rho V_a^2$ where $\rho$ is air's density and $V_a$ is the aerodynamic velocity},
+  symbol={$[Pa]$},
+  type=symbolslist
+}
+
+\newglossaryentry{MAC}{
+  name={$\bar{c}$},
+  description={Mean Aerodynamic Chord of aircraft's wing},
+  symbol={$[m]$},
+  type=symbolslist
+}
+
+\newglossaryentry{S}{
+  name={$S$},
+  description={Aircraft wing's surface},
+  symbol={$[m^2]$},
+  type=symbolslist
+}
+
+\newglossaryentry{FM}{
+  name = {$FM$},
+  description = {Fuel Mass},
+  symbol = {$[kg]$},
+  type=symbolslist
+}
+
+\newglossaryentry{PM}{
+  name = {$PM$},
+  description = {Payload Mass},
+  symbol = {$[kg]$},
+  type=symbolslist
+}
+
+\newglossaryentry{AR}{
+  name = {$AR$},
+  description = {Aspect Ratio of the aircraft computed as $AR = \frac{b^2}{S}$},
+  symbol = {$[-]$},
+  type=symbolslist
+}
+
+\newglossaryentry{b}{
+  name = {$b$},
+  description = {Span of the aircaft's wing},
+  symbol = {$[m]$},
+  type=symbolslist
+}
+
+\newglossaryentry{Dp}{
+  name = {$D_p$},
+  description = {Propeller's diameter},
+  symbol = {$[m]$},
+  type=symbolslist
+}
+
+\newglossaryentry{FLAPS}{
+  name = {$\delta_{FLAPS}$},
+  description = {Flaps deflection, fixed value during the mission},
+  symbol = {$[rad]$},
+  type=symbolslist
+}
+
+\newglossaryentry{rpm}{
+  name = {$RPM$},
+  description = {Indicates the propeller RPMs for thrust computations},
+  symbol = {$[rpm]$},
+  type=symbolslist
+}
+
+\newglossaryentry{thrust_coeff}{
+  name = {$[C_{T_0},C_{T_1},C_{T_2},C_{T_3}]$},
+  description = {Thrust coefficients, to compute thrust $T(J)$ and torque $Q(J)$ as functions of the advance ratio $J$},
+  symbol = {$[-]$},
+  type=symbolslist
+}
+
+\newglossaryentry{eff_coeff}{
+  name = {$[C_{\eta_0},C_{\eta_1}]$},
+  description = {Thrust coefficients, to compute propeller's efficiency $\eta(J)$ as a function of the advance rati $J$},
+  symbol = {$[-]$},
+  type=symbolslist
+}
+
+\newglossaryentry{CG}{
+  name = {$[CG_{x},CG_{z}]$},
+  description = {Centre of Gravity (CG) defined from wing's leading edge in body reference frame. Point where weight is applied},
+  symbol = {$[m]$},
+  type=symbolslist
+}
+
+\newglossaryentry{CP}{
+  name = {$[CP_{x},CP_{z}]$},
+  description = {Centre of Pressure (CP) defined from wing's leading edge in body reference frame. Point where aerodynamic forces are applied},
+  symbol = {$[m]$},
+  type=symbolslist
+}
+
+\newglossaryentry{CT}{
+  name = {$[CT_{x},CT_{z}]$},
+  description = {Centre of Thrust (CT) defined from wing's leading edge in body reference frame. Point where thrust is applied},
+  symbol = {$[m]$},
+  type=symbolslist
+}

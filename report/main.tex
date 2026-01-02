@@ -2,21 +2,68 @@
 
 % PACKAGES AND CONFIGURATIONS
 \input{packages}
+\renewcommand{\familydefault}{\rmdefault}
 
 % HEADER AND FOOTER
 \pagestyle{fancy}
 \fancyhf{} 
 
-\setlength{\headheight}{42.25491pt}
-\addtolength{\topmargin}{-30.25491pt}
+\setlength{\headheight}{46pt} 
+\addtolength{\topmargin}{-4pt}
 
-\fancyhead[L]{\includegraphics[width=5.5cm]{images/default/logo_UPC_header.png}}
-\fancyhead[R]{Real-Time Optimal Trajectory \\ Generation for Fixed-Wing UAVs}
-\fancyfoot[C]{\thepage}
+\fancyhead[L]{\includegraphics[width=5cm]{images/default/logo_UPC_header.png}\includegraphics[width=1.3cm]{images/default/singular_aircraft_ltd_logo.jpeg}}
+\fancyhead[R]{
+    \small\rmfamily\bfseries 
+    \begin{tabular}[b]{r@{}}
+        A.Campillo "Real-Time Optimal Trajectory \\ 
+        Generation for Fixed-Wing UAVs" 
+    \end{tabular}
+}
+\fancyfoot[C]{\small\rmfamily\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
 
-\renewcommand{\headrulewidth}{0.5pt} 
+% CHAPTER'S TITLE
+\titleformat{\chapter}[block]
+  {\normalfont\bfseries\rmfamily}
+  {%
+    \textcolor{RoyalBlue}{\fontsize{25}{33}\selectfont\bfseries\thechapter}
+    \hspace{10pt}
+    \vrule width 3pt 
+    \hspace{10pt}
+  }
+  {0pt}
+  {\huge\rmfamily} 
 
+% GLOSSARIES AND ACRONYMS
+\newglossary[slg]{symbolslist}{syi}{syg}{Nomenclature}
+\makeglossaries
+\input{chapters/acronyms.tex}
+\input{chapters/nomenclature.tex}
 
+\newglossarystyle{nomenclaturestyle}{
+  \setglossarystyle{long3col}
+  \renewenvironment{theglossary}%
+    {\begin{longtable}{@{}l p{0.65\textwidth} r@{}}
+     \rmfamily\bfseries Symbol & \rmfamily\bfseries Description & \rmfamily\bfseries Units \\ [1ex]
+     \hline 
+     \noalign{\vspace{6pt}}
+     % Corrected Notation Note: Using multicolumn to avoid the \cr error
+     \multicolumn{3}{@{}l}{\small\textit{Note: Bold symbols denote vectors; dotted symbols denote time-derivatives ($\dot{x} = dx/dt$).}} \\ [2ex]
+     \endhead}%
+    {\end{longtable}}
+  
+  \renewcommand*{\glossentry}[2]{%
+    \glstarget{##1}{\glossentryname{##1}} & 
+    \glossentrydesc{##1} & 
+    \glossentrysymbol{##1} \\[1.5ex] 
+  }
+}
+
+\glsaddall[types={\acronymtype}]
+\glsaddall[types={symbolslist}]
+
+\setglossarystyle{list}
+\renewcommand*{\glsnamefont}[1]{\rmfamily\bfseries #1}
 
 %% DOCUMENT %%
 \begin{document}
@@ -34,8 +81,8 @@
 \phantom{abs}
 \vspace{1cm}
 \begin{center}
-\scalebox{2}{
-  \parbox{0.9\linewidth}{
+\scalebox{1.95}{
+  \parbox{\linewidth}{
     \textcolor{RoyalBlue}{
       Real-Time Optimal Trajectory Generation \\
       for Fixed-Wing UAVs in Firefighting \\
@@ -77,17 +124,35 @@
 % TABLES OF CONTENTS, FIGURES AND TABLES
 \tableofcontents
 \listoffigures
+\addcontentsline{toc}{chapter}{List of Figures}
 \listoftables
+\addcontentsline{toc}{chapter}{List of Tables}
+\printglossary[type=\acronymtype, style=mcolindex, title=Acronyms]
+\printglossary[type=symbolslist, style=nomenclaturestyle]
 \newpage
 
 % MAIN CONTENT
 \pagestyle{fancy}
 \pagenumbering{arabic}
-\input{chapters/preface}
+\input{chapters/ch2_fundamentals_oc.tex}
+\input{chapters/ch3_benchmark.tex}
+\input{chapters/ch4_problem_definition.tex}
+\input{chapters/ch5_problem_results.tex}
 
 % REFERENCES
 \printbibliography[heading=bibintoc,title={References}]
 
 % APPENDICES
-
+\newpage
+\thispagestyle{empty}
+\vspace*{\fill}
+\begin{center}
+    \Huge \textbf{Appendices}
+\end{center}
+\vfill
+\newpage
+\appendix
+\input{chapters/AppA_Gamma_Dot.tex}
+\input{chapters/AppB_Code.tex}
+\input{chapters/AppC_Aircraft_Parameters.tex}
 \end{document}

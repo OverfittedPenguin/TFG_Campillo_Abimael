@@ -4,6 +4,12 @@
 *.fls
 *.log
 *.synctex.gz
+*.slg
+*.out
+*.slo
+*.sls
+*.syg
+*.syi
 
 # Carpeta de salida del compilador (opcional)
 output/

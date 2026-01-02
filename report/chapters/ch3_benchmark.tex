@@ -1,0 +1,547 @@
+\chapter{Benchmark Problem: A Level-Flight Cruise Trajectory}
+This chapter introduces the reader to flight dynamics using a level-cruise flight trajectory. Also, the trajectory is formulated as an \gls{ocp} and solved via an implementation using CasADi. Therefore, a mathematical formulation on \gls{ocp} and \gls{nlp} notation is presented right after the equations of motion and, right before presenting the results. Eventually, the free-end condition is applied and solved, acting as a preamble of the following chapter.
+
+\section{UAV Kinematics and Equations of Motion}
+\label{sec:EOM}
+Firstly, the flight dynamics for a general \gls{uav} flight trajectory had to be introduced and described. Since the aim of the project is \gls{oct} development for firefighting manoeuvres, some hypothesis have to be applied. The hypotheses considered are the follwoing ones.
+
+\begin{itemize}
+    \item A bidimensional (2D) trajectory without tridimensional (3D) effects will be considered. Thus, all lateral stability and movements will be neglected and only longitudinal static stability will be considered -i.e $\mathcal{L} = 0$, $\mathcal{N}=0$, $\Phi = 0$, $\dot{\Phi} = 0$, $\Psi = 0$, $\dot{\Psi} = 0$, $y = const.$ and $\dot{y} = 0$-.
+    \item All dynamic modes are neglected and only static stability phenomena will be included.
+    \item The atmospheric condistions shall be modelled using International Standard Atmoshpere (ISA) model. Only static bidimensional (2D) wind field would be considered, which means that free-stream velocity has to be constant in all domain.
+    \item Bidimensional (2D) level-flight cruise trajectory implies a null flight path angle and null variation of the same -i.e $\gamma = 0$ and $\dot{\gamma} = 0$ -.
+\end{itemize}
+
+Once the hypostheses have been written, its time to introduce the flight dynamics that are involved in bidimensional (2D) flight trajectories. The image below shows the free-body diagram  and the relation between plane reference systems -i.e including body axes ($x_b$,$z_b$), wind axes ($x_w$,$z_w$) and local-horizon axes ($x_h$,$z_h$)-.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{images/benchmark_fbd.png}
+    \caption{Free-body diagram of an aircraft bidimensional (2D) flight trajectory, involving forces and moments. Own source.}
+    \label{fig:Benchmark}
+\end{figure}
+
+Applying Newton's second law, the equilibrium of forces and moments can be obtained. To see the different elements involved in each equation, the reader can refer to nomenclature's section. 
+
+\begin{equation}
+    \sum F_{x_b} = m\frac{du}{dt} = m\dot{u} = T + L\sin\alpha - D\cos\alpha - W\sin\theta - mqw 
+    \label{eq:Forces_Xb}
+\end{equation}
+
+\begin{equation}
+    \sum F_{z_b} = m\frac{dw}{dt} =m\dot{w} = W\cos\theta - L\cos\alpha - D\sin\alpha + mqu
+    \label{eq:Forces_Zb}
+\end{equation}
+
+\begin{equation}
+    \sum M_{y_b} = I_{y}\frac{dq}{dt} =I_{y}\dot{q} = C_m\bar{q}S\bar{c} - T\left[\Delta X_{CT}\sin\varepsilon + \Delta Z
+    _{CT}   \cos\varepsilon\right]
+    \label{eq:Moment_Yb}
+\end{equation}
+
+Along to the dynamic equations, the \gls{uav} kinematics can be described using the rotation matrix between body and local-horizon axes as follows.
+
+\begin{equation}
+    \begin{bmatrix}
+        \dot{x} \\
+        \dot{z}
+    \end{bmatrix}
+    \coloneqq R_{hb}
+    \begin{bmatrix}
+        u\\
+        w
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        \cos \theta & \sin \theta\\
+        -\sin \theta & \cos \theta
+    \end{bmatrix}
+    \begin{bmatrix}
+        u \\
+        w
+    \end{bmatrix}
+    = 
+    \begin{bmatrix}
+       u \cos \theta + w \sin \theta\\
+        -u \sin \theta + w \cos \theta
+    \end{bmatrix}
+    \label{eq:Inertial_Velocities}
+\end{equation}
+
+Eventually, pitch and mass variations have to be considered to complete the full dynamic and kinematics set of equations. It has to be pinpointed that for this benchmark problem, only specific fuel consumption is considered on mass variation equation.
+
+\begin{equation}
+    \frac{d\theta}{dt} \coloneqq \dot{\theta} = q
+    \label{eq:Theta_dot}
+\end{equation}
+
+\begin{equation}
+    \frac{dm}{dt} \coloneqq \dot{m} = -SFC
+    \label{eq:Mass_dot}
+\end{equation}
+
+As a clarification on the equation terms, below are the complete formulation of aerodynamic forces and moments, with all proper aerodynamic coefficients considered. 
+
+\begin{equation}
+    L \coloneqq \bar{q}SC_L = \bar{q}S\left(C_{L_0} + C_{L_\alpha}\alpha + C_{L_{\delta_e}}\delta_e\right)
+    \label{eq:Lift}
+\end{equation}
+
+\begin{equation}
+    D \coloneqq \bar{q}SC_D = \bar{q}S\left[C_{D_0} + k\left(C_{L_0} + C_{L_\alpha}\alpha + C_{L_{\delta_e}}\delta_e\right)^2\right]
+    \label{eq:Drag}
+\end{equation}
+
+\begin{equation}
+    C_m \coloneqq C_{m_0} + C_{m_\alpha}\alpha + C_{m_{\delta_e}}\delta_e
+    \label{eq:Moment}
+\end{equation}
+
+\section{Mathematical Formulation of the OCP}
+Next step is to transform the problem above into a set of equations using the \gls{oc} notation. To do so, the three phases of optimisation problems description are used, which means that the problem has to be modelled, constrained and then optimised.
+
+\subsection{States and controls}
+First step is modelisation, which means that state and control variables have to be defined for the problem. Since the benchmark problem is a level-flight cruise trajectory, the states involved in the previous equations of motion are: local-horizon position ($x$,$z$); body velocities ($u$,$w$); pitch ($\theta$); pitch rate ($q$); and mass ($m$). Those seven states are the ones that allow describing the trajectory and \gls{uav} condition through time, since they indicate position, attitude and mass.
+
+The previous states are defined for a bidimensional (2D) frame using only longitudinal stability equations, as has been indicated before. Therefore, the controls that shall be used are no other ones but \gls{tps}, denoted as $\delta_{TPS}$, and elevator deflection, denoted as $\delta_e$. That pair of control variables are the minimum controllable conditions for the longitudinal flight given the conditions of the problem and they are responsible of controlling speed and altitude, respectively -i.e \gls{uav} speed is controlled by $\delta_{TPS}$ variations while \gls{uav} altitude is controlled by $\delta_e$ variations-.
+
+Eventually, the state and control vector can be constructed, followed by its form using state space notation -where $x_i$ are states and $u_i$ are controls-. Notice that the order followed to construct the vector has been state variables followed by control variables; nevertheless, is indistinct which state or control goes first in each group. The order has been chosen by convenience for later \gls{nlp} formulation.
+
+\begin{equation}
+\mathbf{w} \coloneqq 
+\begin{bmatrix}
+    u \\
+    w \\
+    q \\
+    \theta \\
+    x \\
+    z \\
+    m \\
+    \delta_{TPS} \\
+    \delta_{e} \\
+\end{bmatrix}
+=
+\begin{bmatrix}
+    x_1 \\
+    x_2 \\
+    x_3 \\
+    x_4 \\
+    x_5 \\
+    x_6 \\
+    x_7 \\
+    u_1 \\
+    u_2 \\
+\end{bmatrix}
+\label{eq:Benchmark_States_Controls}
+\end{equation}
+
+\subsection{Constraints and bounds}
+\label{sec:Benchmark_Constraints_Bounds}
+After the state space is set, the constraints can be defined, following the second step on \gls{ocp} definition. At this point, previous remarks on constraint definition towards \gls{ocp} notation could be recovered. That means that constraints are described following the preset order, which starts by dynamic constraints. Since dynamic constraints have been defined in section \ref{sec:EOM}, they have to be transcribed using state space notation, which led to the following set of expressions.\footnote{From now on, sine operation $\sin()$ is denoted as $s$ and, cosine operation $\cos()$ is denoted as $c$. This has been done for an easy readability of some equations and operations.}
+
+\begin{equation}
+\begin{split}
+    \dot{x_1} ={} & \frac{1}{x_7} \Big[ T(x_1,x_2,x_6,u_1) + L(x_1,x_2,x_6,u_2) \cdot s\alpha(x_1,x_2) \\
+    & - D(x_1,x_2,x_6,u_2) \cdot c\alpha(x_1,x_2) \Big] - x_3x_2 - g \cdot sx_4
+\end{split}
+\label{eq:Benchmark_EOM_1}
+\end{equation}
+
+\begin{equation}
+\begin{split}
+    \dot{x_2} ={} & g \cdot cx_4 - \frac{1}{x_7} \Big[ L(x_1,x_2,x_6,u_2) \cdot c\alpha(x_1,x_2) \\
+    & + D(x_1,x_2,x_6,u_2) \cdot s\alpha(x_1,x_2) \Big] + x_3x_1 
+\end{split}
+\label{eq:Benchmark_EOM_2}
+\end{equation}
+
+\begin{equation}
+\begin{split}
+    \dot{x_3} ={} & \frac{1}{I_y} \Big[ C_m(u_2)\bar{q}(x_1,x_2,x_6)S\bar{c} \\
+    & - T(x_1,x_2,x_6,u_1)\left[\Delta X_{CT}\cdot s \varepsilon (x_1,x_2)+ \Delta Z_{CT}\cdot c \varepsilon (x_1,x_2)\right]\Big]
+\end{split}
+\label{eq:Benchmark_EOM_3}
+\end{equation}
+
+\begin{equation}
+    \dot{x_4} = x_3
+\label{eq:Benchmark_EOM_4}
+\end{equation}
+
+\begin{equation}
+    \dot{x_5} = x_1\cdot c x_4 + x_2\cdot s x_4
+\label{eq:Benchmark_EOM_5}
+\end{equation}
+
+\begin{equation}
+    \dot{x_6} = -x_1\cdot s x_4 + x_2\cdot c x_4
+\label{eq:Benchmark_EOM_6}
+\end{equation}
+
+\begin{equation}
+    \dot{x_7} = -SFC
+\label{eq:Benchmark_EOM_7}
+\end{equation}
+
+The set of equations above can be summarised to a reduced version if RHS is expressed as functionals of the states and controls involved only.
+
+\begin{equation}
+    \mathbf{g_{dyn}} \coloneqq
+\begin{bmatrix}
+    \dot{x_1} -  f_1(x_1,x_2,x_3,x_4,x_6,x_7,u_1,u_2)\\
+    \dot{x_2} -  f_2(x_1,x_2,x_3,x_4,x_6,x_7,u_2)\\
+    \dot{x_3} - f_3(x_1,x_2,x_6,u_1,u_2)\\
+    \dot{x_4} - f_4(x_3)\\
+    \dot{x_5} - f_5(x_1,x_2,x_4)\\
+    \dot{x_6} - f_6(x_1,x_2,x_4)\\
+    \dot{x_7} -SFC\\
+\end{bmatrix}
+=
+0
+\label{eq:Benchmark_Dynamic_Constraints}
+\end{equation}
+
+Once dynamic constraints have been fully described, its time to set the path constraints and define them using state space notation. As said before, path constraints are the ones that could affect state and control trajectories during all time domain. For a level-flight cruise trajectory it is important to introduce a target speed ($V_{tp}$) and a target altitude ($h_{ref}$) as a constraints, see expressions below. It has to be pinpointed that flight path angle ($\gamma$) could be introduced as a constraint, but it has been chosen to introduce it later as a penalty into cost functional definition. Both constraints for target speed and target altitude are introduced using inequality expressions, so as not to be too restrictive with the problem -i.e the expressions have to introduce some margins with target constant values-.
+
+\begin{equation}
+    \begin{cases}
+        0.9\cdot V_{TP} - \sqrt{(u - V_{x_w})^2 + (w - V_{z_w})^2} \leq 0 \\
+        \sqrt{(u - V_{x_w})^2 + (w - V_{z_w})^2} - 1.1\cdot V_{TP} \leq 0
+    \end{cases}
+    \label{eq:Benchmark_Path_1}
+\end{equation}
+
+\begin{equation}
+    \begin{cases}
+        (h_{ref} - 3.0) + z \leq 0 \\
+        -z - (h_{ref} + 3.0) \leq 0
+    \end{cases}
+    \label{eq:Benchmark_Path_2}
+\end{equation}
+
+Transcribing the equations using state space notation led to the following set of expressions.
+
+\begin{equation}
+    \mathbf{g_{path}} \coloneqq
+    \begin{bmatrix}
+        0.9\cdot V_{TP} - \sqrt{(x_1 - V_{x_w})^2 + (x_2 - V_{z_w})^2}\\
+        \sqrt{(x_1 - V_{x_w})^2 + (x_2 - V_{z_w})^2} - 1.1\cdot V_{TP}\\
+        (h_{ref} - 3.0) + x_6\\
+        -x_6 - (h_{ref} + 3.0)
+    \end{bmatrix}
+    \leq 0
+    \label{eq:Benchmark_Path_Constraints}
+\end{equation}
+
+At this point, the only remaining constraints are initial state conditions, which will be enforced to a known state value. Thus, the following equations will have to be fulfilled.
+
+\begin{equation}
+    \mathbf{\varphi_{0}} \coloneqq
+\begin{bmatrix}
+    x_1^0 -  u_0\\
+    x_2^0 -  w_0\\
+    x_3^0\\
+    x_4^0 - \theta_0\\
+    x_5^0\\
+    x_6^0 + h_{ref}\\
+    x_7^0 - TOM\\
+\end{bmatrix}
+=
+0
+\label{eq:Benchmark_Initial_Constraints}
+\end{equation}
+
+Eventually, the simple bounds for each state and control variable have to be declared. The lower bounds and upper bounds are separated onto two different groups denoted by $lbx$ and $ubx$, respectively. They have been already denoted using state space notation.
+
+\begin{equation}
+    \mathbf{lbx} \coloneqq 
+    \begin{bmatrix}
+    u_{min} - x_1  \\
+    w_{min} - x_2 \\
+    - x_3 \\
+    \theta_{min} - x_4 \\
+    - x_5 \\
+    z_{min} - x_6 \\
+    BEM - x_7 \\  
+    \end{bmatrix}
+    \leq 0
+    \label{eq:Benchmark_LBX}
+\end{equation}
+
+\begin{equation}
+    \mathbf{ubx} \coloneqq 
+    \begin{bmatrix}
+    x_1 - u_{max}  \\
+    x_2 - w_{max} \\
+    x_3 \\
+    x_4 - \theta_{max} \\
+    x_5 \\
+    x_6 - z_{max}\\
+    x_7 - MTOM \\  
+    \end{bmatrix}
+    \leq 0
+    \label{eq:Benchmark_UBX}
+\end{equation}
+
+\subsection{Cost functional}
+Third phase of an \gls{ocp} definition is defining which variables have to be optimised and below which optimisation criteria. For this benchmark case, five different criteria have been chosen. 
+
+\begin{itemize}
+    \item Firstly, the minimisation of the flight path angle ($\gamma$) is introduced as a quadratic penalty in the objective function rather than a hard equality constraint. This formulation encourages the solver to converge on a solution where $\gamma \approx 0$, effectively approximating a level-flight trajectory. This approach was chosen because enforcing $\gamma = 0$ as an equality constraint could lead to numerical stiffness, significantly increasing the difficulty of finding a feasible solution. By using it as a penalty, the solver can more efficiently negotiate the trade-offs between system dynamics and path objectives, leading to a more robust and faster convergence toward the optimal solution. The expression introduced in the running cost is the following one, where $\bar{\gamma}$ is the normalised $\gamma$ term using $\gamma_{max}$.
+    
+    \begin{equation}
+        J_{\gamma} \coloneqq \bar{\gamma}^2 = \left(\frac{\gamma}{\gamma_{max}}\right)^2 = \left(\frac{\theta - \alpha}{\gamma_{max}}\right)^2 = \left(\frac{x_4 - \alpha(x_1,x_2)}{\gamma_{max}}\right)^2
+    \end{equation}
+
+    \item Secondly, the minimisation of altitude error relative to the reference altitude ($h_{ref}$) is implemented as a quadratic penalty to promote a level-flight profile. Unlike the path constraints defined in \eqref{eq:Benchmark_Path_2}, which establish strict safety limits, the penalty allows for transient deviations during manoeuvres. This dual-layer approach -constraining the aircraft within a feasible corridor while penalising deviations from the centerline- mimics real-world flight control laws. It allows the optimiser to prioritise control smoothness and actuator limits over rigid altitude tracking, resulting in a more physically realistic and numerically stable trajectory.
+
+    \begin{equation}
+        J_{h} \coloneqq (\bar{h} - 1)^2 = \left(\frac{h - h_{ref}}{h_{ref}}\right)^2 = \left(\frac{-x_6 - h_{ref}}{h_{ref}}\right)^2
+    \end{equation}
+
+    \item Thirdly, the minimisation of flight path angle rate ($\dot{\gamma}$) prevents the aircraft from rapidly oscillating up and down while forces the solver to find a solution that is not only level ($\gamma \approx 0$) but also steady ($\dot{\gamma} \approx 0$). The full derivation of the expression below can be found on appendix \ref{app:Gamma_Dot}, since it involves partial derivatives and a large mathematical development.
+    
+    \begin{equation}
+        J_{\dot{\gamma}} \coloneqq \left(q - \frac{\dot{w}u - \dot{u}w}{u^2 + w^2}\right)^2 / \dot{\gamma}_{max}^2 = \left(x_3 - \frac{\dot{x_2}x_1 - \dot{x_1}x_2}{x_1^2 + x_2^2}\right)^2 / \dot{\gamma}_{max}^2
+    \end{equation}
+
+    \item Eventually, control variable rates minimisation have been introduced using a quadratic penalty, in each case, for preventing a bang-bang -rapidly control changing- behaviour, since it is a non-feasible behaviour in real systems. Furthermore, control rate minimisation is the normal criteria for real pilots when facing low-altitude flight manoeuvres, also known as the 'lazy pilot' implementation. This implementation basically reduces pilot's workload while preventing overcontrol risks, as stated by Stengel in \cite{stengel1994optimal}. The cost expressions for both \gls{tps} and elevator deflection are the following ones, respectively -$t_{k+1}$ and $t_{k}$, refer to next and actual time-instants-.
+    
+    \begin{equation}
+    J_{\dot{\delta}_{TPS}} \coloneqq \frac{\left(\delta_{TPS}^{k+1} - \delta_{TPS}^{k}\right)^2}{\Delta t} = \frac{\left(u_1^{k+1} - u_1^{k}\right)^2}{\Delta t}
+    \end{equation}
+    \begin{equation}
+    J_{\dot{\delta}_{e}} \coloneqq \frac{\left(\delta_{e}^{k+1} - \delta_{e}^{k}\right)^2}{\delta_{e, max}^2\Delta t} = \frac{\left(u_2^{k+1} - u_2^{k}\right)^2}{\delta_{e,max}^2\Delta t}
+    \end{equation}
+\end{itemize}
+
+Once all penalties have been defined, the whole cost functional in its Lagrange form can be stated as follows. Notice that each cost term has a penalty weight associated.
+
+\begin{equation}
+    L(x,u) := \sum_{k=0}^{N-1} \left(w_\gamma\cdot J_\gamma + w_h \cdot J_h + w_{\dot{\gamma}}\cdot J_{\dot{\gamma}} + w_{\dot{\delta}_{TPS}}\cdot J_{\dot{\delta}_{TPS}} + w_{\dot{\delta}_e}\cdot J_{\dot{\delta}_e}\right)
+    \label{eq:Benchmark_Cost}
+\end{equation}
+
+\section{NLP Formulation and Implementation via CasADi}
+After defining the whole \gls{ocp}, it is time to discretise the equations using trapezoidal rule to achieve a \gls{nlp} problem formulation and, therefore, implement it into CasADi blocks. To do the discretisation it is important to remark two different points: firstly, the dynamic constraints will be evaluated for the actual time-instant and next time-instant -following trapezoidal integration scheme- while initial constraints will be enforced at time-instant $t_0$ only, and path constraints will be enforced at each time-instant $t_k$ separately; referring to Lagrange cost term, it will be evaluated also following a trapezoidal scheme. This leads to the following constraints, simple bounds and cost terms. It has to be pinpointed that, in this case, end-time is known and, therefore, time-step is defined as $\Delta t = t_f / (N-1)$, where N is the number of collocation points -or nodes-. Moreover, its implementation in CasADi has to follow the statements done in section \ref{sec:CasADi}, which means to create state and control, constraints and simple bounds vectors as large as the number of states and control variables per node -seven (7) states plus two (2) controls, per node-
+
+\begin{equation}
+    \begin{aligned}
+        \mathbf{x}^k & \coloneqq [x_1^k, x_2^k, x_3^k, x_4^k, x_5^k, x_6^k, x_7^k]^\top \\
+        \mathbf{u}^k & \coloneqq [u_1^k, u_2^k]^\top \\[10pt]
+        \mathbf{w} & \coloneqq 
+        \begin{bmatrix}
+            \mathbf{x}^0 \\ \mathbf{u}^0 \\ \mathbf{x}^1 \\ \mathbf{u}^1 \\ \vdots \\ \mathbf{x}^N \\ \mathbf{u}^N
+        \end{bmatrix}
+    \end{aligned}
+    \label{eq:Benchmark_NLP_w}
+\end{equation}
+
+\begin{gather*}
+    \mathbf{d}^k \coloneqq \mathbf{x}^{k+1} - \mathbf{x}^k - \frac{\Delta t}{2} \left( \mathbf{f}^k + \mathbf{f}^{k+1} \right) \in \mathbb{R}^7 \\
+    \mathbf{h}^k \coloneqq \mathbf{g}_{\text{path}}( \mathbf{x}^k, \mathbf{u}^k ) \in \mathbb{R}^4 \\
+    \mathbf{\varphi}_0 \coloneqq \mathbf{x}^0 - \mathbf{x}_{\text{init}} \in \mathbb{R}^7
+\end{gather*}
+
+\begin{equation}
+    \mathbf{g}(\mathbf{w}) \coloneqq 
+        \begin{bmatrix} 
+            \mathbf{d}^0 \\ \vdots \\ \mathbf{d}^{N-1} \\ \hline 
+            \mathbf{h}^0 \\ \vdots \\ \mathbf{h}^N \\ \hline 
+            \mathbf{\varphi}_0 
+        \end{bmatrix}, \quad
+        \mathbf{g}_{lb} \coloneqq
+        \begin{bmatrix} 
+            \mathbf{0}_{7(N-1)} \\ 
+            -\mathbf{\infty}_{4N} \\ 
+            \mathbf{0}_{7} 
+        \end{bmatrix}, \quad
+        \mathbf{g}_{ub} \coloneqq
+        \begin{bmatrix} 
+            \mathbf{0}_{7(N-1)} \\ 
+            \mathbf{0}_{4N} \\ 
+            \mathbf{0}_{7} 
+        \end{bmatrix}
+    \label{eq:Benchmark_NLP_g}
+\end{equation}
+
+\begin{equation}
+    \begin{aligned}
+        \mathbf{w}_{lb} & \coloneqq \mathbf{1}_{N} \otimes \mathbf{lbx} \\
+        \mathbf{w}_{ub} & \coloneqq \mathbf{1}_{N} \otimes \mathbf{ubx}
+    \end{aligned}
+    \label{eq:Benchmark_NLP_Bounds}
+\end{equation}
+
+\begin{equation}
+    \begin{aligned}
+        L^k & \coloneqq L(\mathbf{x}^k, \mathbf{u}^k) \\
+        J(\mathbf{w}) & \coloneqq \frac{\Delta t}{2} \sum_{k=0}^{N-1} \left( L^k + L^{k+1} \right)
+    \end{aligned}
+    \label{eq:Benchmark_NLP_Cost_Final}
+\end{equation}
+
+
+Next, the \gls{nlp} problem can be defined properly using almost CasADi notation. 
+
+\begin{equation}
+    \begin{aligned}
+        & \min_{\mathbf{w}} \quad J(\mathbf{w}) \coloneqq \frac{\Delta t}{2}\sum_{k=0}^{N-1} \left(L^k + L^{k+1}\right) \\
+        & \text{s.t.} \quad \mathbf{g}(\mathbf{w}) \in [\mathbf{g}_{lb}, \mathbf{g}_{ub}] \\
+        & \quad \quad \mathbf{w} \in [\mathbf{1}_{N} \otimes \mathbf{lbx}, \ \mathbf{1}_{N} \otimes \mathbf{ubx}] \\
+    \end{aligned}
+    \label{eq:Benchmark_NLP}
+\end{equation}
+
+The algorithm that has been implemented to solve the \gls{nlp} problem using \gls{ipopt} solver is the refered below. The whole structure of the implemented algorithm in Python can be seen in appendix \ref{app:Code} referring to benckmark problem section.
+
+\begin{algorithm}[H]
+\caption{Trajectory Optimisation Algorithm for Level-Cruise Flight.}
+\begin{algorithmic}
+\STATE \textbf{1. Initialise Parameters:} 
+\STATE \quad Define $N$ nodes, end-time $t_F$, time-step $\Delta t$, and symbolic vectors for $\mathbf{x}, \mathbf{u}$.
+\STATE \quad Obtain trim state $\mathbf{x}_{trim}$ via static NLP solver.
+\STATE \quad Construct initial guess $\mathbf{w}_0$ using $\mathbf{w}_{trim}$ and linear propagation.
+
+\STATE \textbf{2. Assemble Decision Vector:} 
+\STATE \quad Formulate $\mathbf{w} \coloneqq [\mathbf{x}^0, \mathbf{u}^0, \dots, \mathbf{x}^{N}, \mathbf{u}^{N}]^\top \in \mathbb{R}^{9N}$.
+\STATE \quad Apply variable bounds: $\mathbf{w} \in [\mathbf{1}_{N} \otimes \mathbf{lbx}, \ \mathbf{1}_{N} \otimes \mathbf{ubx}]$.
+
+\FOR{$i = 0$ \TO $N_{iter}$}
+    \STATE \textbf{3. Evaluate NLP Functions:}
+    \STATE \quad Compute trapezoidal Cost: $J(\mathbf{w}) = \frac{\Delta t}{2}\sum_{k=0}^{N-1} (L^k + L^{k+1})$.
+    \STATE \quad Evaluate dynamics $\mathbf{d}^k$ and path constraints $\mathbf{h}^k$.
+    \STATE \quad Stack constraints: $\mathbf{g}(\mathbf{w}) \coloneqq [\mathbf{d}^0, \dots, \mathbf{d}^{N-1}, \mathbf{h}^0, \dots, \mathbf{h}^N, \mathbf{\varphi}_0]^\top$.
+
+    \STATE \textbf{4. Check Convergence:}
+    \IF{$E_0(J, \mathbf{g}, \mathbf{w}) \leq \epsilon_{tol}$}
+        \STATE \textbf{STOP:} Optimal trajectory found.
+    \ENDIF
+
+    \STATE \textbf{5. Compute Step (KKT System):} Form the Lagrangian $\mathcal{L}(\mathbf{w}, \lambda, z)$ and solve the linearised primal-dual system for search direction $d_i$.
+    
+    \STATE \textbf{6. Filter Line-Search:} Determine step size $\alpha_i$ to ensure decrease in $J$ or constraint violation $\|\mathbf{g}\|$.
+    
+    \STATE \textbf{7. Update Iterates:} $\mathbf{w}_{i+1} = \mathbf{w}_i + \alpha_i d_i^w$.
+    
+\ENDFOR
+\STATE \textbf{8. Post-processing:} Extract state and control trajectories for plotting.
+\end{algorithmic}
+\end{algorithm}
+
+\section{Results}
+
+\section{Addition of the Free-End Condition}
+Next step in \gls{ocp} formulation is to set the free-end condition to the problem stated before. Free-end condition implies adding end-time ($t_f$) as a control variable and to let the solver compute its value as part of the dynamic constraints, path constraints -if needed specific end-time conditions- and as part of the cost functional -at this point, terminal cost or Mayer term, has to be remembered-. 
+
+To do so, the following section includes the modification on the \gls{nlp} formulation and on the implementation made. Afterwards, the results of the state and control trajectories for a free-end condition will be presented.
+
+\subsection{NLP formulation and implementation}
+As said before, end-time participates in all trapezoidal schemes -so it participates in all dynamic equations-, can participate as path constraints when a terminal state condition is set and, participates into the cost functional implicitly at running cost, because there is also a trapezoidal scheme integrated, and explicitly as a terminal cost. In this case, it would be implemented as both implicit and explicit forms into cost functional. 
+
+Firstly, the state and control vector will incorporate a unique symbolic term or control variable that will refer to the final time ($t_F$). It would also have lower and upper bounds associated, so the modification rests like this:
+
+\begin{equation}
+    \mathbf{w} \coloneqq 
+    \begin{bmatrix}
+        \mathbf{x}^0 \\ \mathbf{u}^0 \\ \mathbf{x}^1 \\ \mathbf{u}^1 \\ \vdots \\ \mathbf{x}^N \\ \mathbf{u}^N \\ t_F
+    \end{bmatrix}, \quad
+    \mathbf{w}_{lb} \coloneqq 
+    \begin{bmatrix}
+        \mathbf{1}_{N} \otimes \mathbf{lbx} \\
+        t_{F,min}
+    \end{bmatrix}, \quad
+    \mathbf{w}_{ub} \coloneqq 
+    \begin{bmatrix}
+        \mathbf{1}_{N} \otimes \mathbf{ubx} \\
+        t_{F,max}
+    \end{bmatrix}
+    \label{eq:Benchmark_Plus_NLP_w}
+\end{equation}
+
+Secondly, the constraints could add some path constraints referring to final state conditions. Those, would only be evaluated at final node N. In this case, the following equations have been added to the path constraints block of constraints as they indicate the minimum and maximum distance to perform the level-flight cruise trajectory -the expressions are also expressed along to previous path constraints and integrated with all \gls{nlp} constraints vector-. 
+
+\begin{equation}
+    \mathbf{h}_{dist} \coloneqq 
+    \begin{bmatrix}
+        V_{tp}\cdot t_{F, min} - (x_f - x_0) \\
+        (x_f - x_0) - V_{tp}\cdot t_{F, max}
+    \end{bmatrix} \leq \mathbf{0}
+    \label{eq:Benchmark_Plus_Path_Contraint_Added}
+\end{equation}
+
+\begin{equation}
+    \mathbf{g}(\mathbf{w}) \coloneqq 
+    \begin{bmatrix} 
+        \mathbf{d}^0 \\ \vdots \\ \mathbf{d}^{N-1} \\ \hline 
+        \mathbf{h}^0 \\ \vdots \\ \mathbf{h}^N \\ \hline 
+        \mathbf{h}_{dist} \\ \hline
+        \mathbf{\varphi}_0 
+    \end{bmatrix}, \quad
+    \mathbf{g}_{lb} \coloneqq
+    \begin{bmatrix} 
+        \mathbf{0}_{7(N-1)} \\ 
+        -\mathbf{\infty}_{4N} \\ 
+        -\mathbf{\infty}_{2} \\
+        \mathbf{0}_{7} 
+    \end{bmatrix}, \quad
+    \mathbf{g}_{ub} \coloneqq
+    \begin{bmatrix} 
+        \mathbf{0}_{7(N-1)} \\ 
+        \mathbf{0}_{4N} \\ 
+        \mathbf{0}_{2} \\
+        \mathbf{0}_{7} 
+    \end{bmatrix}
+    \label{eq:Benchmark_Plus_NLP_g}
+\end{equation}
+
+Next, the cost functional integrates terminal cost term, only applies to end-time, and running cost term, corrected by adding $t_F$ and restringing the problem to $N-1$ time-intervals with a fixed value of nodes, since time-step is defined as $\Delta t = 1 / (N-1)$.
+
+\begin{equation}
+    J(\mathbf{w}) \coloneqq \frac{\Delta t \cdot t_F}{2}\sum_{k=0}^{N-1} \left(L^k + L^{k+1}\right) + w_{t_F} \cdot t_F
+    \label{eq:Benchmark_Plus_Cost}
+\end{equation}
+
+Eventually, the \gls{nlp} problem can be defined properly using almost CasADi notation before presenting the scheme algorithm so solve it using \gls{ipopt}. 
+
+\begin{equation}
+    \begin{aligned}
+        & \min_{\mathbf{w}} \quad J(\mathbf{w}) \coloneqq \frac{\Delta t \cdot t_F}{2}\sum_{k=0}^{N-1} \left(L^k + L^{k+1}\right) + w_{t_F} \cdot t_F \\
+        & \text{s.t.} \quad \mathbf{g}(\mathbf{w}) \in [\mathbf{g}_{lb}, \mathbf{g}_{ub}] \\
+        & \quad \quad \mathbf{w} \in \left[ 
+        \begin{bmatrix} \mathbf{1}_{N} \otimes \mathbf{lbx} \\ t_{F,min} \end{bmatrix}, 
+        \begin{bmatrix} \mathbf{1}_{N} \otimes \mathbf{ubx} \\ t_{F,max} \end{bmatrix} 
+        \right]
+    \end{aligned}
+    \label{eq:Benchmark_Plus_NLP}
+\end{equation}
+
+\begin{algorithm}[H]
+\caption{Updated Version of \textbf{Algorithm 2}, Free-End Condition Added.}
+\begin{algorithmic}
+\STATE \textbf{1. Initialise Parameters:} 
+\STATE \quad Define $N$ nodes, time-step $\Delta t = 1/(N-1)$, and symbolic vectors for $\mathbf{x}, \mathbf{u}, t_F$.
+\STATE \quad Obtain trim state $\mathbf{x}_{trim}$ via static NLP solver.
+\STATE \quad Construct initial guess $\mathbf{w}_0$ using $\mathbf{w}_{trim}$ and linear propagation.
+\STATE \textbf{2. Assemble Decision Vector:} 
+\STATE \quad Formulate $\mathbf{w} \coloneqq [\mathbf{x}^0, \mathbf{u}^0, \dots, \mathbf{x}^{N}, \mathbf{u}^{N}, t_F]^\top \in \mathbb{R}^{9N+1}$.
+\STATE \quad Apply variable bounds: $\mathbf{w} \in \left[ \begin{smallmatrix} \mathbf{1}_{N} \otimes \mathbf{lbx} \\ t_{F,min} \end{smallmatrix} \right], \left[ \begin{smallmatrix} \mathbf{1}_{N} \otimes \mathbf{ubx} \\ t_{F,max} \end{smallmatrix} \right]$.
+\FOR{$i = 0$ \TO $N_{iter}$}
+    \STATE \textbf{3. Evaluate NLP Functions:}
+    \STATE \quad Compute trapezoidal Cost: $J(\mathbf{w}) = \frac{\Delta t \cdot t_F}{2}\sum_{k=0}^{N-1} (L^k + L^{k+1}) + w_{t_F} \cdot t_F$.
+    \STATE \quad Evaluate scaled dynamics $\mathbf{d}^k$ and path constraints $\mathbf{h}^k$.
+    \STATE \quad Stack constraints: $\mathbf{g}(\mathbf{w}) \coloneqq [\mathbf{d}^0, \dots, \mathbf{d}^{N-1}, \mathbf{h}^0, \dots, \mathbf{h}^N, \mathbf{h_{dist}}, \mathbf{\varphi}_0]^\top$.
+    \STATE \textbf{4. Check Convergence:}
+    \IF{$E_0(J, \mathbf{g}, \mathbf{w}) \leq \epsilon_{tol}$}
+        \STATE \textbf{STOP:} Optimal trajectory found.
+    \ENDIF
+    \STATE \textbf{5. Compute Step (KKT System):} Form the Lagrangian $\mathcal{L}(\mathbf{w}, \lambda, z)$ and solve the linearised primal-dual system for search direction $d_i$.
+    \STATE \textbf{6. Filter Line-Search:} Determine step size $\alpha_i$ to ensure decrease in $J$ or constraint violation $\|\mathbf{g}\|$.
+    \STATE \textbf{7. Update Iterates:} $\mathbf{w}_{i+1} = \mathbf{w}_i + \alpha_i d_i^w$.
+\ENDFOR
+\STATE \textbf{8. Post-processing:} Extract state trajectories, control trajectories and optimal $t_F$ for plotting.
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Results}
+
