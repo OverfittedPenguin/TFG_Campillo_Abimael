@@ -8,6 +8,7 @@
 *.out
 *.slo
 *.sls
+*.slg
 *.syg
 *.syi
 
