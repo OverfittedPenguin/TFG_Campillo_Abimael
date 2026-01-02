@@ -219,23 +219,23 @@ pr_inf3 = np.array(pr_inf3)
 du_inf3 = np.array(du_inf3)
 
 # TRAJECTORIES AND COST. Full trajectory.
-path = os.path.join(os.getcwd(), "images", "manoeuvre")
+path = os.path.join(os.getcwd(), "images", "manoeuvre", "CASE4")
 os.makedirs(path, exist_ok=True)
 Plotter.GENERATE_MANOEUVRE_TRAJECTORIES(t,x1,x2,x3,aircraft,sim,path)
 Plotter.GENERATE_MANOEUVRE_COST(iters1,iters2,iters3,obj1,obj2,obj3,pr_inf1,pr_inf2,pr_inf3,du_inf1,du_inf2,du_inf3,time1+time2+time3,path)
 
 # TRAJECTORIES AND COST. Per each stage.
-path = os.path.join(os.getcwd(), "images", "manoeuvre", "STG1")
+path = os.path.join(os.getcwd(), "images", "manoeuvre", "CASE4","STG1")
 os.makedirs(path, exist_ok=True)
 Plotter.GENERATE_RESULTS_PLOT(t1,x1,aircraft,sim,path)
 Plotter.GENERATE_COST_PLOT(iters1,obj1,time1,path)
 
-path = os.path.join(os.getcwd(), "images", "manoeuvre", "STG2")
+path = os.path.join(os.getcwd(), "images", "manoeuvre", "CASE4","STG2")
 os.makedirs(path, exist_ok=True)
 Plotter.GENERATE_RESULTS_PLOT(t2,x2,aircraft,sim,path)
 Plotter.GENERATE_COST_PLOT(iters2,obj2,time2,path)
 
-path = os.path.join(os.getcwd(), "images", "manoeuvre", "STG3")
+path = os.path.join(os.getcwd(), "images", "manoeuvre", "CASE4","STG3")
 os.makedirs(path, exist_ok=True)
 Plotter.GENERATE_RESULTS_PLOT(t3,x3,aircraft,sim,path)
 Plotter.GENERATE_COST_PLOT(iters3,obj3,time3,path)

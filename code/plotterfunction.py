@@ -138,12 +138,14 @@ class Plotter:
         fig1, axs = plt.subplots(
             nrows=2, 
             ncols=2, 
-            figsize=(10,8),
+            figsize=(10,7),
             gridspec_kw={'hspace': 0.30, 'wspace': 0.70}
             )
         fig1.subplots_adjust(
-            left=0.05,  
-            right=0.95, 
+            left=0.15,  
+            right=0.85,
+            bottom=0.10,
+            top=0.90 
             )
         
         # OPEN GATES TIME VECTORS
@@ -193,7 +195,7 @@ class Plotter:
 
         axs[0,1].axvline(x=t_d0,color=colors_hex[6],linestyle="--",linewidth=1)
         axs[0,1].axvline(x=t_df,color=colors_hex[6],linestyle="--",linewidth=1)
-        axs[0,1].text(t_d0 - 10.0, axs[0,1].get_ylim()[1] * 0.1, 'Gates Open', 
+        axs[0,1].text(t_d0 - 20.0, axs[0,1].get_ylim()[1] * 0.1, 'Gates Open', 
               color=colors_hex[7], 
               fontsize=10, 
               rotation=90, 
@@ -273,14 +275,14 @@ class Plotter:
         fig2, axs = plt.subplots(
             nrows=1, 
             ncols=2, 
-            figsize=(10,6),
+            figsize=(10,4),
             gridspec_kw={'hspace': 0.30, 'wspace': 0.70}
             )
         fig2.subplots_adjust(
-            left=0.10, 
-            bottom=0.10, 
-            right=0.90, 
-            top=0.90
+            left=0.1, 
+            bottom=0.15, 
+            right=0.9, 
+            top=0.85
             )
 
         # TPS
@@ -293,7 +295,7 @@ class Plotter:
         axs[0].plot(t,TPS_min,label=r"$TPS_{lb}$",color=colors_hex[5],linestyle="-.",linewidth=1.5)
         axs[0].axvline(x=t_d0,color=colors_hex[6],linestyle="--",linewidth=1)
         axs[0].axvline(x=t_df,color=colors_hex[6],linestyle="--",linewidth=1)
-        axs[0].text(t_d0 - 10.0, axs[0].get_ylim()[1] * 0.8, 'Gates Open', 
+        axs[0].text(t_d0 - 10.0, axs[0].get_ylim()[1] * 0.7, 'Gates Open', 
               color=colors_hex[7], 
               fontsize=10, 
               rotation=90, 
@@ -319,7 +321,7 @@ class Plotter:
 
         axs[1].axvline(x=t_d0,color=colors_hex[6],linestyle="--",linewidth=1)
         axs[1].axvline(x=t_df,color=colors_hex[6],linestyle="--",linewidth=1)
-        axs[1].text(t_d0 - 10.0, axs[1].get_ylim()[1] * 0.6, 'Gates Open', 
+        axs[1].text(t_d0 - 10.0, axs[1].get_ylim()[0] * 0.4, 'Gates Open', 
               color=colors_hex[7], 
               fontsize=10, 
               rotation=90, 
@@ -344,12 +346,14 @@ class Plotter:
         fig1, axs = plt.subplots(
             nrows=1, 
             ncols=3, 
-            figsize=(16,6),
+            figsize=(14,4),
             gridspec_kw={'hspace': 0.65, 'wspace': 0.35}
             )
         fig1.subplots_adjust(
-            left=0.05,  
-            right=0.95, 
+            left=0.1, 
+            bottom=0.15, 
+            right=0.9, 
+            top=0.85
             )
         
         # STAGE 1
@@ -388,12 +392,14 @@ class Plotter:
         fig2, axs1 = plt.subplots(
             nrows=1, 
             ncols=3, 
-            figsize=(16,6),
+            figsize=(14,4),
             gridspec_kw={'hspace': 0.65, 'wspace': 0.35}
             )
         fig2.subplots_adjust(
-            left=0.05,  
-            right=0.95, 
+            left=0.1, 
+            bottom=0.15, 
+            right=0.9, 
+            top=0.85
             )
         
         # STAGE 1
@@ -510,12 +516,14 @@ class Plotter:
         fig1, axs = plt.subplots(
             nrows=2, 
             ncols=2, 
-            figsize=(10,8),
+            figsize=(10,7),
             gridspec_kw={'hspace': 0.30, 'wspace': 0.70}
             )
         fig1.subplots_adjust(
             left=0.15,  
-            right=0.85, 
+            right=0.85,
+            bottom=0.10,
+            top=0.90 
             )
 
         # VELOCITIES
@@ -600,14 +608,14 @@ class Plotter:
         fig2, axs = plt.subplots(
             nrows=1, 
             ncols=2, 
-            figsize=(10,6),
+            figsize=(10,4),
             gridspec_kw={'hspace': 0.30, 'wspace': 0.70}
             )
         fig2.subplots_adjust(
-            left=0.10, 
-            bottom=0.10, 
-            right=0.90, 
-            top=0.90
+            left=0.1, 
+            bottom=0.15, 
+            right=0.9, 
+            top=0.85
             )
 
         # TPS
