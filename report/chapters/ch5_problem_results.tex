@@ -6,18 +6,69 @@ In order to compare a few things among the different simulations, it is importan
 
 SIMULATION PARAMETERS TAB
 
-Once all parameters have been properly set, the state and control trajectories are the following ones. As can be seen on figure \ref{fig:Base_STATES}
-
 \begin{figure}[H]
     \centering
-    \includesvg[width=\textwidth]{images/manoeuvre/CASE_0/STATES} 
+    \includesvg[width=\textwidth]{images/manoeuvre/CASE0/STATES} 
     \caption{State trajectories, base case. States included are velocities, angles, mass and \gls{uav} trajectory. Own source.}
-    \label{fig:base_STATES}
+    \label{fig:Base_STATES}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includesvg[width=\textwidth]{images/manoeuvre/CASE_0/CONTROLS} 
+    \includesvg[width=\textwidth]{images/manoeuvre/CASE0/CONTROLS} 
     \caption{Control trajectories, base case. Controls included are \gls{tps} and elevator. Own source.}
-    \label{fig:base_CONTROLS}
+    \label{fig:Base_CONTROLS}
 \end{figure}
+
+Once all parameters have been properly set, the state and control trajectories are the following ones. As can be seen on figure \ref{fig:Base_STATES}, the water-discharge has been modelled as a discontinuity for this base case -indeed, it is a one-second discharge but since \gls{PM} is two-hundred (200) kg, discharge can be suddenly interpreted-. Descent and climb stages are almost continuous, as can be seen by nearly constant value on flight path angle ($\gamma$) or directly on the \gls{uav} trajectory. In terms of velocity, its profile may be suprisingly, but it denotes a key aspect of Flyox behaviour: longitudinal movements are closely coupled, as can be seen on velocities subgraph -difference between body velocity along $x_b$-axis $u$ and velocity modulus $V$-. Thus, the aircraft tends to align the descent or ascent path, provoking changes on velocity's module. In terms of controls, discontinuities are unavoidable because they correspond with the jump between stages; nevertheless, there are discontinuities affordable to a control feedback loop proper of an autopilot on an \gls{uav}. They will not be further mentioned on the report. Moreover, control seems smooth in each stage and they are far from the operational limits. Essentially, controls reach a trim point in each stage, more or less.
+
+Following figure shows the evolution of cost objective per iteration for each stage. As can be seen, the demanding stages in terms of cost are the most restrictive ones: descent and climb stages, specifically descent one. This means that some constraints have been breached or nearly breached -i.e the solution found in the iteration which cost is highest is not feasible, constraints or penalties have been not fulfilled and the control turns agressive to avoid constraint breach-.
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{images/manoeuvre/CASE0/COST} 
+    \caption{Cost objective per iteration, base case. Each stage cost has been added. Own source.}
+    \label{fig:Base_COST}
+\end{figure}
+
+\subsection{Case 1: continuous water-discharge}
+This case has been done using the same parameters that have been indicated on table \ref{tab:FFM_Parameters} except for the discharge time ($t_d$), which has been incremented to perform a more continuous and controlled discharge above TP. The discharge time has been set to $t_d = 7.2\ s$, which is near to firefighting controlled drops -it has been specified by Singular Aircraft engineers-. 
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{images/manoeuvre/CASE1/STATES} 
+    \caption{State trajectories, case 1. States included are velocities, angles, mass and \gls{uav} trajectory. Own source.}
+    \label{fig:Case1_STATES}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{images/manoeuvre/CASE1/CONTROLS} 
+    \caption{Control trajectories, case 1. Controls included are \gls{tps} and elevator. Own source.}
+    \label{fig:Case1_CONTROLS}
+\end{figure}
+
+As can be seen on previous figures, there are no noticeable changes on state trajectories. However, there is a minor change in term of controls. Since the gates are open for a longer period of time, control corrections are soft and smooth than in the previous case. The following figure shows a comparison between the second stage control from base case -top- and this case -bottom-. 
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{\textwidth}
+        \centering
+        \includesvg[width=\textwidth]{images/manoeuvre/CASE0/STG2/CONTROLS}
+        \caption{Base case, discontinuous discharge.}
+    \end{subfigure}
+    
+    \vspace{0.25cm}
+    
+    \begin{subfigure}[b]{\textwidth}
+        \centering
+        \includesvg[width=\textwidth]{images/manoeuvre/CASE1/STG2/CONTROLS}
+        \caption{Case 1, continuous discharge.}
+    \end{subfigure}
+    \caption{Comparison between control trajectories during a two different discharge types. Own source.}
+    \label{fig:comparison_states}
+\end{figure}
+
+\subsection{Case 2: restrictive distances and end-time penalties}
+
+\subsection{Case 3: controls and, desired attitudes not penalised}
