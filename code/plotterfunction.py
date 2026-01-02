@@ -163,7 +163,7 @@ class Plotter:
 
         axs[0,0].axvline(x=t_d0,color=colors_hex[6],linestyle="--",linewidth=1)
         axs[0,0].axvline(x=t_df,color=colors_hex[6],linestyle="--",linewidth=1)
-        axs[0,0].text(t_d0 - 3.0, axs[0,0].get_ylim()[1] * 0.3, 'Gates Open', 
+        axs[0,0].text(t_d0 - 10.0, axs[0,0].get_ylim()[1] * 0.35, 'Gates Open', 
               color=colors_hex[7], 
               fontsize=10, 
               rotation=90, 
@@ -193,7 +193,7 @@ class Plotter:
 
         axs[0,1].axvline(x=t_d0,color=colors_hex[6],linestyle="--",linewidth=1)
         axs[0,1].axvline(x=t_df,color=colors_hex[6],linestyle="--",linewidth=1)
-        axs[0,1].text(t_d0 - 3.0, axs[0,1].get_ylim()[0] * 0.55, 'Gates Open', 
+        axs[0,1].text(t_d0 - 10.0, axs[0,1].get_ylim()[1] * 0.1, 'Gates Open', 
               color=colors_hex[7], 
               fontsize=10, 
               rotation=90, 
@@ -219,7 +219,7 @@ class Plotter:
 
         axs[1,0].axvline(x=t_d0,color=colors_hex[6],linestyle="--",linewidth=1)
         axs[1,0].axvline(x=t_df,color=colors_hex[6],linestyle="--",linewidth=1)
-        axs[1,0].text(t_d0 - 3.0, axs[1,0].get_ylim()[1] * 0.9, 'Gates Open', 
+        axs[1,0].text(t_d0 - 10.0, axs[1,0].get_ylim()[1] * 0.9, 'Gates Open', 
               color=colors_hex[7], 
               fontsize=10, 
               rotation=90, 
@@ -252,7 +252,7 @@ class Plotter:
         axs[1,1].scatter(x_TP, -sim.ub[3], label="TP", color=colors_hex[5], s=25)
         axs[1,1].axvline(x=x_d0,color=colors_hex[6],linestyle="--",linewidth=1)
         axs[1,1].axvline(x=x_df,color=colors_hex[6],linestyle="--",linewidth=1)
-        axs[1,1].text(x_d0 - 75.0, axs[1,1].get_ylim()[1] * 0.7, 'Gates Open', 
+        axs[1,1].text(x_d0 - 500.0, axs[1,1].get_ylim()[1] * 0.7, 'Gates Open', 
               color=colors_hex[7], 
               fontsize=10, 
               rotation=90, 
@@ -293,7 +293,7 @@ class Plotter:
         axs[0].plot(t,TPS_min,label=r"$TPS_{lb}$",color=colors_hex[5],linestyle="-.",linewidth=1.5)
         axs[0].axvline(x=t_d0,color=colors_hex[6],linestyle="--",linewidth=1)
         axs[0].axvline(x=t_df,color=colors_hex[6],linestyle="--",linewidth=1)
-        axs[0].text(t_d0 - 3.0, axs[0].get_ylim()[1] * 0.8, 'Gates Open', 
+        axs[0].text(t_d0 - 10.0, axs[0].get_ylim()[1] * 0.8, 'Gates Open', 
               color=colors_hex[7], 
               fontsize=10, 
               rotation=90, 
@@ -319,7 +319,7 @@ class Plotter:
 
         axs[1].axvline(x=t_d0,color=colors_hex[6],linestyle="--",linewidth=1)
         axs[1].axvline(x=t_df,color=colors_hex[6],linestyle="--",linewidth=1)
-        axs[1].text(t_d0 - 3.0, axs[1].get_ylim()[1] * 0.6, 'Gates Open', 
+        axs[1].text(t_d0 - 10.0, axs[1].get_ylim()[1] * 0.6, 'Gates Open', 
               color=colors_hex[7], 
               fontsize=10, 
               rotation=90, 
