@@ -66,5 +66,16 @@
     tabsize=2,
     language=Python
 }
-\lstset{style=mystyle}
+\lstdefinelanguage{json}{
+    basicstyle=\normalfont\ttfamily,
+    numbers=left,
+    numberstyle=\scriptsize,
+    stepnumber=1,
+    numbersep=8pt,
+    showstringspaces=false,
+    breaklines=true,
+    % --- The key additions ---
+    morecomment=[l]{//},       % Define // as a line comment
+    commentstyle=\color{codegreen},
+}
 \usepackage{appendix}

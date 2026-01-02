@@ -1,2 +1,80 @@
 \chapter{Code Snippets and Files}
 \label{app:Code}
+
+To see the last version of all code snippets, the reader can access to the main branch at the following repository \url{https://github.com/OverfittedPenguin/TFG_Campillo_Abimael}. This GitHub repository contains both source code of the project's algorithm and thesis report. Essentially, all code snippets have been comented during its development and no further description is required. Nevertheless, this section includes a brief description of the structure used in each JSON file.
+
+The configuration files or JSON files are three, as mentioned in \ref{sec:General_Framework}. Atmos.json is the atmospheric conditions dedicated configuration file. Its structure is self-descriptive, since it only contains variables and its value, so no further comments will be done.
+
+\begin{lstlisting}[language=json,caption={Atmospheric conditions configuration file (\textit{Atmos.json}).}]
+{
+    "GRAVITY_ACC": 9.81,
+    "SL_PRESS": 101325.0,
+    "SL_TEMP": 15.0,
+    "SL_RHO": 1.225,
+    "ATMOS_GRADIENT": -0.0065,
+    "AIR_CONSTANT": 287.053
+}
+\end{lstlisting}
+
+Then, the structure of the aircraft configuration file. In this case, the file contains the description of all geometrical, physical and operational parameters as stated on \ref{app:AircarftParameters}. The structure of the JSON is descriptive along the tables of the mentioned appendix.
+
+\begin{lstlisting}[language=json,caption={Aircraft configuration file (\textit{Flyox.json}).}]
+{
+   "NAME": "FLYOX_MSN011",
+    "BEM": 2850.0,
+    "MTOM": 4000.0,
+    "FM": 360.0,
+    "PM": 200.0,
+    "SFC": 23.60,
+    "AR": 7.0,
+    "S": 28.0,
+    "b": 14.0,
+    "c": 2.0,
+    "e": 0.84,
+    "CGx": 0.759,
+    "CGz": -0.090,
+    "CPwx": 0.537,
+    "CPwz": -1.100,
+    "CTx": 0.000,
+    "CTz": -1.010,
+    "Dp": 2.03,
+    "nENG": 2.0,
+    "EPS0": 0.0,
+    "Iyy": 20980.0,
+    "LIFT_DRAG_COEFFS": [[0.410, 3.340, 0.048],[0.510, 4.584, 0.060],[0.700, 5.730, 0.080]],
+    "MOMENT_COEFFS": [0.052, -1.030],
+    "ELEVATOR_COEFFS": [0.750, -2.640],
+    "THRUST_COEFFS": [0.156, 0.036, -0.201, 0.093],
+    "EFFICIENCY_COEFFS": [1.0, 0.0],
+    "OPERATIONAL_LIMITS": [[33.40, -0.17, 0.00, -3000.00, 0.00, -0.21],[61.70, 0.26, 50000.00, -5.00, 1.00, 0.21]],
+    "MISSION_SPECS": [0.0, 2700.0]
+}
+\end{lstlisting}
+
+Eventually, there is the simulation configuration file, which deserves a bit of explanation. JSON structure does not accept comments but, in this case comments have been added to this example to explain the structure -comments are after // in green color-. As stated before, initial guesses, mission parameters, mission bounds and all numerical needed values are defined in this configuration file.
+
+\begin{lstlisting}[language=json,caption={Simulation configuration file (\textit{Simulation.json}).}]
+{
+    "N":150, // Nodes
+    "INITIAL_STATE": [50.00,0.0,120.00,110.00,120.00], 
+    // Initial guesses [V, Pitch, t1, t2, t3]
+    "WIND_SPEED": [0.00,0.00], 
+    // Wind speed [Vwx, Vwz]
+    "TARGET_POINT": [10000.00, 10000.00, 0.25, 52.00, 5.0], 
+    // TP Parameters [RENTRY, REXIT, fTP, VTP, td]
+    "MISSION_BOUNDS": [[5.00,10.00,15.00,-608.00,-7.08],
+    [600.0,600.00,600.0,-25.0,7.08]], 
+    // Mission bounds. [t1, t2, t3, h, ROC]
+    "STG1_WEIGHTS":[0.0,0.3,0.2,1.0,1.5], 
+    // STG1 Penalty Weights. Time weight with running cost 
+    // weights per order of appearance on Section 4.2.1
+    "STG2_WEIGHTS":[0.1,0.5,0.3,0.5,1.0,2.0], 
+    // STG2 Penalty Weights. Time weight with running cost 
+    // weights per order of appearance on Section 4.2.2
+    "STG3_WEIGHTS":[0.0,0.2,5.0,0.5,1.5,1.0], 
+    // STG3 Penalty Weights. Time weight with running cost 
+    // weights per order of appearance on Section 4.2.3
+    "AIRCRAFT_FILE": "configs/Flyox.json" 
+    // Path of the aircraft.
+}
+\end{lstlisting}

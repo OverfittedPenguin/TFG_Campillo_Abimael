@@ -40,7 +40,7 @@ class Aircraft:
         self.MTOM = MTOM
         self.FM = FM
         self.PM = PM
-        self.SFC = SFC / 1000
+        self.SFC = SFC
         self.AR = AR
         self.S = S
         self.b = b
