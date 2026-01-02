@@ -1,0 +1,45 @@
+\glossaryentry{$F_b(x_b,y_b,z_b)$?\glossentry{bodyaxes}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$F_w(x_w,y_w,z_w)$?\glossentry{windaxes}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$F_h(x_h,y_h,z_h)$?\glossentry{localhorizon}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$W$?\glossentry{weight}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$m$?\glossentry{mass}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$I_y$?\glossentry{iy}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$u, w$?\glossentry{bodyvel}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$q$?\glossentry{pitchrate}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$"\theta $?\glossentry{pitch}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$"\gamma $?\glossentry{fpa}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$"\alpha $?\glossentry{aoa}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$L$?\glossentry{lift}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$D$?\glossentry{drag}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$C_{L_0}, C_{L_"\alpha }, C_{L_{"\delta e}}$?\glossentry{cl_coeffs}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$C_{D_0}, k$?\glossentry{cd_coeffs}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$C_{m_0}, C_{m_"\alpha }, C_{m_{"\delta e}}$?\glossentry{cm_coeffs}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$T$?\glossentry{thrust}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$"\Delta X_{CT}, "\Delta Z_{CT}$?\glossentry{dist_ct_cg}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$"\varepsilon $, $"\varepsilon _0$?\glossentry{thrust_aoa}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$SFC$?\glossentry{sfc}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$BEM$?\glossentry{bem}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$MTOM$?\glossentry{mtom}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$TOM$?\glossentry{tom}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$V_{tp}$?\glossentry{vtp}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$h_{ref}$?\glossentry{href}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$"\mathbf {V}_w$?\glossentry{windfield_2d}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$"\bar {q}$?\glossentry{qbar}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$"\bar {c}$?\glossentry{MAC}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$S$?\glossentry{S}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$FM$?\glossentry{FM}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$PM$?\glossentry{PM}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$AR$?\glossentry{AR}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$b$?\glossentry{b}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$D_p$?\glossentry{Dp}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$"\delta _{FLAPS}$?\glossentry{FLAPS}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$RPM$?\glossentry{rpm}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$[C_{T_0},C_{T_1},C_{T_2},C_{T_3}]$?\glossentry{thrust_coeff}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$[C_{"\eta _0},C_{"\eta _1}]$?\glossentry{eff_coeff}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$[CG_{x},CG_{z}]$?\glossentry{CG}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$[CP_{x},CP_{z}]$?\glossentry{CP}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$[CT_{x},CT_{z}]$?\glossentry{CT}|setentrycounter[]{page}"\glsnumberformat}{1}
+\glossaryentry{$"\alpha $?\glossentry{aoa}|setentrycounter[]{page}"\glsnumberformat}{2}
+\glossaryentry{$"\alpha $?\glossentry{aoa}|setentrycounter[]{page}"\glsnumberformat}{3}
+\glossaryentry{$"\alpha $?\glossentry{aoa}|setentrycounter[]{page}"\glsnumberformat}{3}
+\glossaryentry{$SFC$?\glossentry{sfc}|setentrycounter[]{page}"\glsnumberformat}{30}
