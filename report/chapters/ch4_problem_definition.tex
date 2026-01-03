@@ -7,7 +7,7 @@ Firstly, the user case has to be presented. As stated on the thesis' motivations
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.66\linewidth]{images/conops_manoeuvre.jpg}
-    \caption{CONOPS of Flyox autonomous firefighting manoeuvres. Own source.}
+    \caption{CONOPS of a generic autonomous firefighting manoeuvre performed by Flyox \gls{uas}. Own source.}
     \label{fig:CONOPS}
 \end{figure}
 
@@ -41,14 +41,14 @@ All the mentioned parameters have been summarised in the following table. It sho
 \end{table}
 
 \section{OCP Formulation and NLP Implementation}
-This section contains the formulation of each manoeuvre's stage as an \gls{ocp} and the subsequent implementation as \gls{nlp} separated problems. This means that for each stage a \gls{nlp} problem will be defined and solved. Initial conditions for STG2 and STG3 will be the linking conditions for the overall manoeuvre, since they will be enforced to be the end-state from previous stage.
+This section contains the formulation of each stage's manoeuvre as an \gls{ocp} and the subsequent implementation as \gls{nlp} separated problems. This means that for each stage a \gls{nlp} problem will be defined and solved. Initial conditions for STG2 and STG3 will be the linking conditions for the overall manoeuvre, since they will be enforced to be the end-state from previous stage.
 
 It has to be pinpointed that any of the stages dedicated sections will not contain the definition of the dynamic equations, because they are the same as the ones defined for the benchmark case, referring section \ref{sec:Benchmark_Constraints_Bounds} from expression \eqref{eq:Benchmark_EOM_1} to \eqref{eq:Benchmark_EOM_7}. In case of the initial state constraints, its definition does not change and therefore, they will not be added on this section. Specifically, the only change is the initial value for state and control vector, which will be the linking condition between stages, but not its formal definition. Moreover, state and control vectors -and simple bounds by extension- will not be specified, since they are the same as the ones explained for free-end addition to benchmark problem; see expression \eqref{eq:Benchmark_Plus_NLP_w}. 
 
 Alternatively, the path constraints and cost functionals are the major changes per stage. Eventually, new constraint vector, constraint bounds vectors and cost functional will be defined per stage. Wording will focus on that. Eventually, each stage constitutes a free-end \gls{nlp} problem using expression \eqref{eq:Benchmark_Plus_NLP}.
 
 \subsection{Descent stage (STG1)}
-Descent stage is characterised by a negative flight path angle ($\gamma \leq 0$) that enforces the aircraft to decrease its altitude. In terms of the manoeuvre, it is also characterised by initial state -given by the user initial conditions- and end state at known altitude and horizontal distance. Initial state computation will be introduced at section \ref{sec:General_Framework} because, as said before, it does not have effect on mathematical formulation.
+Descent stage is characterised by a negative flight path angle ($\gamma \leq 0$) that enforces the aircraft to decrease its altitude. In terms of the manoeuvre, it is also characterised by initial state -given by the user initial conditions- and an end state at known altitude and horizontal distance. Initial state computation will be introduced at section \ref{sec:General_Framework} because, as said before, it does not have effect on mathematical formulation.
 
 Then, path constraints for the descent stage are related with aerodynamic velocity limits -stall velocity $V_S$ and never-operate velocity $V_{NO}$- and with end-time altitude and horizontal distance, which have to be proper, respectively. Translating to expressions it can be written like:
 
@@ -123,7 +123,7 @@ Once the constraints have been defined, it is time to express the cost functiona
     \item Secondly, the minimisation of flight path angle rate ($\dot{\gamma}$) has been added too in order to prevent huge oscillations and to provide smoothness on flight angle profile. This penalty was already used in benchmark problems and the only change introduced is the type of normalisation done on the penalty term.
     
     \begin{equation}
-        J_{\dot{\gamma}} \coloneqq \left(q - \frac{\dot{w}u - \dot{u}w}{u^2 + w^2}\right)^2 / \dot{\gamma}_{min}^2 = \left(x_3 - \frac{\dot{x_2}x_1 - \dot{x_1}x_2}{x_1^2 + x_2^2}\right)^2 / \dot{\gamma}_{min}^2
+        J_{\dot{\gamma}} \coloneqq \left(q - \frac{\dot{w}u - \dot{u}w}{u^2 + w^2}\right)^2 / \dot{\gamma}_{min}^2 = \left(x_3 - \frac{\dot{x}_2x_1 - \dot{x}_1x_2}{x_1^2 + x_2^2}\right)^2 / \dot{\gamma}_{min}^2
     \end{equation}
 
     \item Eventually, control variable rates minimisation have been introduced using a quadratic penalty, as has been done in benchmark problems.
@@ -241,7 +241,7 @@ Next, the terms that form part of the running cost are explained. In this case, 
     \item In first place, the minimisation of flight path angle rate ($\dot{\gamma}$) has been added too in order to prevent huge oscillations and to provide smoothness on flight angle profile, as done in the previous stages. In this case, normalisation of flight path angle rate has been done using $\gamma_{max}$, as done in benchmark problem and in level-flight stage (STG2).
     
     \begin{equation}
-        J_{\dot{\gamma}} \coloneqq \left(q - \frac{\dot{w}u - \dot{u}w}{u^2 + w^2}\right)^2 / \dot{\gamma}_{max}^2 = \left(x_3 - \frac{\dot{x_2}x_1 - \dot{x_1}x_2}{x_1^2 + x_2^2}\right)^2 / \dot{\gamma}_{max}^2
+        J_{\dot{\gamma}} \coloneqq \left(q - \frac{\dot{w}u - \dot{u}w}{u^2 + w^2}\right)^2 / \dot{\gamma}_{max}^2 = \left(x_3 - \frac{\dot{x}_2x_1 - \dot{x}_1x_2}{x_1^2 + x_2^2}\right)^2 / \dot{\gamma}_{max}^2
     \end{equation}
 
     \item In second place, an extra protection has been added in terms of the stall angle ($\alpha_{stall}$). In this case, $\alpha$ has been penalised quadratically once it enters the warning zone -defined using a 25\% safety margin in stall angle-. To prevent and avoid angle-of-attack stall, the solver is forced to prioritise lift-force over agressive manoeuvres. It ensures the aircraft maintains a sufficient margin from the aerodynamic stall regime during the ascent stage. For the penalty defined below, margin angle is $\alpha_{mg} \coloneqq 0.25\cdot\theta_{max}$ and safe angle is $\alpha_{sf} \coloneqq 0.75\cdot\theta_{max}$ -in this case $\theta_{max}$ has been used as $\alpha_{stall}$ for simplicity-.

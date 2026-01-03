@@ -1,5 +1,5 @@
 \chapter{Fundamentals of Optimal Control and its Implementation}
-This chapter includes the mathematical formualtion of the \gls{ocp}, which is the base of the \gls{oct}. It also includes a careful explanation about direct and indirect methods, which are two different approaches to solve optimal control problems, highlighting the \gls{dcm} and \gls{pmp}. Eventually, the \gls{ipopt} method is presented as the used approach, including the mathematical formulation of the method and its implementation from CasADi's Python library.
+This chapter includes the mathematical formualtion of the \gls{ocp}, which is the base of the \gls{oct}. It also includes a careful explanation about direct and indirect methods, which are two different approaches to solve optimal control problems, highlighting the \gls{dcm} and \gls{pmp}. Eventually, the \gls{ipopt} method is presented as the used approach, including the mathematical formulation of the method and its implementation from CasADi's optimisation library.
 
 \section{Introduction to Optimal Control Theory}
 The \gls{oct} is a control field related branch where an objective function has to be optimised -most of the times, it has to be minimised- in order to find the control trajectory for a determined dynamical system. This theory is historically realted with calculus of variations, where optimal points -either maxima or minima- are found using little variations in functions or functionals \cite{Courant1953}. This field of study, proposed by Isaac Newton, was developed as a solving approach for the brachistochrone problem, posed by Bernoulli in 1696. The brachistochrone curve is defined as the fastest descent path -most optimal path for minimising time- between two points A and B under a uniform gravitational field. Counterintuitively, it was found that the most optimal path was not but the cycloidal ramp, as can be seen in the image below.
@@ -32,7 +32,7 @@ The \gls{ocp} is defined as follows.
 
 \begin{equation}
     \begin{aligned}
-        \min_{y,u} \ \  & J(y,u) \coloneqq \Phi[y(t_f),t_f] + \int _{t_0}^{t_f} L[ y(t),u(t),t] \ dt\\
+        \min_{y,u} \ \  & J(y,u) \coloneqq \Phi[y(t_f),u(t_f),t_f] + \int _{t_0}^{t_f} L[ y(t),u(t),t] \ dt\\
         \text{s.t.} \ \  & \dot{y} =f[y(t),u(t),t]\\
         & g[y(t),u(t),t] \leq 0\\
         & \varphi [y(t_0 ),u(t_0),t_0] =0\\
@@ -48,8 +48,8 @@ The previous description is the formal description for the \gls{ocp}, since it c
 \begin{itemize}
     \item \underline{State variables $y(t)$:} As explained before, state variables are time-continuous functions that describe the system condition and allow to predict its future coindition. This state variables are limited by lower and upper bounds, $y_{lb}$ and $y_{ub}$, respectively. Those bounds are the physical or operational limits that each state variable has; for example, on the brachistochrone problem, the horizontal position of the ball -when movement is restricted to the vertical plane- cannot be lower than the point A horizontal coordinate and bigger than the point B horizontal coordinate -those are the simple bounds for horizontal position state variable in that case-.
     \item \underline{Control variables $u(t)$:} Control variables are time-continuous functions that describe the changes on the system to achieve a determined state or condition through time. Similarly, they are simple bounded, in this case by lower bound $u_{lb}$ and upper bound $u_{ub}$; for example, for the flight trajectory previously described, control variable \gls{aoa} could be lower bounded by a null value and upper bounded by the stall angle, $\alpha_{stall}$ -those are the simple bounds for the \gls{aoa} control variable in that case-.
-    \item \underline{Time domain $t$:} Time domain is the closed interval of time, defined on real numbers, between initial time $t_0$ -where initial state condition is applied- and the time horizon $t_f$ -that can be fixed or free-. On \gls{ocp}, time horizon can be set to a known value if its a problem's parameter or can be free if it is set a decision variable -also called control variable- of the problem through end-time constraints or inside the cost functional.
-    \item \underline{Dynamic constraints $\dot{y}$:} Dynamic equations are a set of \gls{ode}s equality constraints that describe the physics of the problem. This set of constraints are always active, which means that they apply for all time domain. 
+    \item \underline{Time domain $t$:} Time domain is the closed interval of time, defined on real numbers, between initial time $t_0$ -where initial state condition is applied- and the time horizon $t_f$ -that can be fixed or free-. On \gls{ocp}, time horizon can be set to a known value if its a problem's parameter or can be free if it is set as a decision variable -also called control variable- of the problem through end-time constraints or inside the cost functional.
+    \item \underline{Dynamic constraints $\dot{y}$:} Dynamic equations are a set of \gls{ode}s defined as equality constraints that describe the physics of the problem. This set of constraints are always active, which means that they apply for all time domain. 
     \item \underline{Path constraints $g[y(t),u(t),t]$:} Path contsraints are another set of expressions that apply for a given time domain and that could refer to any type of extra restrcitions to the problem. They could be equalities or inequalities that could both restrict state or controls in a determined way.
     \item \underline{Initial state conditions $\varphi[y(t_0),u(t_0),t_0]$:} The initial state constraints are a set of equalities that restrict the initial value of state variables to a known value -the initial condition of the system is known-. They can also include restrictions for the initial value of control variables; nevertheless, it is not a common practice because the problem could be overrestricted and the solver may be unable to found a feasible solution.
     \item \underline{Cost functional $J(y,u)$:} The cost functional is the cost objective function that has to be minimised to found the optimal solution. This cost is defined by two different terms that contribute differently to the whole objective: terminal and running costs. If both contributions are present, then the cost objective is defined as in its Bolza form. As clarified in \cite{BrysonHo1975}:
@@ -69,28 +69,28 @@ Once the basic problem has been set, is has to be noticed that although the vari
 \subsection{Direct collocation method as direct method}
 Direct collocation methods are a type of direct method in which the functions are discretised in a set of predefined points called collocation points. These collocation points are part of a collocation grid that is set along the domain in both state and control variables. It has to be pinpointed that between collocation methods two different types can be distinguished: low-order collocation methods, applied to solve \gls{ode}s, and pseudospectral methods, applied to solve \gls{pde}s. Since this bachelor thesis adresses the flight mechanics of an aircraft for low-flight manoeuvres, which dynamic equations consists on different \gls{ode}s, the wording will focus on low-order collocation methods (\gls{dcm} from now on) \cite{Becerra2012}.
 
-Essentially, in the \gls{dcm} the state and the control variables are both discretised in different collocation points. This collocation points are a set of N time-instants that form the collocation grid (in an equivalent way, the reader can think about the collocation grid as the element grid usually made for finite element purposes). On this points, the dynamic of the problem will be evaluated, or forced, to solve the equations and, therefore, the whole problem. Thus, the \gls{dcm} for the control variables is defined as follows, extracted from \cite{Bohme2017}.
+Essentially, in the \gls{dcm} the state and the control variables are both discretised in different collocation points. This collocation points are a set of N time-instants that form the collocation grid (in an equivalent way, the reader can think about the collocation grid as the element grid usually made for finite element purposes). On these points, the dynamic of the problem will be evaluated, or forced, to solve the equations and, therefore, the whole problem. Thus, the \gls{dcm} for the control variables is defined as follows, extracted from \cite{Bohme2017}.
 
 \begin{equation}
     \begin{aligned}
         u(t) &= 
         \begin{cases} 
-            U_{k}^{u}(u_{k}, u_{k+1}, t) & \forall t \in [t_{k}, t_{k+1}] \\
-            U_{N-1}^{u}(u_{N-1}, u_{N}, t) & \forall t \in [t_{N-1}, t_{N}] 
+            U^{k}_{u}(u^{k}, u^{k+1}, t) & \forall t \in [t^{k}, t^{k+1}] \\
+            U^{N-1}_{u}(u^{N-1}, u^{N}, t) & \forall t \in [t^{N-1}, t^{N}] 
         \end{cases}
     \end{aligned}
     \label{eq:DCM_Control_Discretisation}
 \end{equation}
 
 \begin{equation}
-    \bar{u} = [u_{0}, u_{1}, u_{2}, \dots, u_{N}]^{T} \in \mathbb{R}^{(N+1) \cdot n_u}
+    \bar{u} = [u^{0}, u^{1}, u^{2}, \dots, u^{N}]^{T} \in \mathbb{R}^{(N+1) \cdot n_u}
     \label{eq:DCM_Control_Vector}
 \end{equation}
 
-The previous expressions \eqref{eq:DCM_Control_Discretisation} and \eqref{eq:DCM_Control_Vector} are the time-domain discretisation in N subintervals with specific nodes $t_i$ with $i \in [0,N]$, what allows to obatin a decision vector for control. In other words, it is an interpolation that avoids sudden discontinuities that can generate inestabilities on the integrator or solver, allowing a more precise capture of the different variations. In an equivalent way, the discretisation for state variables can be obtained as:
+The previous expressions \eqref{eq:DCM_Control_Discretisation} and \eqref{eq:DCM_Control_Vector} are the time-domain discretisation in N subintervals with specific nodes $t^i$ with $i \in [0,N]$, what allows to obatin a decision vector for control. In other words, it is an interpolation that avoids sudden discontinuities that can generate inestabilities on the integrator or solver, allowing a more precise capture of the different variations. In an equivalent way, the discretisation for state variables can be obtained as:
 
 \begin{equation}
-\overline{y} \ =\ [ y_{0} ,y_{1} ,y_{2} ,\dotsc,y_{N}]^{T} \in \mathbb{R}^{(N+1) \cdot n_y}
+\overline{y} \ =\ [ y^{0} ,y^{1} ,y^{2} ,\dotsc,y^{N}]^{T} \in \mathbb{R}^{(N+1) \cdot n_y}
 \end{equation}
 
 
@@ -98,8 +98,8 @@ For a better comprehension, the mathematical formulation behind discretisation c
 
 \begin{equation*}
     \begin{aligned}
-        u(t)\longrightarrow u_{i} =u(t_{i} )\ \ \ \text{for each} \ t_{i} \ \text{with} \ i\in [0,\dotsc,N]\\
-        y(t)\longrightarrow y_{i} =y(t_{i} )\ \ \ \text{for each} \ t_{i} \ \text{with} \ i\in [0,\dotsc,N]
+        u(t)\longrightarrow u^{i} =u(t^{i} )\ \ \ \text{for each} \ t^{i} \ \text{with} \ i\in [0,\dotsc,N]\\
+        y(t)\longrightarrow y^{i} =y(t^{i} )\ \ \ \text{for each} \ t^{i} \ \text{with} \ i\in [0,\dotsc,N]
     \end{aligned}
 \end{equation*}
 
@@ -107,11 +107,11 @@ At this point, a trapezoidal scheme is proposed to be used on the numerical appr
 
 \begin{equation}
     \begin{aligned}
-        & \int _{t_{0}}^{t_f} L(y,u,t)\ dt\approx \sum _{k=0}^{N-1}\frac{1}{2} h_{k} \cdotp ( L_{k} +L_{k+1})\\
+        & \int _{t_{0}}^{t_f} L(y,u,t)\ dt\approx \sum _{k=0}^{N-1}\frac{1}{2} h^{k} \cdotp ( L^{k} +L^{k+1})\\
         where & \\
-        & h_{k} \coloneqq t_{k+1} -t_{k}\\
-        & L_{k} \coloneqq L[ y(t_{k} ),u(t_{k} ),t_{k}]\\
-        & L_{k+1} \coloneqq L[ y(t_{k+1} ),u(t_{k+1} ),t_{k+1}]\\
+        & h^{k} \coloneqq t^{k+1} -t^{k}\\
+        & L^{k} \coloneqq L[ y(t^{k} ),u(t^{k} ),t^{k}]\\
+        & L^{k+1} \coloneqq L[ y(t^{k+1} ),u(t^{k+1} ),t^{k+1}]\\
         & k\in [0,N-1]
     \end{aligned}
     \label{eq:DCM_Running_Cost}
@@ -122,7 +122,7 @@ Furthermore, the trapezoidal rule has to be applied to the constraints of the pr
 \begin{equation*}
     \begin{aligned}
         & \dot{y} \coloneqq f(y,u,t)\\
-        & \int _{t_{k}}^{t_{k+1}}\dot{y} \ dt=\int _{t_{k}}^{t_{k+1}} f(y,u,t)\ dt
+        & \int _{t^{k}}^{t^{k+1}}\dot{y} \ dt=\int _{t^{k}}^{t^{k+1}} f(y,u,t)\ dt
     \end{aligned}
 \end{equation*}
 
@@ -130,9 +130,9 @@ Resulting in:
 
 \begin{equation}
     \begin{aligned}
-        & y_{k+1} - y_{k} =\frac{1}{2} h_{k} \cdotp (f_{k} +f_{k+1} )\\
+        & y^{k+1} - y^{k} =\frac{1}{2} h^{k} \cdotp (f^{k} +f^{k+1} )\\
         where & \\
-        & f_{k} \coloneqq f(y_{k} ,u_{k} ,t_{k} )\text{ for each } k\in [0,N-1]
+        & f^{k} \coloneqq f(y^{k} ,u^{k} ,t^{k} )\text{ for each } k\in [0,N-1]
     \end{aligned}
     \label{eq:DCM_ODEs}
 \end{equation}
@@ -141,13 +141,13 @@ Eventually, the terminal cost can be added taking into account its contribution 
 
 \begin{equation}
     \begin{aligned}
-        \min_{y,u} \ \  & J(y,u) \coloneqq \Phi[ y(t_{N} ),u(t_{N} ),t_{N}] +\sum _{k=0}^{N-1}\frac{1}{2} h_{k} \cdotp ( L_{k} +L_{k+1})\\
-        \text{s.t.} \ \  & y_{k+1} =y_{k} + \frac{1}{2} h_{k} \cdotp (f_{k} +f_{k+1} ) \text{ for } k \in [0,N-1]\\
-        & g[y(t_k),u(t_k),t_k] \leq 0 \text{ for } \forall k\\
-        & \varphi [y(t_0 ),u(t_0),t_0] =0\\
-        & y_{lb} \leq y(t_k)\leq y_{ub}\\
-        & u_{lb} \leq u(t_k)\leq u_{ub}\\
-        & t_k \text{ for each } k \in [0,N]
+        \min_{y,u} \ \  & J(y,u) \coloneqq \Phi[ y(t^{N} ),u(t^{N} ),t^{N}] +\sum _{k=0}^{N-1}\frac{1}{2} h^{k} \cdotp ( L^{k} +L^{k+1})\\
+        \text{s.t.} \ \  & y^{k+1} =y^{k} + \frac{1}{2} h^{k} \cdotp (f^{k} +f^{k+1} ) \text{ for } k \in [0,N-1]\\
+        & g[y(t^k),u(t^k),t^k] \leq 0 \text{ for } \forall k\\
+        & \varphi [y(t^0 ),u(t^0),t^0] =0\\
+        & y_{lb} \leq y(t^k)\leq y_{ub}\\
+        & u_{lb} \leq u(t^k)\leq u_{ub}\\
+        & t^k \text{ for each } k \in [0,N]
     \end{aligned}
     \label{eq:DCM_OCP}
 \end{equation}
@@ -159,7 +159,7 @@ The optimality conditions are consequence of the application of the Euler-Lagran
 
 \begin{equation}
     \begin{aligned}
-        min_{x\in \mathbb{R}^{n}} \ \  & f\ (x)\\
+        \min_{x\in \mathbb{R}^{n}} \ \  & f\ (x)\\
         \text{s.t.} \ \  & g_{i} \ (x)\leq 0\ \text{for each} \ i=1,\dotsc ,m\\
         & h_{j} \ ( x) =0\ \text{for each} \ j=1,\dotsc ,p\\
     \end{aligned}
@@ -222,12 +222,12 @@ On its part, the transversality conditions are the boundary conditions for the c
 Once the Hamiltonian is defined, both transversality conditions can be found as the partial derivative of the Hamiltonian respect to the state variables and, the evaluation of the co-state at the end of time domain, respectively. Formulation has been adapted from \cite{Stryk1992} and \cite{Chachuat2009}.
 
 \begin{equation}
-    \dot{\lambda } \ =\ -\frac{\partial H}{\partial y} =-\lambda ^{T}\frac{\partial f}{\partial y} -\nu ^{T}\frac{\partial g}{\partial y}
+    \dot{\lambda } \coloneqq \ -\frac{\partial H}{\partial y} =-\lambda ^{T}\frac{\partial f}{\partial y} -\nu ^{T}\frac{\partial g}{\partial y}
     \label{eq:Transversality_1}
 \end{equation}
 
 \begin{equation}
-    \lambda (t_f) =\ \frac{\partial \Phi }{\partial y(t_f)} -\nu ^{T}\frac{\partial \varphi }{\partial y(t_f)}
+    \lambda (t_f) \coloneqq \frac{\partial \Phi }{\partial y(t_f)} -\nu ^{T}\frac{\partial \varphi }{\partial y(t_f)}
     \label{eq:Transversality_2}
 \end{equation}
 
@@ -235,8 +235,8 @@ Eventually, the \gls{pmp} is a fundamental result of optimal control theory, sin
 
 \begin{equation}
     \begin{aligned}
-        & \dot{\lambda } (t)=-\frac{\partial H}{\partial y}\\
-        & \lambda (t_f)=\frac{\partial \Phi }{\partial y(t_f)}\\
+        & \dot{\lambda } (t)\coloneqq -\frac{\partial H}{\partial y}\\
+        & \lambda (t_f)\coloneqq \frac{\partial \Phi }{\partial y(t_f)}\\
         where & \\
         & H(y,u,\lambda ,t)\coloneqq L(y,u,t)+\lambda ^{T} f(y,u,t)\\
         & \dot{y} (t)\coloneqq f(y,u,t)
@@ -244,7 +244,7 @@ Eventually, the \gls{pmp} is a fundamental result of optimal control theory, sin
     \label{eq:PMP_Problem}
 \end{equation}
 
-Therefore, the \gls{pmp} can be expressed as the minimisation of the Hamiltonian with respect to the control variables, as indicated in equation \eqref{eq:PMP}. This formulation arises because the original statement of \gls{pmp} is given as a maximisation problem, but it can be equivalently rewritten in minimisation form by changing the sign of the Hamiltonian \cite{BrysonHo1975_Blaisdell} -also called Pontryagin's Minimum Principle-. In essence, the principle reformulates the original optimal control problem into an equivalent system involving the state and an adjoint -or co-state- system. The optimal control trajectory is then obtained by ensuring that, at each instant of time, the Hamiltonian is minimised with respect to the admissible controls.
+Therefore, the \gls{pmp} can be expressed as the minimisation of the Hamiltonian with respect to the control variables, as indicated in equation \eqref{eq:PMP}. This formulation arises because the original statement of \gls{pmp} is given as a maximisation problem, but it can be equivalently rewritten in minimisation form by changing the sign of the Hamiltonian -also called Pontryagin's Minimum Principle- \cite{BrysonHo1975_Blaisdell}. In essence, the principle reformulates the original optimal control problem into an equivalent system involving the state and an adjoint -or co-state- system. The optimal control trajectory is then obtained by ensuring that, at each instant of time, the Hamiltonian is minimised with respect to the admissible controls.
 
 \begin{equation}
     \begin{aligned}
@@ -303,7 +303,7 @@ At this point, optimality error of the barrier problem can be defined using \gls
     \label{eq:BP_Error}
 \end{equation}
 
-The expression above is used on each iteration of the \gls{ipopt} algorithm to compute the optimality error and, therefore, check local convergence before stepping onto the following point. The checks for local and global convergence are the following, respectively. As can be seen, these checks use an approximate solution and an approximation to multipliers ($\tilde{x}^*, \tilde{\lambda}^*, \tilde{z}^*$). It also has to be pinpointed that each iteration, the update in barrier parameter is obtained following the expression \eqref{eq:BP_Mu}. All three expresions are computed for given constants $\kappa_\epsilon$, $\kappa_\mu$, $\theta_\mu$ and $\epsilon_{tol}$, as indicated in \cite{Waechter2004}.
+The expression above is used on each iteration of the \gls{ipopt} algorithm to compute the optimality error and, therefore, check local convergence before stepping onto the following point. The checks for local and global convergence are the following, respectively. As can be seen, these checks use an approximate solution and an approximation to multipliers ($\tilde{x}^*, \tilde{\lambda}^*, \tilde{z}^*$). It also has to be pinpointed that at each iteration, the update in barrier parameter is obtained following the expression \eqref{eq:BP_Mu}. All three expresions are computed for given constants $\kappa_\epsilon$, $\kappa_\mu$, $\theta_\mu$ and $\epsilon_{tol}$, as indicated in \cite{Waechter2004}.
 
 \begin{equation}
     E_{\mu, j}(\tilde{x}^*_{j+1}, \tilde{\lambda}^*_{j+1}, \tilde{z}^*_{j+1}) \leq \kappa_\epsilon \mu_j
@@ -341,13 +341,13 @@ As said before, the \gls{ipopt} is based on a primal-dual framework that iterate
     \label{eq:BP_Newton_System}
 \end{equation}
 
-From the previous expression, gradients could be computed. Thus, the update on variables and multipliers will be set following the set of equations \eqref{eq:BP_Mu} once the step size parameter $\alpha_k$ is determined by a filter search or filter method. A deep explanation of the filther methods used can be found on \cite{Waechter2004} and \cite{Fletcher2002}.
+From the previous expression, gradients could be computed. Thus, the update on variables and multipliers will be set following the set of equations \eqref{eq:BP_Mu}, once the step size parameter $\alpha_k$ is determined by a filter search or filter method. A deep explanation of the filther methods used can be found on \cite{Waechter2004} and \cite{Fletcher2002}.
 
 \begin{subequations}
     \begin{align}
-        x_{k+1} &\coloneqq x_k + \alpha_k d_x^k \\
-        \lambda_{k+1} &\coloneqq \lambda_k + \alpha_k d_{\lambda}^k \\
-        z_{k+1} &\coloneqq z_k + \alpha_z^k d_z^k
+        x_{k+1} &\coloneqq x_k + \alpha_k d_k^x \\
+        \lambda_{k+1} &\coloneqq \lambda_k + \alpha_k d_{k}^{\lambda} \\
+        z_{k+1} &\coloneqq z_k + \alpha_k d_k^z
     \end{align}
     \label{eq:BP_Updated_Steps}
 \end{subequations}
