@@ -656,12 +656,12 @@ class Plotter:
 
     def GENERATE_COST_PLOT(it,obj,time,path):
         # PLOT: COST EVOLUTION
-        plt.figure(figsize=(10,6))
+        plt.figure(figsize=(12,6))
         plt.subplots_adjust(
             left=0.10, 
-            bottom=0.10, 
+            bottom=0.15, 
             right=0.90, 
-            top=0.90
+            top=0.85
             )
         
         # Cost plot.
