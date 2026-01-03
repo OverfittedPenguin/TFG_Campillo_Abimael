@@ -430,6 +430,41 @@ The algorithm that has been implemented to solve the \gls{nlp} problem using \gl
 \end{algorithm}
 
 \section{Results}
+The following simulation has been done for the initial states indicated in the table below, which summarises the \textit{Simulation.json} for benchmark problem. The aircraft used for this simulation has been the \gls{uav} Flyox, which parameters can be seen on appendix \ref{app:AircraftParameters} table \ref{tab:Flyox_Parameters}. In addition, the simulation has been performed with 150 collocation points -or nodes- for a end-time of 600 s.
+
+As can be seen on figure \ref{fig:Benchmark_STATES} the generated trajectory is a level-flight cruise trajectory for 600 s, leading the \gls{uav} to a distance of 30 km when flying at 50 m/s - or 100 kts-. States seem typical for a level-flight since flight path angle is null ($\gamma \approx 0$) and there are no apparent oscillations on altitude. Mass decreases as fuel is consumed and velocity is mantained at target velocity. Moreover, figure \ref{fig:Benchmark_CONTROLS} shows the \gls{tps} and elevator deflection ($\delta_{e}$) trim points. Elevator deflection, which is positive-defined as trailing edge goes down -if the aircarft does pitch down-, shows a trim point that compensates the natural tendency of Flyox, which is a pitch up moment due to its positive $C_{m_0}$. It has to be pinpointed that the end value for states is abrupt and increases due to minor changes on controls.
+
+\begin{table}[H]
+    \centering
+    \caption{Benchmark simulation parameters. See reference in appendix \ref{app:Code}, \textit{Simulation.json}. Own source.}
+    \begin{tabular}{lcc}
+        \hline
+        \textbf{Parameter} & \textbf{Value} & \textbf{Units} \\ \hline
+        N -collocation points- & 150 & {[}-{]} \\
+        \begin{tabular}[c]{@{}l@{}}Initial State -or\\ guesses-\end{tabular} & {[}50.00, 0.07, -, 600.00, -{]} & {[}m/s, rad, s, s, s{]} \\
+        Wind Speed & {[}0.00, 0.00{]} & {[}m/s{]} \\
+        \begin{tabular}[c]{@{}l@{}}Target Point \\ parameters\end{tabular} & {[}-, -, -, 50.00, -{]} & {[}km, km, -, m/s, s{]} \\
+        Mission Bounds & \begin{tabular}[c]{@{}c@{}}LB: {[}-, -, -, -608.00, -{]}\\ UB: {[}-, -, -, -608.00, -{]}\end{tabular} & {[}s, s, s, m, m/s{]} \\
+        Weights STG1 & {[}0.0, 0.3, 0.2, 1.0, 1.5{]} & {[}-{]} \\
+        Weights STG2 & {[}-{]} & {[}-{]} \\
+        Weights STG3 & {[}-{]} & {[}-{]} \\ \hline
+    \end{tabular}
+    \label{tab:Benchmark_Parameters}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{images/benchmark/B_STATES_CASE0} 
+    \caption{State trajectories, benchmark. States included are velocities, angles, mass and \gls{uav} trajectory. Own source.}
+    \label{fig:Benchmark_STATES}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=0.9\textwidth]{images/benchmark/B_CONTROLS_CASE0} 
+    \caption{Control trajectories, benchmark. Controls included are \gls{tps} and elevator deflection. Own source.}
+    \label{fig:Benchmark_CONTROLS}
+\end{figure}
 
 \section{Addition of the Free-End Condition}
 Next step in \gls{ocp} formulation is to set the free-end condition to the problem stated before. Free-end condition implies adding end-time ($t_f$) as a control variable and to let the solver compute its value as part of the dynamic constraints, path constraints -if needed specific end-time conditions- and as part of the cost functional -at this point, terminal cost or Mayer term, has to be remembered-. 
@@ -544,4 +579,39 @@ Eventually, the \gls{nlp} problem can be defined properly using almost CasADi no
 \end{algorithm}
 
 \subsection{Results}
+For the free-end simulation, the parameters from table \ref{tab:Benchmark_Parameters} remain unchanged except for definition of a lower-bound $t_{F,lb} =  600\ s$ and $t_{F, ub} = 800\ s$ for end-time control variable. What is more, a penalty weight on terminal cost for end-time has been added with a 0.5 value, in order to see if there are relavent differences.
 
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{images/benchmark/B_STATES_CASE1} 
+    \caption{State trajectories, benchmark with free-end condition. States included are velocities, angles, mass and \gls{uav} trajectory. Own source.}
+    \label{fig:Benchmark_Plus_STATES}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=0.9\textwidth]{images/benchmark/B_CONTROLS_CASE1} 
+    \caption{Control trajectories, benchmark with free-end condition. Controls included are \gls{tps} and elevator deflection. Own source.}
+    \label{fig:Benchmark_Plus_CONTROLS}
+\end{figure}
+
+As can be spotted on previous figures, there are no eye-sight differences between the state trajectories from this case with the previous benchmark case. That is because the problem is, in essentia, the same. However, it can be pinpointed that endpoint of both state and control trajectories are slightly smoother and continuous. That minor change is consequence of adding free-end condition with a penalty weight in terminal cost because the optimiser can seek a better adjustment, reducing end-time. This reduction translates into a slightly modification of end states and controls which produce a bit of pitch down -invaluable in the flight path- that consume a bit of more fuel. Nonetheless, the important change has been produced in cost objective graph, which has increased due to terminal cost pressence -its profile is similar because running cost has not changed-. This increase is unnoticeable in states or controls because the problem is a simple validation problem; however, these could provoke huge differences in more realistic scenarios because the optimiser could not minimise properly the cost functional when terminal cost is present and, therefore, it could lead to appreciable differences in states or controls.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{\textwidth}
+        \centering
+        \includesvg[width=0.8\textwidth]{images/benchmark/B_COST_CASE0}
+        \caption{No free-end condition.}
+    \end{subfigure}
+    
+    \vspace{0.25cm}
+    
+    \begin{subfigure}[b]{\textwidth}
+        \centering
+        \includesvg[width=0.8\textwidth]{images/benchmark/B_COST_CASE1}
+        \caption{Free-end condition.}
+    \end{subfigure}
+    \caption{Comparison between benchmark problem cost objective per iteration with or without free-end condition. Own source.}
+    \label{fig:Benchmark_COST_Comparison}
+\end{figure}
