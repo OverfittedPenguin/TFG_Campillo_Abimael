@@ -20,11 +20,13 @@
 \usepackage{geometry}            
 \usepackage{lipsum}
 \geometry{
+    a4paper,
     left=2.5cm,
     right=2.5cm,
-    top=3.5cm,
+    top=2.5cm,
     bottom=3.5cm,
-    headsep=0.75cm
+    headsep=0.5cm,
+    includehead
 }
 \usepackage{graphicx}           
 \usepackage{fancyhdr}    
@@ -40,7 +42,7 @@
 \setlength{\parskip}{0.8em}     
 \setlength{\parindent}{0pt}     
 \usepackage{wrapfig}            
-\usepackage[style=ieee, sorting=none, backend=biber]{biblatex} 
+\usepackage[style=iso-numeric, sorting=none, backend=biber]{biblatex} 
 \addbibresource{references.bib}
 \usepackage{listings}
 \definecolor{codegreen}{rgb}{0,0.6,0}
@@ -74,8 +76,7 @@
     numbersep=8pt,
     showstringspaces=false,
     breaklines=true,
-    % --- The key additions ---
-    morecomment=[l]{//},       % Define // as a line comment
+    morecomment=[l]{//},      
     commentstyle=\color{codegreen},
 }
 \usepackage{appendix}
@@ -83,7 +84,10 @@
 \svgsetup{
     inkscapeexe={/usr/bin/inkscape},
     inkscapeversion=1,
-    extractpath=./svg-extract/ % Forces LaTeX to create a dedicated folder for the PDFs
+    extractpath=./svg-extract/ 
 }
 \usepackage{subcaption}
 \usepackage{array}
+\usepackage[catalan, british]{babel}
+\usepackage{csquotes}
+\usepackage{url}

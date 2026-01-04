@@ -3,6 +3,13 @@
 % PACKAGES AND CONFIGURATIONS
 \input{packages}
 \renewcommand{\familydefault}{\rmdefault}
+\setlength{\bibitemsep}{0.75em}
+\appto{\bibsetup}{\raggedright}
+\renewcommand*{\bibfont}{\small}
+
+% ABSTRACT 
+\newcommand{\keywords}[1]{\par\vspace{10pt}\noindent\textbf{Keywords:} #1}
+\newcommand{\paraulesclau}[1]{\par\vspace{10pt}\noindent\textbf{Paraules clau:} #1}
 
 % HEADER AND FOOTER
 \pagestyle{fancy}
@@ -11,13 +18,16 @@
 \setlength{\headheight}{46pt} 
 \addtolength{\topmargin}{-4pt}
 
-\fancyhead[L]{\includegraphics[width=5cm]{images/default/logo_UPC_header.png}\includegraphics[width=1.3cm]{images/default/singular_aircraft_ltd_logo.jpeg}}
-\fancyhead[R]{
+\fancyhead[L]{%
+    \includegraphics[height=1cm]{images/default/logo_UPC_header.png}%
+    \hspace{5pt}%
+    \includegraphics[height=1cm]{images/default/singular_aircraft_ltd_logo.jpeg}%
+}
+\fancyhead[R]{%
     \small\rmfamily\bfseries 
-    \begin{tabular}[b]{r@{}}
-        A.Campillo "Real-Time Optimal Trajectory \\ 
-        Generation for Fixed-Wing UAVs" 
-    \end{tabular}
+    \begin{minipage}[b]{8cm} % This forces the title to wrap
+        \raggedleft A.Campillo "Real-Time Optimal Trajectory Generation for Fixed-Wing UAVs"
+    \end{minipage}
 }
 \fancyfoot[C]{\small\rmfamily\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
@@ -43,7 +53,7 @@
 \newglossarystyle{nomenclaturestyle}{
   \setglossarystyle{long3col}
   \renewenvironment{theglossary}%
-    {\begin{longtable}{@{} p{0.18\textwidth} p{0.62\textwidth} >{\raggedleft\arraybackslash}p{0.15\textwidth} @{}}
+    {\begin{longtable}{@{} p{0.15\textwidth} p{0.55\textwidth} >{\raggedleft\arraybackslash}p{0.20\textwidth} @{}}
      \rmfamily\bfseries Symbol & \rmfamily\bfseries Description & \rmfamily\bfseries Units \\ [1ex]
      \hline 
      \noalign{\vspace{6pt}}
@@ -113,6 +123,23 @@
 \scalebox{1.5}{{\textcolor{RoyalBlue}{Autumn 2025}}}
 \restoregeometry
 
+%% - PHRASE - %%
+\newpage
+\thispagestyle{empty}
+\mbox{}
+\vfill
+\begin{flushright}
+    \begin{minipage}{0.6\textwidth}
+        \raggedleft
+        \itshape
+        “The airplane has unveiled for us the true face of the earth. No longer confined to roads that bend around obstacles and follow the will of cities and rivers, the pilot looks down on mountains, deserts, and oceans as a single, living map. To fly is to discover that the world is wider, harsher, and more beautiful than the paths laid out for us on the ground.” \\
+        \vspace{1em}
+        \hfill \textbf{--- Antoine de Saint-Exupéry}, \textit{Wind, Sand and Stars.}
+    \end{minipage}
+\end{flushright}
+\vfill
+\vfill
+\newpage
 %% - DOCUMENT - %%
 \pagestyle{plain}
 \pagenumbering{roman}
@@ -134,10 +161,13 @@
 % MAIN CONTENT
 \pagestyle{fancy}
 \pagenumbering{arabic}
+\input{chapters/ch1_state_of_the_art.tex}
 \input{chapters/ch2_fundamentals_oc.tex}
 \input{chapters/ch3_benchmark.tex}
 \input{chapters/ch4_problem_definition.tex}
 \input{chapters/ch5_problem_results.tex}
+\input{chapters/ch6_budget_environmental.tex}
+\input{chapters/ch7_conclusions.tex}
 
 % REFERENCES
 \printbibliography[heading=bibintoc,title={References}]

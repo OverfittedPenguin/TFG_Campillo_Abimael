@@ -1,2 +1,14 @@
-\chapter*{Abstract}
 \addcontentsline{toc}{chapter}{Abstract}
+\begin{abstract}
+Given the increase in the frequency and intensity of wildfires, the necessity for autonomous aerial firefighting solutions has become increasingly urgent. Within this context, this final bachelor's degree thesis aims to develop the foundations of an optimal control algorithm capable of generating trajectories for firefighting manoeuvres. The methodological approach combines \gls{oct} with a \gls{dc} implementation in \gls{nlp} using the CasADi framework. Results indicate that while the system is robust to instantaneous disturbances, a clear trade-off exists between manoeuvre duration and smoothness; specifically, end-time penalisation accelerates the mission but induces aggressive, spiky control actions. Optimal performance was achieved by easing constraint margins, thereby increasing the KKT optimality margin. Conversely, schemes lacking a balanced cost functional led to unstable bang-bang oscillations or non-optimal feasible solutions. While promising, the current solution requires further integration of real-world environmental factors, such as \gls{dem}, \gls{nfz}, and real-time atmospheric conditions.
+\keywords{Optimal Control Theory, OCT, Direct Collocation, DCM, Non-linear Programming, NLP, CasADi, Firefighting Manoeuvres, Flight Trajectory Generation, Path Planning}
+\end{abstract}
+
+\vspace{1.5cm} 
+
+\begin{otherlanguage}{catalan}
+\begin{abstract}
+Davant l'augment de la freqüència i la intensitat dels incendis forestals, la necessitat de solucions aèries autònomes per a l'extinció d'incendis s'ha tornat cada vegada més urgent. En aquest context, aquest treball de final de grau té com a objectiu desenvolupar les bases d'un algorisme de control òptim capaç de generar trajectòries per a maniobres d'extinció d'incendis. L'enfocament metodològic combina la teoria de control òptim \gls{oct} amb una implementació de col·locació directa \gls{dc} en programació no lineal \gls{nlp} utilitzant l'entorn CasADi. Els resultats indiquen que, tot i que el sistema és robust davant pertorbacions instantànies, existeix un compromís clar entre la durada de la maniobra i la seva suavitat; concretament, la penalització del temps final accelera la missió però indueix accions de control agressives i irregulars. L'optimitat màxima s'ha assolit relaxant els marges de les restriccions, augmentant així el marge d'optimitat KKT. Per contra, els esquemes sense un funcional de cost equilibrat han derivat en oscil·lacions inestables de tipus bang-bang o solucions factibles no òptimes. Tot i ser prometedora, la solució actual requereix una major integració de factors ambientals reals, com ara models digitals d'elevació \gls{dem}, zones de vol prohibit \gls{nfz} i condicions atmosfèriques en temps real.
+\paraulesclau{Control Òptim, OCT, Col·locació Directa, DCM, Programació No Lineal, NLP, CasADi, Extinció d'Incendis, Generació de Trajectòries de Vol, Planificació de Rutes}
+\end{abstract}
+\end{otherlanguage}
