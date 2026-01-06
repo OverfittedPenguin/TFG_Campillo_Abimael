@@ -1,1 +1,45 @@
 \chapter{State-of-the-Art}
+This first chapter provides a general overview of the current state-of-the-art in trajectory optimisation frameworks and solutions, ranging from industrial and commercial software to academic-oriented tools. The chapter concludes with a brief summary of identified limitations and the primary research gaps within the current trajectory optimisation landscape.
+
+\section{Overview of Frameworks and Solutions}
+Trajectories are time-continuous functions that describe the evolution and behaviour of a system from an initial state until it reaches a specific objective. This objective is typically defined by a cost function within an optimisation framework. The following discussion explores various solutions for trajectory optimisation problems, with a specific focus on aerospace applications.
+
+\subsection{Commercial-of-the-shelf (COTS) solutions}
+\gls{cots} refers to commercially developed tools widely used in the industry, accessible via licensing fees. While some of these tools originated as open-source or research projects, their reliability led to commercialization. In this context, the most prominent \gls{cots} tools for trajectory optimization are NASA OTIS4 and ASTOS.
+
+NASA OTIS4 was initially developed for missile trajectories in 1986 by the United States Air Force (USAF). It is a robust framework that supports both 3-DOF and 6-DOF modeling, allowing users to solve for the complete state of an aircraft -including position and attitude- or a reduced point-mass version. The framework is designed to handle highly constrained problems or those with sparse initial data. It features four distinct solution modes:
+\begin{itemize}
+    \item Discrete Mode: Used for simple integration of the equations of motion given a fixed control history (simulation only).
+    \item Target Mode: Adjusts a set of free parameters to satisfy specific terminal conditions or goals (boundary value problem).
+    \item Optimal Constrained Mode: Minimises or maximises a cost function while strictly satisfying path and terminal constraints using \gls{nlp}.
+    \item Optimal Open-Loop Mode: Solves for the optimal control history without feedback, typically used for generating baseline reference trajectories.
+\end{itemize}
+OTIS4 relies on \gls{dcm}, pseudospectral methods, and implicit integration, interfaced with solvers such as SLSQP, SNOPT, or NPOPT. However, it remains limited regarding the integration of dynamic \gls{dem} or complex \gls{nfz} in real-time. Furthermore, it is characterised by a high computational demand \cite{hargreaves2012} \cite{rosmann2006}.
+
+ASTOS is perhaps the most widely recognised tool for launch vehicle trajectory computation. It provides a comprehensive environment for modeling all flight phases, from liftoff to re-entry. Developed by the DLR in 1989 and written in C, it utilises \gls{dcm} and multiple shooting methods, such as Sequential Quadratic Programming (SQP) and general \gls{nlp} solvers. Despite its high fidelity and versatility, ASTOS shares the limitations of high computational overhead and lack of suitability for real-time onboard computation \cite{astos2024}.
+
+\subsection{Open-source frameworks}
+Open-source frameworks have gained significant traction in the research community due to their flexibility, transparency, and the ability to be integrated into custom software pipelines without licensing constraints. Unlike COTS solutions, these tools often allow for deeper modification of the underlying numerical methods. Two examples are PSOPT and TAOS.
+
+PSOPT is an open-source, C++ and Python-based optimal control library developed in 2010 by Victor M. Becerra. It was designed to solve a wide range of multi-phase engineering problems by approximating continuous-time optimal control problems into finite-dimensional \gls{nlp} problems. It is distinguished by its versatility, offering three primary numerical approaches:
+
+\begin{itemize}
+    \item \gls{dcm}: Solving the state and control variables simultaneously at discrete points.
+    \item Local Discretisation Methods: Utilising implicit integration schemes, such as the Runge-Kutta, for high-accuracy local approximations.
+    \item Pseudospectral Methods: Employing global orthogonal polynomials, specifically Chebyshev and Legendre approximations, to achieve exponential convergence rates for smooth problems.
+\end{itemize}
+
+Despite its robust mathematical core, PSOPT remains limited in modern operational contexts; it lacks native support for \gls{dem} integration or complex \gls{nfz} constraints, and its architecture is not optimized for real-time on-board applications \cite{becerra2010psopt}.
+
+TAOS is a specialiSed framework designed to handle a spectrum of flight regimes, from low-speed atmospheric vehicles to high-speed orbital trajectories. The core philosophy of TAOS is based on Newtonian mechanics: it estimates system performance by calculating the position, velocity, and acceleration through a segmentation method. In this approach, the trajectory is divided into discrete segments where the equations of motion are integrated. To achieve optimisation, TAOS typically employs Powell’s Method, a derivative-free optimisation algorithm used to find local minima of the cost function. While efficient for specific mission profiles, TAOS shares the same limitations as earlier frameworks regarding the lack of integrated \gls{dem} and \gls{nfz} data handling, which restricts its use in complex terrain-avoidance scenarios \cite{salguero1995taos}.
+
+\subsection{Academic and research oriented tools}
+Academic tools are often at the forefront of algorithmic innovation, focusing on computational efficiency, real-time feasibility, and the implementation of advanced mathematical theories. In this context, ACADO Toolkit and OpenAp.opt are two (2) great examples of academic tools.
+
+ACADO Toolkit, developed in C++ in 2011, is a comprehensive software library designed for solving \gls{ocp} in non-linear dynamic systems. It is specifically engineered for versatility and efficiency, making it a primary choice for embedded systems and industrial engineering applications. ACADO supports a wide array of problems, including non-linear optimal control, multi-objective optimization, and state/parameter estimation. Its core strength lies in its ability to handle both Model Predictive COntrol (MPC) and Non-linear Model Predictive Control (NMPC). The underlying algorithms utilize \gls{dcm}, single shooting, and multiple shooting methods. While ACADO does not natively support \gls{dem} or \gls{nfz} integration, it is one of the few frameworks explicitly prepared for real-time applications. However, it is noted in the community for having a very steep learning curve, requiring significant expertise in C++ and numerical optimisation \cite{houska2011acado}.
+
+OpenAp.opt is a specialized Python-based tool introduced in 2019 as part of the OpenAP ecosystem for aviation purposes. It provides a complete environment for aircraft performance modeling, the calculation of key aerodynamic parameters, and trajectory generation and optimization. The tool solves non-linear \gls{ocp} through \gls{dcm} and fourth-order Runge-Kutta integration. It leverages the CasADi framework and the \gls{ipopt} solver to handle large-scale non-linear programming. Unlike ACADO, OpenAP.opt is designed for strategic planning and high-fidelity performance analysis rather than tactical maneuvers; consequently, real-time computation is not supported \cite{sun2020openap}.
+
+\section{Research Gaps}
+
+The analysis identifies a clear void in the state-of-the-art: the integration of Digital Elevation Models (\gls{dem}) and No-Fly Zones (\gls{nfz}) within a real-time, adaptable environment. To address this gap, this research adopts CasADi -via Python- as a flexible baseline. This choice provides the necessary mathematical foundation -done in \gls{oct}- and algorithmic differentiation required to develop a baseline algorithm that will serve as the starting point for future real-time, terrain-aware developments, which are necessary for autonomous firefighting missions.
