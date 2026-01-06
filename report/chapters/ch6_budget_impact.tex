@@ -1,0 +1,45 @@
+\chapter{Budget and Impact}
+The following chapter includes a summary of the overall development cost of the project and this thesis along to its environmental and social impact.
+
+\section{Budget}
+The following table is a summary of the breakdown budget of the project worded in this report. A detailed version of the budget can be seen in the proper budget's document facilitated along to this document. As can be seen, the overall estimated cost of the project has been $\mathbf{8935.59 \ }$ €.
+
+\begin{table}[H]
+    \caption{Budget executive sumamry. Own source.}
+    \begin{tabular}{clllcc}
+        \hline
+        \multicolumn{5}{l}{Personnel Costs} & 7737.12 € \\ \hline
+        & \multicolumn{3}{l}{GNC Intern Engineer (360h)} & 4417.20 € &  \\
+        & \multicolumn{3}{l}{GNC Senior Engineer (36h)} & 1249.92 € &  \\
+        & \multicolumn{3}{l}{Aerospace Senior Engineer (72h)} & 2070.00 € &  \\ \hline
+        \multicolumn{5}{l}{Hardware Costs} & 386.14 € \\ \hline
+        & \multicolumn{3}{l}{MSI Modern 15 16GB 512GB -  amortised 2 years} & 218.54 € &  \\
+        & \multicolumn{3}{l}{Apple IPad Air 11" 128 GB - amortised 5 months} & 129.80 € &  \\
+        & \multicolumn{3}{l}{Apple Pencil - amortised 5 months} & 37.80 € &  \\ \hline
+        \multicolumn{5}{l}{Contingency Margin (10\%)} & 812.33 € \\ \hline
+        \multicolumn{5}{l}{\textbf{Total Cost}} & \textbf{8935.59 €} \\ \hline
+    \end{tabular}
+    \label{tab:Budget}
+\end{table}
+
+\section{Environmental Impact}
+This project constitutes the computational development of an algorithm. For that reason, the use of computer resources has been the most relevant item in terms of energy resources and, therefore, environmental impact. For the energy consumption, taking the total amount of dedicated hours -including algorithm planning, code development, simulations, report writing and schematics done with a tablet- they amount up to three hundred and sixty (360) hours. Specifically, they have been 85\% done with the laptop and 15\% done with the tablet; thus, taking 65 W and 29 W as reference consumptions values for both the laptop and the tablet, separately, the total consumption is expressed below. Reference values have been extracted from \cite{msi2024modern} and \cite{apple2024ipad}, respectively.
+
+\begin{equation*}
+    \begin{aligned}
+        E & \coloneqq E_{laptop} + E_{tablet} = 0.85\cdot 360 \cdot 65 + 0.15\cdot 360 \cdot 29 \\
+        E & = 19890 + 1566 = 21456\ Wh \\
+        E & = 21.46 \ kWh
+    \end{aligned}
+\end{equation*}
+
+Then, considering an average energy mix of $0.283 \ kg/(kWh)$, extracted from \cite{occc2025mix}, the total amount of $CO_2$ emissions of this project's developments can be computed with a total sum of $6.07\ kg$.
+
+The development of the trajectory optimisation algorithm was conducted under a framework of digital sustainability, prioritising computational efficiency to minimise the project's carbon footprint. By leveraging CasADi’s symbolic differentiation and implementing warm-start techniques, the total CPU cycles and iterations required for convergence were significantly reduced. 
+
+Beyond hardware optimisation, the project was managed in a strictly paperless environment, utilizing digital version control and cloud-based tools for all documentation and analysis. This approach eliminated the need for a physical environment that generate material waste. Moreover, by integrating early stopping criteria and efficient numerical libraries, the study aligns technical rigor with energy responsibility, ensuring that the transition from theoretical optimal control to a functional baseline is achieved with minimal environmental impact.
+
+\section{Social Impact}
+The social impact of this firefighting trajectory optimisation algorithm is centered on the preservation of life and the advancement of autonomous emergency response. By providing a technical foundation for high-autonomy systems, this work directly contributes to reducing pilot workload and human exposure in hazardous, high-stress environments. The long-term goal is to shift the risk from human first responders to robust autonomous platforms, thereby increasing the safety margins and operational precision of critical firefighting missions in complex scenarios.
+
+In accordance with the UPC Ethical Code (February 22, 2022), this research has been developed with a strict commitment to academic integrity, transparency, and social equity. The documentation utilises inclusive, non-sexist language and avoids cultural or social biases in all descriptions and figures. Furthermore, by using open-access tools like Python and CasADi, the project ensures that the methodology is reproducible and accessible to the wider scientific community, fostering a collaborative environment for future safety-critical developments.
