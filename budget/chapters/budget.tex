@@ -1,0 +1,81 @@
+\chapter*{Budget}
+\addcontentsline{toc}{chapter}{Budget}
+This document presents a detailed cost breakdown analysis of the project development. The estimation includes personnel costs based on dedicated time, hardware costs calculated through amortization, and a contingency margin. Electricity and internet expenses have been excluded as their impact on the total budget is negligible. Additionally, there are no software costs since all tools used are open-source or under free licenses.
+
+The objective of this document is to provide economic context, approximating the development process to a real-world scenario where financial resources are a primary consideration.
+
+\section*{Personnel Costs}
+\addcontentsline{toc}{section}{Personnel Costs}
+To compute personnel costs, three engineering profiles have been defined based on the roles of the author, co-director, and director. These correspond to a GNC Intern, a GNC Senior Engineer, and an Aerospace Senior Engineer, respectively \footcite{GNC refers to Guidance, Navigation and Control.}.
+
+Estimated gross annual salaries were sourced from industry data: €21,600, €49,527, and €41,400 -as low, mid and mid range salaries, respectively extracted from \cite{Infojobs2024}, \cite{SalaryExpert2024} and \cite{UnivEuropea2023}-. Assuming a standard full-time workload of 160 hours per month, the hourly rates are calculated as follows:
+
+\begin{itemize}
+    \item \textbf{GNC Intern Engineer:} $11.25$ €/h
+    \item \textbf{GNC Senior Engineer:} $25.80$ €/h
+    \item \textbf{Aerospace Senior Engineer:} $21.56$ €/h
+\end{itemize}
+
+The author’s total dedication is 360 hours. The co-director’s involvement is estimated at 10\% of the author's time (36 h), and the director’s contribution at 20\% (72 h). These figures account for research, development, meetings, and reviews. Given the academic nature of this project, these costs represent the base technical and human resource requirements and do not include social security contributions or applicable taxes. A summarised table can be seen below.
+
+\begin{table}[H]
+\centering
+    \caption{Personnel costs executive summary. Own source.}
+    \begin{tabular}{lrrr}
+    \hline
+    \textbf{Role} & \textbf{Rate (€/h)} & \textbf{Hours (h)} & \textbf{Total (€)} \\ \hline
+    GNC Intern Engineer & 11.25 & 360 & 4,050.00 \\
+    GNC Senior Engineer & 25.80 & 36 & 928.80 \\
+    Aerospace Senior Engineer & 21.56 & 72 & 1,552.32 \\ \hline
+    \textbf{Total Personnel Cost ($C_p$)} & & & \textbf{6,531.12} \\ \hline
+    \end{tabular}
+\end{table}
+
+\section*{Hardware Costs}
+\addcontentsline{toc}{section}{Hardware Costs}
+The hardware expenses for this project primarily account for the equipment utilized by the author during the development phase. The main items include a high-performance laptop, a digital tablet, and a compatible stylus. The initial purchase prices, sourced from official distributors \cite{pccomponentes_msi_2024}\cite{apple_ipad_2024}\cite{apple_pencil_2024}, are summarised below:
+
+\begin{itemize}
+    \item \textbf{Laptop:} MSI Modern 15 (16GB RAM, 512GB SSD) --- $1,049.00$ €
+    \item \textbf{Tablet:} iPad Air 11" (128GB) --- $649.00$ €
+    \item \textbf{Stylus:} Apple Pencil --- $149.00$ €
+\end{itemize}
+
+To determine the project-specific cost, a linear depreciation (amortization) model is applied based on the equipment's useful life and the project's 5-month duration. Following standard accounting practices for electronic equipment \cite{AEATAmortizacion}, a useful life of 4 years (48 months) is assumed for the laptop, and 2 years (24 months) for the tablet and stylus.
+
+The amortized cost ($C_h$) for each item is calculated as follows:
+
+\begin{equation*}
+    \begin{aligned}
+        & \text{Laptop:} & 1,049.00 \text{ €} \cdot \left( \frac{5 \text{ months}}{48 \text{ months}} \right) &= 109.27 \text{ €} \\
+        & \text{Tablet:} & 649.00 \text{ €} \cdot \left( \frac{5 \text{ months}}{24 \text{ months}} \right) &= 135.21 \text{ €} \\
+        & \text{Stylus:} & 149.00 \text{ €} \cdot \left( \frac{5 \text{ months}}{24 \text{ months}} \right) &= 31.04 \text{ €}
+    \end{aligned}
+\end{equation*}
+
+The total hardware contribution to the project budget is the sum of these amortized values:
+\begin{equation*}
+    C_h = 109.27 + 135.21 + 31.04 = 275.52 \text{ €}
+\end{equation*}
+
+\section*{Summary}
+\addcontentsline{toc}{section}{Summary}
+The following table is a summary of the breakdown budget of the project worded in this report. A detailed version of the budget can be seen in the proper budget's document facilitated along to this document. As can be seen, the overall estimated cost of the project has been $\mathbf{7587.30 \ }$ €.
+
+\begin{table}[H]
+    \caption{Budget executive sumamry. Own source.}
+    \begin{tabular}{clllcc}
+        \hline
+        \multicolumn{5}{l}{Personnel Costs} & 6531.12 € \\ \hline
+        & \multicolumn{3}{l}{GNC Intern Engineer (360h)} & 4050.00 € &  \\
+        & \multicolumn{3}{l}{GNC Senior Engineer (36h)} & 928.80 € &  \\
+        & \multicolumn{3}{l}{Aerospace Senior Engineer (72h)} & 1552.32 € &  \\ \hline
+        \multicolumn{5}{l}{Hardware Costs} & 275.52 € \\ \hline
+        & \multicolumn{3}{l}{MSI Modern 15 16GB 512GB -  amortised 2 years} & 109.27 € &  \\
+        & \multicolumn{3}{l}{Apple IPad Air 11" 128 GB - amortised 5 months} & 135.21 € &  \\
+        & \multicolumn{3}{l}{Apple Pencil - amortised 5 months} & 31.04 € &  \\ \hline
+        \multicolumn{5}{l}{Contingency Margin (10\%)} & 680.66 € \\ \hline
+        \multicolumn{5}{l}{\textbf{Total Cost}} & \textbf{7587.30 €} \\ \hline
+    \end{tabular}
+    \label{tab:Budget}
+\end{table}

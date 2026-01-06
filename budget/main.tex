@@ -1,0 +1,113 @@
+\documentclass[a4paper,12pt]{report}
+% PACKAGES AND CONFIGURATIONS
+\input{packages}
+\renewcommand{\familydefault}{\rmdefault}
+\setlength{\bibitemsep}{0.60em}
+\appto{\bibsetup}{\raggedright}
+\renewcommand*{\bibfont}{\small}
+
+% ABSTRACT 
+\newcommand{\keywords}[1]{\par\vspace{10pt}\noindent\textbf{Keywords:} #1}
+\newcommand{\paraulesclau}[1]{\par\vspace{10pt}\noindent\textbf{Paraules clau:} #1}
+
+% HEADER AND FOOTER
+\pagestyle{fancy}
+\fancyhf{} 
+
+\setlength{\headheight}{46pt} 
+\addtolength{\topmargin}{-4pt}
+
+\fancyhead[L]{%
+    \includegraphics[height=1cm]{images/default/logo_UPC_header.png}%
+    \hspace{5pt}%
+    \includegraphics[height=1cm]{images/default/singular_aircraft_ltd_logo.jpeg}%
+}
+\fancyhead[R]{%
+    \small\rmfamily\bfseries 
+    \begin{minipage}[b]{8cm} % This forces the title to wrap
+        \raggedleft A.Campillo "Real-Time Optimal Trajectory Generation for Fixed-Wing UAVs"
+    \end{minipage}
+}
+\fancyfoot[C]{\small\rmfamily\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% CHAPTER'S TITLE
+\titleformat{\chapter}[block]
+  {\normalfont\bfseries\rmfamily}
+  {%
+    \textcolor{RoyalBlue}{\fontsize{25}{33}\selectfont\bfseries\thechapter}
+    \hspace{10pt}
+    \vrule width 3pt 
+    \hspace{10pt}
+  }
+  {0pt}
+  {\huge\rmfamily}
+
+%% DOCUMENT %%
+\begin{document}
+
+%% - COVER PAGE - %%
+\newgeometry{left=2.5cm,bottom=0.1cm,textwidth=19cm}
+\pagestyle{empty}
+\begin{figure}[h]
+\includegraphics[width=6cm]{{images/default/logo_UPC_header.png}}
+\end{figure}
+\begin{wrapfigure}{r}{0.25\textwidth} 
+    \centering
+    \includegraphics[angle=90, width=0.09\textwidth]{images/default/bachelorfinalthesis.JPG}
+\end{wrapfigure}
+\phantom{abs}
+\vspace{1cm}
+\begin{center}
+\scalebox{1.95}{
+  \parbox{\linewidth}{
+    \textcolor{RoyalBlue}{
+      Real-Time Optimal Trajectory Generation \\
+      for Fixed-Wing UAVs in Firefighting \\
+      Missions via Numerical Integration \\
+      and Constrained Optimization
+    }
+  }
+}
+\end{center}
+\vspace{1cm}
+\textbf{\scalebox{1.5}{{Document:}}}
+\vspace{0.5 cm} \\
+\scalebox{1.5}{\textcolor{RoyalBlue}{Budget}} 
+\vspace{1cm}\\
+\textbf{\scalebox{1.5}{{Author:}}}
+\vspace{0.5 cm} \\
+\scalebox{1.5}{{\textcolor{RoyalBlue}{Abimael Campillo Simón}}}                      
+\vspace{1cm}\\
+\textbf{\scalebox{1.5}{{Director/Co-director:}}}
+\vspace{0.5 cm} \\
+\scalebox{1.5}{{\textcolor{RoyalBlue}{Prof.\ Dr.\ Alex Ferrer Ferre / Miguel Pareja Muñoz}}}                      
+\vspace{1cm}\\
+\textbf{\scalebox{1.5}{{Degree:}}}
+\vspace{0.5 cm} \\
+\scalebox{1.5}{{\textcolor{RoyalBlue}{Bachelor in Aerospace Technology Engineering}}}                 
+\vspace{1cm}\\
+\textbf{\scalebox{1.5}{{Examination session:}}}
+\vspace{0.5 cm} \\
+\scalebox{1.5}{{\textcolor{RoyalBlue}{Autumn 2025}}}
+\restoregeometry
+
+%% - DOCUMENT - %%
+\pagestyle{plain}
+\pagenumbering{roman}
+\tableofcontents
+\pagestyle{plain}
+\pagenumbering{roman}
+\listoftables
+\addcontentsline{toc}{chapter}{List of Tables}
+\newpage
+
+% MAIN CONTENT
+\pagestyle{fancy}
+\pagenumbering{arabic}
+\input{chapters/budget.tex}
+
+% REFERENCES
+\printbibliography[heading=bibintoc,title={References}]
+
+\end{document}
