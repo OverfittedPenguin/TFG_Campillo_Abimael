@@ -16,16 +16,20 @@ In essence, the \gls{oct} responds the need to solve continuous time optimisatio
 \begin{equation}
     \begin{aligned}
         \max_{x\in \mathbb{R}^{n}} \ \  & f(x)\\
-        \text{s.t.} \ \  & g_{j}(x)\leq b_{j} \ \text{for each} \ j=1,\dotsc ,m\\
-        & x =(x_{1} ,\dotsc ,x_{n} )\\
-        & g =(g_{1} ,\dotsc ,g_{m} ).
+        \text{s.t.} \ \  & g(x)\leq 0\
     \end{aligned}
     \label{eq:NLP}
 \end{equation}
 
-The \gls{nlp} problem is limited to a finite number of state variables and restrictions, since it has a discretised treatment. At this point, it has to be mentioned that any \gls{nlp} problem goes through three different phases, which are applicable to the \gls{ocp} or any optimisation problem. The first phase is modelling, which is, in fact, a mathematical description of a dynamic system through simple equations that allow future state predictions of a system thanks to a given set of control variables. While state variables $y_i(t)$ are the variables that describe system conditions at a given time, control variables $u_i(t)$ are the variables that can be manipulated through time because they have an influence on the system. In other words, state variables are consequence of the control variables -p.e for a flight trajectory, the position and velocity of the aircraft would be the state variables for a set of different control variables as could be the \gls{aoa} or the \gls{tps}-. Secondly, the restrictions have to be applied to the system in the form of equality or inequality constraints to describe its physical or operational limitations. In addition, the admissible trajectory and admissible control are described, what means that state and control variables satisfy the restrictions within all time domain, respectively -later will be referred to as simple bounds-. Third and last phase is optimisation, which means the maximisation or minimisation of the cost function or functional associated with the system while complying with all the constraints and bounds set for a determined optimisation criteria. For example, in the brachistochrone problem introduced before, there are several feasible paths between points A and B, but only the cycloidal path complies with the minimum time optimisation criteria \cite{Bernoulli1696}.
+The \gls{nlp} problem is defined as function $f(x)$ that has to be optimised subject to a set of constraints $g(x)$. At this point, it has to be mentioned that any \gls{nlp} problem goes through three different phases, which are applicable to the \gls{ocp} or any optimisation problem. 
 
-It has to be pinpointed that the \gls{ocp} is a n-dimensional interpretation of the \gls{nlp} because state and control variables are time-continuous functions and, therefore, the problem's objective is to find the $n_k$-dimensional vector of state functions $y_k(t)$ and control functions $u_k(t)$ that optimise a determined functional $F(y,u)$.
+The first phase is modelling, which is, in fact, a mathematical description of a dynamic system through simple equations that allow future state predictions of a system thanks to a given set of control variables. In essence, $x$ is composed by $y$ and $u$; while state variables $y_i(t)$ are the variables that describe system conditions at a given time, control variables $u_i(t)$ are the variables that can be manipulated through time because they have an influence on the system. In other words, state variables are consequence of the control variables -e.g for a flight trajectory, the position and velocity of the aircraft would be the state variables for a set of different control variables as could be the \gls{aoa} or the \gls{tps}-. 
+
+Secondly, the restrictions have to be applied to the system in the form of equality or inequality constraints to describe its physical or operational limitations. In addition, the admissible trajectory and admissible control are defined, what means that state and control variables satisfy the restrictions within all time domain, respectively -later will be referred to as simple bounds-. 
+
+Third and last phase is optimisation, which means the maximisation or minimisation of the cost function or functional associated with the system while complying with all the constraints and bounds set for a determined optimisation criteria. For example, in the brachistochrone problem introduced before, there are several feasible paths between points A and B, but only the cycloidal path complies with the minimum time optimisation criteria \cite{Bernoulli1696}.
+
+It has to be highlightedthat the \gls{ocp} is a n-dimensional interpretation of the \gls{nlp} because state and control variables are time-continuous functions and, therefore, the problem's objective is to find the $n_k$-dimensional vector of state functions $y_k(t)$ and control functions $u_k(t)$ that optimise a determined functional $F(y,u)$.
 
 \subsection{Mathematical formulation}
 The \gls{ocp} is defined as follows.
@@ -54,20 +58,20 @@ The previous description is the formal description for the \gls{ocp}, since it c
     \item \underline{Initial state conditions $\varphi[y(t_0),u(t_0),t_0]$:} The initial state constraints are a set of equalities that restrict the initial value of state variables to a known value -the initial condition of the system is known-. They can also include restrictions for the initial value of control variables; nevertheless, it is not a common practice because the problem could be overrestricted and the solver may be unable to found a feasible solution.
     \item \underline{Cost functional $J(y,u)$:} The cost functional is the cost objective function that has to be minimised to found the optimal solution. This cost is defined by two different terms that contribute differently to the whole objective: terminal and running costs. If both contributions are present, then the cost objective is defined as in its Bolza form. As clarified in \cite{BrysonHo1975}:
     \begin{itemize}
-        \item Terminal cost is the contribution that only penalises the final value of state variables. Is represented by $\Phi[y(t_f),u(t_f),t_f]$ and, if cost objective $J(y,u) = \Phi[y(t_f),u(t_f),t_f]$, it is said that the whole cost functional is in its Mayer form.
-        \item Running cost is the contribution that penalises each state and control variable trough time and, therefore, accumulates the whole penalisation. Is represented by $\int _{t_0}^{t_f} L[ y(t),u(t),t] \ dt$ and, if cost objective $J(y,u) = \int _{t_0}^{t_f} L[ y(t),u(t),t] \ dt$, it is said that the whole cost functional is in its Lagrange form.
+        \item Terminal cost is the contribution that only penalises the final value of state variables. Is represented by $\Phi[y(t_f),u(t_f),t_f]$ and if the cost objective is $J(y,u) = \Phi[y(t_f),u(t_f),t_f]$, it is said that the whole cost functional is in its Mayer form.
+        \item Running cost is the contribution that penalises each state and control variable trough time and, therefore, accumulates the whole penalisation. It is represented by $\int _{t_0}^{t_f} L[ y(t),u(t),t] \ dt$ and if the cost objective is $J(y,u) = \int _{t_0}^{t_f} L[ y(t),u(t),t] \ dt$, it is said that the whole cost functional is in its Lagrange form.
     \end{itemize}
 \end{itemize}
 
 \section{Direct and Indirect Methods}
-Once the basic problem has been set, is has to be noticed that although the variables are time-continuous, they have to be discretised in order to solve the problem. This discretisation is necessary because the problem is not affordable analytically and it has to be treated numerically. This implies a discretisation of the time domain, converting the infinite-dimensional treatment inherited from the running cost into a sum of different time-instants. There are two different types of approaches, as stated by John T. Betts on \cite{Betts2010}:
+Once the continuous problem has been introduced, it has to be discretised for solvebility. This discretisation is necessary because the problem is not affordable analytically and it has to be treated numerically. This implies a discretisation of the time domain, converting the infinite-dimensional treatment inherited from the running cost into a sum of different time-instants. There are two different types of approaches, as stated by John T. Betts on \cite{Betts2010}:
 \begin{itemize}
-\item {Direct methods, which are based in the evaluation of the images from a function and the comparison between different values at different instants to find the derivative -p.e Direct collocation method-.}
-\item {Indirect methods, which are based on direct evaluation of the derivative and its proximity to zero value. In this case, there is need of explicit derivation of the equations and is a method subjected to initial conditions -p.e Pontryagin's maximum principle-.}
+\item {Direct methods, which are based in the evaluation of the function in some instants and the comparison between the resulting values at those different instants to find the derivative -e.g Direct collocation method-.}
+\item {Indirect methods, which are based on direct evaluation of the derivative and its proximity to zero value. In this case, there is need of explicit derivation of the equations and is a method subjected to initial conditions -e.g Pontryagin's maximum principle-.}
 \end{itemize}
 
 \subsection{Direct collocation method as direct method}
-Direct collocation methods are a type of direct method in which the functions are discretised in a set of predefined points called collocation points. These collocation points are part of a collocation grid that is set along the domain in both state and control variables. It has to be pinpointed that between collocation methods two different types can be distinguished: low-order collocation methods, applied to solve \gls{ode}s, and pseudospectral methods, applied to solve \gls{pde}s. Since this bachelor thesis adresses the flight mechanics of an aircraft for low-flight manoeuvres, which dynamic equations consists on different \gls{ode}s, the wording will focus on low-order collocation methods (\gls{dcm} from now on) \cite{Becerra2012}.
+Direct collocation methods are a type of direct method in which the functions are discretised in a set of predefined points called collocation points. These collocation points are part of a collocation grid that is set along the domain in both state and control variables. It has to be pinpointed that between collocation methods two different types can be distinguished: low-order collocation methods, applied to solve \gls{ode}s, and pseudospectral methods, applied to solve \gls{pde}s. Since this bachelor thesis adresses the flight mechanics of an aircraft for low-flight manoeuvres, whose dynamic equations consists on different \gls{ode}s, the thesis will focus on low-order collocation methods (\gls{dcm} from now on) \cite{Becerra2012}:
 
 Essentially, in the \gls{dcm} the state and the control variables are both discretised in different collocation points. This collocation points are a set of N time-instants that form the collocation grid (in an equivalent way, the reader can think about the collocation grid as the element grid usually made for finite element purposes). On these points, the dynamic of the problem will be evaluated, or forced, to solve the equations and, therefore, the whole problem. Thus, the \gls{dcm} for the control variables is defined as follows, extracted from \cite{Bohme2017}.
 
@@ -103,12 +107,12 @@ For a better comprehension, the mathematical formulation behind discretisation c
     \end{aligned}
 \end{equation*}
 
-At this point, a trapezoidal scheme is proposed to be used on the numerical approach since it takes into account not only the present time-instant but the following time-instant for the function evaulation and its integration. This numerical integration scheme is preferred above others such as Runge-Kutta or Hermite-Simpson because of its simplicity, its easy applicability and its precision, which is enough for the scope of this project. The trapezoidal integration scheme for the running cost, adapted from \cite{Becerra2012} and \cite{Jackson2018}, can be state as:
+At this point, a trapezoidal scheme is proposed to be used on the numerical approach since it takes into account not only the present time-instant but the following time-instant for the function evaulation and its integration. This numerical integration scheme is preferred above others such as Runge-Kutta or Hermite-Simpson because of its simplicity, its easy applicability and its precision, which is enough for the scope of this project. The trapezoidal integration scheme for the running cost, adapted from \cite{Becerra2012} and \cite{Jackson2018}, can be stated as:
 
 \begin{equation}
     \begin{aligned}
         & \int _{t_{0}}^{t_f} L(y,u,t)\ dt\approx \sum _{k=0}^{N-1}\frac{1}{2} h^{k} \cdotp ( L^{k} +L^{k+1})\\
-        where & \\
+        \text{where} & \\
         & h^{k} \coloneqq t^{k+1} -t^{k}\\
         & L^{k} \coloneqq L[ y(t^{k} ),u(t^{k} ),t^{k}]\\
         & L^{k+1} \coloneqq L[ y(t^{k+1} ),u(t^{k+1} ),t^{k+1}]\\
@@ -131,7 +135,7 @@ Resulting in:
 \begin{equation}
     \begin{aligned}
         & y^{k+1} - y^{k} =\frac{1}{2} h^{k} \cdotp (f^{k} +f^{k+1} )\\
-        where & \\
+        \text{where} & \\
         & f^{k} \coloneqq f(y^{k} ,u^{k} ,t^{k} )\text{ for each } k\in [0,N-1]
     \end{aligned}
     \label{eq:DCM_ODEs}
@@ -153,15 +157,15 @@ Eventually, the terminal cost can be added taking into account its contribution 
 \end{equation}
 
 \subsection{Pontryagin's maximum principle as indirect method}
-As said before, the indirect methods search a solution for the optimality conditions directly. In this context, they doesn't need to discretise the control variables but they will need an approximation; thus, they are subject to the initial conditions. Moreover, since the indirect methods are based on the calculus of variations, they also need to comply a set of necessary conditions called transversality conditions. These remarks about conditions are important and are stated before presenting the \gls{pmp}.
+As said before, the indirect methods search a solution for the optimality conditions directly. In this context, they don't need to discretise the control variables but they will need an approximation; thus, they are subject to the initial conditions. Moreover, since the indirect methods are based on the calculus of variations, they also need to comply a set of necessary conditions called transversality conditions. These remarks about conditions are important and are stated before presenting the \gls{pmp}.
 
 The optimality conditions are consequence of the application of the Euler-Lagrange equation, which can be found on \cite{UCLCalcVar}. They mean to be the necessary but not sufficient conditions for the resolution of the optimisation problem; in other words, they are the proof that the solution found is actually the optimal one. They are careless of meaning until they are directly found for the problem. They are also called \gls{kkt} conditions. Essentially, they are a set of equations related to the gradient or derivative of a functional respect to other parameters and variables that have to be null in order to verify optimality. A general optimisation problem and its Lagrangian can be defined as follows.
 
 \begin{equation}
     \begin{aligned}
-        \min_{x\in \mathbb{R}^{n}} \ \  & f\ (x)\\
-        \text{s.t.} \ \  & g_{i} \ (x)\leq 0\ \text{for each} \ i=1,\dotsc ,m\\
-        & h_{j} \ ( x) =0\ \text{for each} \ j=1,\dotsc ,p\\
+        \min_{x\in \mathbb{R}^{n}} \ \  & f(x)\\
+        \text{s.t.} \ \  & g_{i} (x)\leq 0\ \text{for each} \ i=1,\dotsc ,m\\
+        & h_{j} ( x) =0\ \text{for each} \ j=1,\dotsc ,p\\
     \end{aligned}
     \label{eq:OP}
 \end{equation}
@@ -183,22 +187,22 @@ The \gls{kkt} conditions are stationarity, complementary slackness, primal feasa
 \end{equation}
 
 \begin{itemize}
-\item Complementary slackness. The multiplier reflects how much the constraint influences the optimal solution. For each inequality constraint, either the constraint is active and its Lagrange multiplier can be positive, or the constraint is inactive and its multiplier is zero.
+\item Complementary slackness. The multiplier reflects how much the constraint influences the optimal solution. For each inequality constraint, either the constraint is active and its Lagrange multiplier can be positive, or the constraint is inactive and its multiplier is zero:
 \end{itemize}
 
 \begin{equation}
-    z_{i} g_{i}(x) =0
+    z_{i} g_{i}(x) =0.
     \label{eq:KKT_Comp_Slackness}
 \end{equation}
 
 \begin{itemize}
-\item Primal feasability. Ensures that the found solution satisfies the original constraints of the problem, which means that the inequality conditions must be held and the equality conditions must be satisfied totally.
+\item Primal feasability. Ensures that the found solution satisfies the original constraints of the problem, which means that the inequality conditions must be held and the equality conditions must be satisfied totally:
 \end{itemize}
 
 \begin{equation}
     \begin{aligned}
-        & g_{i} (x)\leq 0\\
-        & h_{j} (x)=0
+        & g_{i} (x)\leq 0,\\
+        & h_{j} (x)=0.
     \end{aligned}
     \label{eq:KKT_Primal_Inf}
 \end{equation}
@@ -215,7 +219,7 @@ The \gls{kkt} conditions are stationarity, complementary slackness, primal feasa
 On its part, the transversality conditions are the boundary conditions for the co-state variables $\lambda$. They are a necessary condition for optimisation in state free-end problems, which means that there is no end known for the trajectory. These transversality conditions can be defined as the existence of a n-vectorial function of the co-state variables $\lambda (t)$ and a m-vectorial function $\nu (t)$ such that the Hamiltonian function $ H(\lambda,\nu,t)$, see equation \eqref{eq:Hamiltonian}, can be defined like in a boundary value problem in his canonical form with \gls{ode}s in all time domain $t_{0} \leq t\leq t_f$ \cite{Stryk1992}\cite{Leonard1992}.
 
 \begin{equation}
-    H\ (\lambda ,\nu ,t)\coloneqq\lambda ^{T} f+\nu ^{T} g
+    H(\lambda ,\nu ,t)\coloneqq\lambda ^{T} f+\nu ^{T} g
     \label{eq:Hamiltonian}
 \end{equation}
 
@@ -237,7 +241,7 @@ Eventually, the \gls{pmp} is a fundamental result of optimal control theory, sin
     \begin{aligned}
         & \dot{\lambda } (t)\coloneqq -\frac{\partial H}{\partial y}\\
         & \lambda (t_f)\coloneqq \frac{\partial \Phi }{\partial y(t_f)}\\
-        where & \\
+        \text{where} & \\
         & H(y,u,\lambda ,t)\coloneqq L(y,u,t)+\lambda ^{T} f(y,u,t)\\
         & \dot{y} (t)\coloneqq f(y,u,t)
     \end{aligned}
@@ -248,7 +252,7 @@ Therefore, the \gls{pmp} can be expressed as the minimisation of the Hamiltonian
 
 \begin{equation}
     \begin{aligned}
-        u(t)\coloneqq\arg\min_{u\in U} \ H\ (y,u,\lambda ,t)
+        u(t)\coloneqq\arg\min_{u\in U} \ H (y,u,\lambda ,t)
     \end{aligned}
     \label{eq:PMP}
 \end{equation}
@@ -264,7 +268,7 @@ Below there is a general formulation of an optimisation problem followed by its 
 \begin{equation}
     \begin{aligned}
         \min_{x\in \mathbb{R}^{n}} \ \  & f(x)\\
-        \text{s.t.} \ \  & c(x) = 0\\
+        \text{s.t.} \ \  & h(x) = 0\\
                          & x\geq 0
     \end{aligned}
     \label{eq:Opt_Problem}
@@ -273,7 +277,7 @@ Below there is a general formulation of an optimisation problem followed by its 
 \begin{equation}
     \begin{aligned}
         \min_{x\in \mathbb{R}^{n}} \ \  & \varphi_\mu(x) \coloneqq f(x) - \mu \sum_{i=0}^n ln(x^{(i)})\\
-        \text{s.t.} \ \  & c(x) = 0\\
+        \text{s.t.} \ \  & h(x) = 0\\
     \end{aligned}
     \label{eq:Barrier_Problem}
 \end{equation}
@@ -296,31 +300,7 @@ Following the Lagrangian, the \gls{kkt} conditions can be defined for the barrie
     \label{eq:BP_KKT}
 \end{subequations}
 
-At this point, optimality error of the barrier problem can be defined using \gls{kkt} conditions. The error is the ratio that would be used to compare with tolerances to determine if local and global optimal points are reached. Full definition of $s_d$ and $s_c$ can be found on \cite{Waechter2004}.
-
-\begin{equation}
-    E_\mu(x,\lambda,z)\coloneqq \text{max}\left\{\frac{||\nabla f(x) + \nabla c(x)-z||_\infty}{s_d}, \frac{||XZe-\mu e||_\infty}{s_c}\right\}
-    \label{eq:BP_Error}
-\end{equation}
-
-The expression above is used on each iteration of the \gls{ipopt} algorithm to compute the optimality error and, therefore, check local convergence before stepping onto the following point. The checks for local and global convergence are the following, respectively. As can be seen, these checks use an approximate solution and an approximation to multipliers ($\tilde{x}^*, \tilde{\lambda}^*, \tilde{z}^*$). It also has to be pinpointed that at each iteration, the update in barrier parameter is obtained following the expression \eqref{eq:BP_Mu}. All three expresions are computed for given constants $\kappa_\epsilon$, $\kappa_\mu$, $\theta_\mu$ and $\epsilon_{tol}$, as indicated in \cite{Waechter2004}.
-
-\begin{equation}
-    E_{\mu, j}(\tilde{x}^*_{j+1}, \tilde{\lambda}^*_{j+1}, \tilde{z}^*_{j+1}) \leq \kappa_\epsilon \mu_j
-    \label{eq:BP_Local_Convergence}
-\end{equation}
-
-\begin{equation}
-    E_0(\tilde{x}^*, \tilde{\lambda}^*, \tilde{z}^*) \leq \epsilon_{tol}
-    \label{eq:BP_Global_Convergence}
-\end{equation}
-
-\begin{equation}
-    \mu_{j+1} = \max \left\{ \frac{\epsilon_{tol}}{10}, \min \left\{ \kappa_{\mu} \mu_j, \mu_j^{\theta_{\mu}} \right\} \right\}
-    \label{eq:BP_Mu}
-\end{equation}
-
-As said before, the \gls{ipopt} is based on a primal-dual framework that iterates between variables and multipliers by solving a linearised set of the \gls{kkt} conditions via Newton's method. This method allows to find gradients for each variable or multiplier, as stated below -with $A_k \coloneqq \nabla c(x_k)$, $W_k \coloneqq \nabla_{xx} \mathcal{L}(x_k,\lambda_k,z_k)$ and k the inner-loop counter-.
+At this point, optimality error of the barrier problem can be defined using \gls{kkt} conditions. The error is the ratio that would be used to compare with tolerances to determine if local and global optimal points are reached. Full definition of the error and its terms can be found on \cite{Waechter2004}. As said before, the \gls{ipopt} is based on a primal-dual framework that iterates between variables and multipliers by solving a linearised set of the \gls{kkt} conditions via Newton's method. This method allows to find gradients for each variable or multiplier, as stated below -with $A_k \coloneqq \nabla c(x_k)$, $W_k \coloneqq \nabla_{xx} \mathcal{L}(x_k,\lambda_k,z_k)$ and k the inner-loop counter-.
 
 \begin{equation}
     \begin{bmatrix}
@@ -352,32 +332,8 @@ From the previous expression, gradients could be computed. Thus, the update on v
     \label{eq:BP_Updated_Steps}
 \end{subequations}
 
-Eventually, a summarised version of the general \gls{ipopt} algorithm has been adapted from the original source \cite{Waechter2004}.
-
-\begin{algorithm}
-\caption{Interior-Point Filter Line-Search Algorithm (IPOPT).}
-\begin{algorithmic}
-\STATE \textbf{1. Initialise:} Choose $x_0 > 0$, $\lambda_0, z_0 > 0$, $\mu > 0$, and iteration limit $N$.
-\FOR{$k = 0$ \TO $N$}
-    \STATE \textbf{2. Compute Errors:} Calculate $E_\mu(x_k, \lambda_k, z_k)$ and $E_0(x_k, \lambda_k, z_k)$.   
-    \IF{$E_0 \leq \epsilon_{tol}$}
-        \STATE \textbf{STOP:} Optimal solution found at iteration $k$.
-    \ENDIF
-    \IF{$E_\mu \leq \kappa_\epsilon \mu$}
-        \STATE \textbf{3. Update Barrier:} Decrease $\mu$ and return to Step 2.
-    \ENDIF
-    \STATE \textbf{4. Solve KKT System:} Compute search directions $d_k$ via expression \eqref{eq:BP_Newton_System}.
-    \STATE \textbf{5. Filter Line-Search:} Determine $\alpha_k$ via the filter method.
-    \STATE \textbf{6. Update Iterates:} Compute them using equations \eqref{eq:BP_Updated_Steps}.
-\ENDFOR
-\IF{$k = N$}
-    \STATE \textbf{Exit:} Maximum iterations reached without convergence.
-\ENDIF
-\end{algorithmic}
-\end{algorithm}
-
 \subsection{Implementation of IPOPT using CasADi}\label{sec:CasADi}
-\gls{ipopt} is one of the integrated solvers provided by CasADi inside the \textit{ca.nlpsol()} block. This solver blocks needs from a very specific definition of the problem initial guess, its variables, constraints and simple bounds using symbolic notation. This specific definition has to end in the creation of a \textit{nlp\{\}} dictionary that contains all the discretised symbolic variables that form the \gls{nlp} problem. In other words, from the \gls{ocp}, a discretisation has to be applied to reach a fesaible \gls{nlp} definition with initial guess, constraints and simple bounds defined for each variable at each collocation point -all those defined using symbolic notation-. In addition, this dictionary has to include the definition of the cost function as the sum of all variables, when needed.
+\gls{ipopt} is one of the integrated solvers provided by CasADi inside the \textit{ca.nlpsol()} block. CasADi is an open-source symbolic framework designed for numerical optimization and algorithmic differentiation, specifically optimized for solving problems constrained by differential equations. It provides a set of high-performance building blocks that allow you to formulate complex optimal control problems and automatically generate the exact derivatives required by nonlinear solvers like IPOPT \cite{Andersson2018}. These solver blocks needs from a very specific definition of the problem initial guess, its variables, constraints and simple bounds using symbolic notation. This specific definition has to end in the creation of a \textit{nlp\{\}} dictionary that contains all the discretised symbolic variables that form the \gls{nlp} problem. In other words, from the \gls{ocp}, a discretisation has to be applied to reach a fesaible \gls{nlp} definition with initial guess, constraints and simple bounds defined for each variable at each collocation point -all those defined using symbolic notation-. In addition, this dictionary has to include the definition of the cost function as the sum of all variables, when needed.
 
 Since the needs explained above, suppose a simple problem directly extracted from \gls{nlp} CasADi documentation section \cite{Andersson2018}. In this problem, there are three different variables, an objective function and an equality constraint.
 

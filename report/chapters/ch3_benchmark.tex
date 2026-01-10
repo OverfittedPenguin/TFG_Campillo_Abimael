@@ -80,7 +80,7 @@ Eventually, pitch and mass variations have to be considered to complete the full
     \label{eq:Mass_dot}
 \end{equation}
 
-As a clarification on the equation terms, below are the complete formulation of aerodynamic forces and moments, with all proper aerodynamic coefficients considered. 
+As a clarification on the equation terms, below are the complete formulation of aerodynamic forces and moments, with all proper aerodynamic coefficients considered. To see the different elements involved in each equation, the reader can refer to nomenclature's section.
 
 \begin{equation}
     L \coloneqq \bar{q}SC_L = \bar{q}S\left(C_{L_0} + C_{L_\alpha}\alpha + C_{L_{\delta_e}}\delta_e\right)
@@ -97,7 +97,7 @@ As a clarification on the equation terms, below are the complete formulation of 
     \label{eq:Moment}
 \end{equation}
 
-\section{Mathematical Formulation of the OCP}
+\section{Mathematical Formulation of the Level-Flight Cruise Trajectory as an OCP}
 Next step is to transform the problem above into a set of equations using the \gls{oc} notation. To do so, the three phases of optimisation problems description are used, which means that the problem has to be modelled, constrained and then optimised.
 
 \subsection{States and controls}
@@ -137,20 +137,20 @@ Eventually, the state and control vector can be constructed, followed by its for
 
 \subsection{Constraints and bounds}
 \label{sec:Benchmark_Constraints_Bounds}
-After the state space is set, the constraints can be defined, following the second step on \gls{ocp} definition. At this point, previous remarks on constraint definition towards \gls{ocp} notation could be recovered. That means that constraints are described following the preset order, which starts by dynamic constraints. Since dynamic constraints have been defined in section \ref{sec:EOM}, they have to be transcribed using state space notation, which led to the following set of expressions.\footnote{From now on, sine operation $\sin()$ is denoted as $s$ and, cosine operation $\cos()$ is denoted as $c$. This has been done for an easy readability of some equations and operations.}
+After the state space is set, the constraints can be defined, following the second step on \gls{ocp} definition. At this point, previous remarks on constraint definition towards \gls{ocp} notation could be recovered. That means that constraints are described following the preset order, which starts by dynamic constraints. Since dynamic constraints have been defined in section \ref{sec:EOM}, they have to be transcribed using state space notation, which led to the following set of expressions.
 
 \begin{equation}
 \begin{split}
-    \dot{x}_1 ={} & \frac{1}{x_7} \Big[ T(x_1,x_2,x_6,u_1) + L(x_1,x_2,x_6,u_2) \cdot s\alpha(x_1,x_2) \\
-    & - D(x_1,x_2,x_6,u_2) \cdot c\alpha(x_1,x_2) \Big] - x_3x_2 - g \cdot sx_4
+    \dot{x}_1 ={} & \frac{1}{x_7} \Big[ T(x_1,x_2,x_6,u_1) + L(x_1,x_2,x_6,u_2) \cdot \sin \alpha(x_1,x_2) \\
+    & - D(x_1,x_2,x_6,u_2) \cdot \cos \alpha(x_1,x_2) \Big] - x_3x_2 - g \cdot \sin x_4
 \end{split}
 \label{eq:Benchmark_EOM_1}
 \end{equation}
 
 \begin{equation}
 \begin{split}
-    \dot{x}_2 ={} & g \cdot cx_4 - \frac{1}{x_7} \Big[ L(x_1,x_2,x_6,u_2) \cdot c\alpha(x_1,x_2) \\
-    & + D(x_1,x_2,x_6,u_2) \cdot s\alpha(x_1,x_2) \Big] + x_3x_1 
+    \dot{x}_2 ={} & g \cdot \cos x_4 - \frac{1}{x_7} \Big[ L(x_1,x_2,x_6,u_2) \cdot \cos \alpha(x_1,x_2) \\
+    & + D(x_1,x_2,x_6,u_2) \cdot \sin \alpha(x_1,x_2) \Big] + x_3x_1 
 \end{split}
 \label{eq:Benchmark_EOM_2}
 \end{equation}
@@ -158,7 +158,7 @@ After the state space is set, the constraints can be defined, following the seco
 \begin{equation}
 \begin{split}
     \dot{x}_3 ={} & \frac{1}{I_y} \Big[ C_m(u_2)\bar{q}(x_1,x_2,x_6)S\bar{c} \\
-    & - T(x_1,x_2,x_6,u_1)\left[\Delta X_{CT}\cdot s \varepsilon (x_1,x_2)+ \Delta Z_{CT}\cdot c \varepsilon (x_1,x_2)\right]\Big]
+    & - T(x_1,x_2,x_6,u_1)\left[\Delta X_{CT}\cdot \sin \varepsilon (x_1,x_2)+ \Delta Z_{CT}\cdot \cos \varepsilon (x_1,x_2)\right]\Big]
 \end{split}
 \label{eq:Benchmark_EOM_3}
 \end{equation}
@@ -169,12 +169,12 @@ After the state space is set, the constraints can be defined, following the seco
 \end{equation}
 
 \begin{equation}
-    \dot{x}_5 = x_1\cdot c x_4 + x_2\cdot s x_4
+    \dot{x}_5 = x_1\cdot \cos x_4 + x_2\cdot \sin x_4
 \label{eq:Benchmark_EOM_5}
 \end{equation}
 
 \begin{equation}
-    \dot{x}_6 = -x_1\cdot s x_4 + x_2\cdot c x_4
+    \dot{x}_6 = -x_1\cdot \sin x_4 + x_2\cdot \cos x_4
 \label{eq:Benchmark_EOM_6}
 \end{equation}
 
@@ -201,7 +201,7 @@ The set of equations above can be summarised to a reduced version if RHS is expr
 \label{eq:Benchmark_Dynamic_Constraints}
 \end{equation}
 
-Once dynamic constraints have been fully described, its time to set the path constraints and define them using state space notation. As said before, path constraints are the ones that could affect state and control trajectories during all time domain. For a level-flight cruise trajectory it is important to introduce a target speed ($V_{TP}$) and a target altitude ($h_{ref}$) as a constraints, see expressions below. It has to be pinpointed that flight path angle ($\gamma$) could be introduced as a constraint, but it has been chosen to introduce it later as a penalty into cost functional definition. Both constraints for target speed and target altitude are introduced using inequality expressions, so as not to be too restrictive with the problem -i.e the expressions have to introduce some margins with target constant values-.
+Once dynamic constraints have been fully described, its time to set the path constraints and define them using state space notation. As said before, path constraints are the ones that could affect state and control trajectories during all time domain. For a level-flight cruise trajectory it is important to introduce a target speed ($V_{TP}$) and a target altitude ($h_{ref}$) as constraints, see expressions below. It has to be emphasised that flight path angle ($\gamma$) could be introduced as a constraint, but it has been chosen to introduce it later as a penalty into cost functional definition. Both constraints for target speed and target altitude are introduced using inequality expressions, so as not to be too restrictive with the problem -i.e the expressions have to introduce some margins with target constant values, denoted as $h_{mg}$ in case of the altitude equations-.
 
 \begin{equation}
     \begin{cases}
@@ -213,8 +213,8 @@ Once dynamic constraints have been fully described, its time to set the path con
 
 \begin{equation}
     \begin{cases}
-        (h_{ref} - 3.0) + z \leq 0 \\
-        -z - (h_{ref} + 3.0) \leq 0
+        (h_{ref} - h_{mg}) + z \leq 0 \\
+        -z - (h_{ref} + h_{mg}) \leq 0
     \end{cases}
     \label{eq:Benchmark_Path_2}
 \end{equation}
@@ -226,8 +226,8 @@ Transcribing the equations using state space notation leads to the following set
     \begin{bmatrix}
         0.9\cdot V_{TP} - \sqrt{(x_1 - V_{x_w})^2 + (x_2 - V_{z_w})^2}\\
         \sqrt{(x_1 - V_{x_w})^2 + (x_2 - V_{z_w})^2} - 1.1\cdot V_{TP}\\
-        (h_{ref} - 3.0) + x_6\\
-        -x_6 - (h_{ref} + 3.0)
+        (h_{ref} - h_{mg}) + x_6\\
+        -x_6 - (h_{ref} + h_{mg})
     \end{bmatrix}
     \leq 0
     \label{eq:Benchmark_Path_Constraints}
@@ -251,10 +251,10 @@ At this point, the only remaining constraints are initial state conditions, whic
 \label{eq:Benchmark_Initial_Constraints}
 \end{equation}
 
-Eventually, the simple bounds for each state and control variable have to be declared. The lower bounds and upper bounds are separated onto two different groups denoted by $lbx$ and $ubx$, respectively. They have been already denoted using state space notation.
+Eventually, the simple bounds for each state and control variable have to be declared. The lower bounds and upper bounds are separated onto two different groups denoted by $\mathbf{x_{lb}}$ and $\mathbf{x_{ub}}$, respectively. They have been already denoted using state space notation.
 
 \begin{equation}
-    \mathbf{lbx} \coloneqq 
+    \mathbf{x_{lb}} \coloneqq 
     \begin{bmatrix}
     u_{min} - x_1  \\
     w_{min} - x_2 \\
@@ -269,7 +269,7 @@ Eventually, the simple bounds for each state and control variable have to be dec
 \end{equation}
 
 \begin{equation}
-    \mathbf{ubx} \coloneqq 
+    \mathbf{x_{ub}} \coloneqq 
     \begin{bmatrix}
     x_1 - u_{max}  \\
     x_2 - w_{max} \\
@@ -293,7 +293,7 @@ Third phase of an \gls{ocp} definition is defining which variables have to be op
         J_{\gamma} \coloneqq \bar{\gamma}^2 = \left(\frac{\gamma}{\gamma_{max}}\right)^2 = \left(\frac{\theta - \alpha}{\gamma_{max}}\right)^2 = \left(\frac{x_4 - \alpha(x_1,x_2)}{\gamma_{max}}\right)^2
     \end{equation}
 
-    \item Secondly, the minimisation of altitude error relative to the reference altitude ($h_{ref}$) is implemented as a quadratic penalty to promote a level-flight profile. Unlike the path constraints defined in \eqref{eq:Benchmark_Path_2}, which establish strict safety limits, the penalty allows for transient deviations during manoeuvres. This dual-layer approach -constraining the aircraft within a feasible corridor while penalising deviations from the centerline- mimics real-world flight control laws. It allows the optimiser to prioritise control smoothness and actuator limits over rigid altitude tracking, resulting in a more physically realistic and numerically stable trajectory.
+    \item Secondly, the minimisation of altitude error relative to the reference altitude ($h_{ref}$) is implemented as a quadratic penalty to promote a level-flight profile. Unlike the path constraints defined in \eqref{eq:Benchmark_Path_2}, which establishes strict safety limits, the penalty allows for transient deviations during manoeuvres. This dual-layer approach -constraining the aircraft within a feasible corridor while penalising deviations from the centerline- mimics real-world flight control laws. It allows the optimiser to prioritise control smoothness and actuator limits over rigid altitude tracking, resulting in a more physically realistic and numerically stable trajectory.
 
     \begin{equation}
         J_{h} \coloneqq (\bar{h} - 1)^2 = \left(\frac{h - h_{ref}}{h_{ref}}\right)^2 = \left(\frac{-x_6 - h_{ref}}{h_{ref}}\right)^2
@@ -323,7 +323,7 @@ Once all penalties have been defined, the whole cost functional in its Lagrange 
 \end{equation}
 
 \section{NLP Formulation and Implementation via CasADi}
-After defining the whole \gls{ocp}, it is time to discretise the equations using trapezoidal rule to achieve a \gls{nlp} problem formulation and, therefore, implement it into CasADi blocks. To do the discretisation it is important to remark two different points: firstly, the dynamic constraints will be evaluated for the actual time-instant and next time-instant -following trapezoidal integration scheme- while initial constraints will be enforced at time-instant $t_0$ only, and path constraints will be enforced at each time-instant $t_k$ separately; referring to Lagrange cost term, it will be evaluated also following a trapezoidal scheme. This leads to the following constraints, simple bounds and cost terms. It has to be pinpointed that, in this case, end-time is known and, therefore, time-step is defined as $\Delta t = t_f / (N-1)$, where N is the number of collocation points -or nodes-. Moreover, its implementation in CasADi has to follow the statements done in section \ref{sec:CasADi}, which means to create state and control, constraints and simple bounds vectors as large as the number of states and control variables per node -seven (7) states plus two (2) controls, per node-
+After defining the whole \gls{ocp}, it is time to discretise the equations using trapezoidal rule to achieve a \gls{nlp} problem formulation and, therefore, implement it into CasADi blocks. To do the discretisation it is important to remark two different points: firstly, the dynamic constraints will be evaluated for the actual time-instant and next time-instant -following trapezoidal integration scheme- while initial constraints will be enforced at time-instant $t_0$ only, and path constraints will be enforced at each time-instant $t_k$ separately; referring to Lagrange cost term, it will be evaluated also following a trapezoidal scheme. This leads to the following constraints, simple bounds and cost terms. It has to be highlighted that, in this case, end-time is known and, therefore, time-step is defined as $\Delta t = t_f / (N-1)$, where N is the number of collocation points -or nodes-. Moreover, its implementation in CasADi has to follow the statements done in section \ref{sec:CasADi}, which means to create state and control, constraints and simple bounds vectors as large as the number of states and control variables per node -seven (7) states plus two (2) controls, per node-
 
 \begin{equation}
     \begin{aligned}
@@ -367,8 +367,8 @@ After defining the whole \gls{ocp}, it is time to discretise the equations using
 
 \begin{equation}
     \begin{aligned}
-        \mathbf{w}_{lb} & \coloneqq \mathbf{1}_{N} \otimes \mathbf{lbx} \\
-        \mathbf{w}_{ub} & \coloneqq \mathbf{1}_{N} \otimes \mathbf{ubx}
+        \mathbf{w}_{lb} & \coloneqq \mathbf{1}_{N} \otimes \mathbf{x_{lb}} \\
+        \mathbf{w}_{ub} & \coloneqq \mathbf{1}_{N} \otimes \mathbf{x_{ub}}
     \end{aligned}
     \label{eq:Benchmark_NLP_Bounds}
 \end{equation}
@@ -429,10 +429,10 @@ The algorithm that has been implemented to solve the \gls{nlp} problem using \gl
 \end{algorithmic}
 \end{algorithm}
 
-\section{Results}
+\section{Numerical Simulation}
 The following simulation has been done for the initial states indicated in the table below, which summarises the \textit{Simulation.json} for benchmark problem. The aircraft used for this simulation has been the \gls{uav} Flyox, which parameters can be seen on appendix \ref{app:AircraftParameters} table \ref{tab:Flyox_Parameters}. In addition, the simulation has been performed with 150 collocation points -or nodes- for a end-time of 600 s.
 
-As can be seen on figure \ref{fig:Benchmark_STATES}, the generated trajectory is a level-flight cruise trajectory for 600 s, leading the \gls{uav} to a distance of 30 km when flying at 50 m/s -or 100 kts-. States seem typical for a level-flight since flight path angle is null ($\gamma \approx 0$) and there are no apparent oscillations on altitude. Mass decreases as fuel is consumed, and velocity is mantained at target velocity. Moreover, figure \ref{fig:Benchmark_CONTROLS} shows the \gls{tps} and elevator deflection ($\delta_{e}$) trim points. Elevator deflection, which is positive-defined as trailing edge goes down -if the aircarft does pitch down-, shows a trim point that compensates the natural tendency of Flyox, which is a pitch up moment due to its positive $C_{m_0}$. It has to be pinpointed that the end value for states is abrupt and increases due to minor changes on controls.
+As can be seen on figure \ref{fig:Benchmark_STATES}, the generated trajectory is a level-flight cruise trajectory for 600 s, leading the \gls{uav} to a distance of 30 km when flying at 50 m/s -or 100 kts-. States seem typical for a level-flight since flight path angle is null ($\gamma \approx 0$) and there are no apparent oscillations on altitude. Mass decreases as fuel is consumed, and velocity is mantained at target velocity. Moreover, figure \ref{fig:Benchmark_CONTROLS} shows the \gls{tps} and elevator deflection ($\delta_{e}$) trim points. Elevator deflection, which is positive-defined as trailing edge goes down -if the aircarft picthes down-, shows a trim point that compensates the natural tendency of Flyox, which is a pitch up moment due to its positive $C_{m_0}$. It has to be highlighted that the end value for states is abrupt and increases due to minor changes on controls. This abrupt end is caused by the absence of terminal cost, the solver stops caring about the trajectories once the end-time is reached.
 
 \begin{table}[H]
     \centering
@@ -466,15 +466,15 @@ As can be seen on figure \ref{fig:Benchmark_STATES}, the generated trajectory is
     \label{fig:Benchmark_CONTROLS}
 \end{figure}
 
-\section{Addition of the Free-End Condition}
+\section{Extension to Free-End Condition}
 Next step in \gls{ocp} formulation is to set the free-end condition to the problem stated before. Free-end condition implies adding end-time ($t_f$) as a control variable and to let the solver compute its value as part of the dynamic constraints, path constraints -if needed specific end-time conditions- and as part of the cost functional -at this point, terminal cost or Mayer term, has to be remembered-. 
 
 To do so, the following section includes the modification on the \gls{nlp} formulation and on the implementation made. Afterwards, the results of the state and control trajectories for a free-end condition will be presented.
 
-\subsection{NLP formulation and implementation}
-As said before, end-time participates in all trapezoidal schemes -so it participates in all dynamic equations-, can participate as path constraints when a terminal state condition is set and, participates into the cost functional implicitly at running cost, because there is also a trapezoidal scheme integrated, and explicitly as a terminal cost. In this case, it would be implemented as both implicit and explicit forms into cost functional. 
+\subsection*{NLP formulation and implementation}
+As said before, end-time participates in all trapezoidal schemes -so it participates in all dynamic equations-, can participate as path constraints when a terminal state condition is set and, participates into the cost functional implicitly at running cost, because there is also a trapezoidal scheme integrated, and explicitly as a terminal cost. In this case, it will be implemented as both implicit and explicit forms into cost functional. 
 
-Firstly, the state and control vector will incorporate a unique symbolic term or control variable that will refer to the final time ($t_F$). It would also have lower and upper bounds associated, so the modification rests like this:
+Firstly, the state and control vector will incorporate a unique symbolic term or control variable that will refer to the final time ($t_F$). It will also have lower and upper bounds associated, so the modification rests like this:
 
 \begin{equation}
     \mathbf{w} \coloneqq 
@@ -494,7 +494,7 @@ Firstly, the state and control vector will incorporate a unique symbolic term or
     \label{eq:Benchmark_Plus_NLP_w}
 \end{equation}
 
-Secondly, the constraints could add some path constraints referring to final state conditions. Those, would only be evaluated at final node N. In this case, the following equations have been added to the path constraints block of constraints as they indicate the minimum and maximum distance to perform the level-flight cruise trajectory -the expressions are also expressed along to previous path constraints and integrated with all \gls{nlp} constraints vector-. 
+Secondly, the constraints could add some path constraints referring to final state conditions. Those would only be evaluated at final node N. In this case, the following equations have been added to the path constraints block of constraints as they indicate the minimum and maximum distance to perform the level-flight cruise trajectory -the expressions are also expressed along to previous path constraints and integrated with all \gls{nlp} constraints vector, see previous section-. 
 
 \begin{equation}
     \mathbf{h}_{dist} \coloneqq 
@@ -530,14 +530,14 @@ Secondly, the constraints could add some path constraints referring to final sta
     \label{eq:Benchmark_Plus_NLP_g}
 \end{equation}
 
-Next, the cost functional integrates terminal cost term, only applies to end-time, and running cost term, corrected by adding $t_F$ and restringing the problem to $N-1$ time-intervals with a fixed value of nodes, since time-step is defined as $\Delta t = 1 / (N-1)$.
+Next, the cost functional integrates terminal cost term, which only applies to end-time, and running cost term, corrected by adding $t_F$ and restringing the problem to $N-1$ time-intervals with a fixed value of nodes, since time-step is defined as $\Delta t = 1 / (N-1)$.
 
 \begin{equation}
     J(\mathbf{w}) \coloneqq \frac{\Delta t \cdot t_F}{2}\sum_{k=0}^{N-1} \left(L^k + L^{k+1}\right) + w_{t_F} \cdot t_F
     \label{eq:Benchmark_Plus_Cost}
 \end{equation}
 
-Eventually, the \gls{nlp} problem can be defined properly using almost CasADi notation before presenting the scheme algorithm so solve it using \gls{ipopt}. 
+Eventually, the \gls{nlp} problem can be defined properly using almost CasADi notation before presenting the scheme algorithm to solve it using \gls{ipopt}. 
 
 \begin{equation}
     \begin{aligned}
@@ -578,8 +578,8 @@ Eventually, the \gls{nlp} problem can be defined properly using almost CasADi no
 \end{algorithmic}
 \end{algorithm}
 
-\subsection{Results}
-For the free-end simulation, the parameters from table \ref{tab:Benchmark_Parameters} remain unchanged except from the definition of a lower-bound $t_{F,lb} =  600\ s$ and $t_{F, ub} = 800\ s$ for end-time control variable. What is more, a penalty weight on terminal cost for end-time has been added with a 0.5 value, in order to see if there are relevant differences.
+\subsection*{Numerical simulation}
+For the free-end simulation, the parameters from table \ref{tab:Benchmark_Parameters} remain unchanged except from the definition of a lower-bound $t_{F,lb} =  600\ s$ and $t_{F, ub} = 800\ s$ for end-time control variable. What is more, a penalty weight on terminal cost for end-time has been added with a 0.5 value, in order to see if there are relevant differences. The rest of the weights have been maintained as indicated in table \ref{tab:Benchmark_Parameters}.
 
 \begin{figure}[H]
     \centering
@@ -595,7 +595,7 @@ For the free-end simulation, the parameters from table \ref{tab:Benchmark_Parame
     \label{fig:Benchmark_Plus_CONTROLS}
 \end{figure}
 
-As can be spotted on previous figures, there are no eye-sight differences between the state trajectories from this case with the previous benchmark case. That is because the problem is, in essentia, the same. However, it can be pinpointed that endpoint of both state and control trajectories are slightly smoother and continuous. That minor change is consequence of adding free-end condition with a penalty weight in terminal cost because the optimiser can seek a better adjustment, reducing end-time. This reduction translates into a slightly modification of end states and controls which produce a bit of pitch down -invaluable in the flight path- that consume a bit of more fuel. Nonetheless, the important change has been produced in cost objective graph, which has increased due to terminal cost pressence -its profile is similar because running cost has not changed- and time computation reduction. This increase is unnoticeable in states or controls because the problem is a simple validation problem; however, this could provoke huge differences in more realistic scenarios because the optimiser could not minimise properly the cost functional when terminal cost is present and, therefore, it could lead to appreciable differences in states or controls.
+As can be spotted on previous figures, there are no eye-sight differences between the state trajectories from this case with the previous benchmark case. That is because the problem is, in essentia, the same. However, it can be emphasised that endpoint of both state and control trajectories are slightly smoother and continuous. That minor change is consequence of adding free-end condition with a penalty weight in terminal cost because the optimiser can seek a better adjustment, reducing end-time. This reduction translates into a slight modification of end states and controls which produce a bit of pitch down -invaluable in the flight path- that consume a bit of more fuel. Nonetheless, the important change has been produced in cost objective graph, which has increased due to terminal cost pressence -its profile is similar because running cost has not changed- and time computation reduction. This increase is unnoticeable in states or controls because the problem is a simple validation problem; however, this could provoke huge differences in more realistic scenarios because the optimiser could not minimise properly the cost functional when terminal cost is present and, therefore, it could lead to appreciable differences in states or controls.
 
 \begin{figure}[H]
     \centering
