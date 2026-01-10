@@ -23,11 +23,11 @@ In essence, the \gls{oct} responds the need to solve continuous time optimisatio
 
 The \gls{nlp} problem is defined as function $f(x)$ that has to be optimised subject to a set of constraints $g(x)$. At this point, it has to be mentioned that any \gls{nlp} problem goes through three different phases, which are applicable to the \gls{ocp} or any optimisation problem. 
 
-The first phase is modelling, which is, in fact, a mathematical description of a dynamic system through simple equations that allow future state predictions of a system thanks to a given set of control variables. In essence, $x$ is composed by $y$ and $u$; while state variables $y_i(t)$ are the variables that describe system conditions at a given time, control variables $u_i(t)$ are the variables that can be manipulated through time because they have an influence on the system. In other words, state variables are consequence of the control variables -e.g for a flight trajectory, the position and velocity of the aircraft would be the state variables for a set of different control variables as could be the \gls{aoa} or the \gls{tps}-. 
+The first phase is modelling, which is, in fact, a mathematical description of a dynamic system through simple equations that allow future state predictions of a system thanks to a given set of control variables. In essence, $x$ is composed by $y$ and $u$; while state variables $y_i(t)$ are the variables that describe system conditions at a given time, control variables $u_i(t)$ are the variables that can be manipulated through time because they have an influence on the system. In other words, state variables are consequence of the control variables -e.g for a flight trajectory, the position of the aircraft is the state variable for the \gls{tps} control variable-. 
 
 Secondly, the restrictions have to be applied to the system in the form of equality or inequality constraints to describe its physical or operational limitations. In addition, the admissible trajectory and admissible control are defined, what means that state and control variables satisfy the restrictions within all time domain, respectively -later will be referred to as simple bounds-. 
 
-Third and last phase is optimisation, which means the maximisation or minimisation of the cost function or functional associated with the system while complying with all the constraints and bounds set for a determined optimisation criteria. For example, in the brachistochrone problem introduced before, there are several feasible paths between points A and B, but only the cycloidal path complies with the minimum time optimisation criteria \cite{Bernoulli1696}.
+Third and last phase is optimisation, which means the maximisation or minimisation of the cost function or functional associated with the system while complying with all the constraints and bounds set for a determined optimisation criteria. For example, in the brachistochrone problem introduced before only the cycloidal path complies with the minimum time optimisation criteria \cite{Bernoulli1696}.
 
 It has to be highlightedthat the \gls{ocp} is a n-dimensional interpretation of the \gls{nlp} because state and control variables are time-continuous functions and, therefore, the problem's objective is to find the $n_k$-dimensional vector of state functions $y_k(t)$ and control functions $u_k(t)$ that optimise a determined functional $F(y,u)$.
 
@@ -212,27 +212,25 @@ The \gls{kkt} conditions are stationarity, complementary slackness, primal feasa
 \end{itemize}
 
 \begin{equation}
-    z _{i} \geq 0
+    z _{i} \geq 0.
     \label{eq:KKT_Dual_Inf}
 \end{equation}
 
 On its part, the transversality conditions are the boundary conditions for the co-state variables $\lambda$. They are a necessary condition for optimisation in state free-end problems, which means that there is no end known for the trajectory. These transversality conditions can be defined as the existence of a n-vectorial function of the co-state variables $\lambda (t)$ and a m-vectorial function $\nu (t)$ such that the Hamiltonian function $ H(\lambda,\nu,t)$, see equation \eqref{eq:Hamiltonian}, can be defined like in a boundary value problem in his canonical form with \gls{ode}s in all time domain $t_{0} \leq t\leq t_f$ \cite{Stryk1992}\cite{Leonard1992}.
 
 \begin{equation}
-    H(\lambda ,\nu ,t)\coloneqq\lambda ^{T} f+\nu ^{T} g
+    H(y,u,\lambda ,t)\coloneqq L(y,u,t)+\lambda ^{T} g(y,u,t)
     \label{eq:Hamiltonian}
 \end{equation}
 
 Once the Hamiltonian is defined, both transversality conditions can be found as the partial derivative of the Hamiltonian respect to the state variables and, the evaluation of the co-state at the end of time domain, respectively. Formulation has been adapted from \cite{Stryk1992} and \cite{Chachuat2009}.
 
 \begin{equation}
-    \dot{\lambda } \coloneqq \ -\frac{\partial H}{\partial y} =-\lambda ^{T}\frac{\partial f}{\partial y} -\nu ^{T}\frac{\partial g}{\partial y}
-    \label{eq:Transversality_1}
-\end{equation}
-
-\begin{equation}
-    \lambda (t_f) \coloneqq \frac{\partial \Phi }{\partial y(t_f)} -\nu ^{T}\frac{\partial \varphi }{\partial y(t_f)}
-    \label{eq:Transversality_2}
+    \begin{aligned}
+        & \dot{\lambda } \coloneqq \ -\frac{\partial H}{\partial y} =-\lambda ^{T}\frac{\partial f}{\partial y} -\nu ^{T}\frac{\partial g}{\partial y} ,\\
+        & \lambda (t_f) \coloneqq \frac{\partial \Phi }{\partial y(t_f)} -\nu ^{T}\frac{\partial \varphi }{\partial y(t_f)}.
+    \end{aligned}
+    \label{eq:Transversality}
 \end{equation}
 
 Eventually, the \gls{pmp} is a fundamental result of optimal control theory, since it stablishes the necessary conditions to find the optimal trajectory for control variables. In other words, this principle gives the strategy that has to be followed on the control variables, the ones that can be modified through time on the whole problem, to minimise the cost functional while the system dynamic and its constraints are satisfied. From \cite{ColumbiaPMP}, the \gls{pmp} is defined as the partial derivative of the Hamiltonian function respect to the control variables for a problem where $y(0) = y_{0} \in \mathcal{S}$ and $u(t)$, a contol trajectory, has a state trajectory $y(t)$  associated for a given dynamic system. Thus, a co-state trajectory $\lambda (t)$ can be defined as follows.
@@ -242,7 +240,7 @@ Eventually, the \gls{pmp} is a fundamental result of optimal control theory, sin
         & \dot{\lambda } (t)\coloneqq -\frac{\partial H}{\partial y}\\
         & \lambda (t_f)\coloneqq \frac{\partial \Phi }{\partial y(t_f)}\\
         \text{where} & \\
-        & H(y,u,\lambda ,t)\coloneqq L(y,u,t)+\lambda ^{T} f(y,u,t)\\
+        & H(y,u,\lambda ,t)\coloneqq L(y,u,t)+\lambda ^{T} g(y,u,t)\\
         & \dot{y} (t)\coloneqq f(y,u,t)
     \end{aligned}
     \label{eq:PMP_Problem}

@@ -314,7 +314,7 @@ Finally, the algorithm developed can be summarised in the following algorithm li
 
 \STATE \textbf{3. NLP Creation for STG1:} 
 \STATE \quad Formulate $\mathbf{w} \coloneqq [\mathbf{x}^0, \mathbf{u}^0, \dots, \mathbf{x}^{N}, \mathbf{u}^{N}, t_F]^\top \in \mathbb{R}^{9N+1}$.
-\STATE \quad Apply variable bounds: $\mathbf{w} \in \left[ \begin{smallmatrix} \mathbf{1}_{N} \otimes \mathbf{lbx} \\ t_{F,min} \end{smallmatrix} \right], \left[ \begin{smallmatrix} \mathbf{1}_{N} \otimes \mathbf{ubx} \\ t_{F,max} \end{smallmatrix} \right]$.
+\STATE \quad Apply variable bounds: $\mathbf{w} \in \left[ \begin{smallmatrix} \mathbf{1}_{N} \otimes \mathbf{x}_{lb} \\ t_{F,min} \end{smallmatrix} \right], \left[ \begin{smallmatrix} \mathbf{1}_{N} \otimes \mathbf{x}_{ub}\\ t_{F,max} \end{smallmatrix} \right]$.
 \STATE \quad Compute trapezoidal Cost: $J(\mathbf{w}) = \frac{\Delta t \cdot t_F}{2}\sum_{k=0}^{N-1} (L^k + L^{k+1}) + w_{t_F} \cdot t_F$.
 \STATE \quad Evaluate scaled dynamics $\mathbf{d}^k$ and path constraints $\mathbf{h}^k$.
 \STATE \quad Stack constraints: $\mathbf{g}(\mathbf{w}) \coloneqq [\mathbf{d}^0, \dots, \mathbf{d}^{N-1}, \mathbf{h}^0, \dots, \mathbf{h}^N, \mathbf{\varphi}_0]^\top$.

@@ -254,7 +254,7 @@ At this point, the only remaining constraints are initial state conditions, whic
 Eventually, the simple bounds for each state and control variable have to be declared. The lower bounds and upper bounds are separated onto two different groups denoted by $\mathbf{x_{lb}}$ and $\mathbf{x_{ub}}$, respectively. They have been already denoted using state space notation.
 
 \begin{equation}
-    \mathbf{x_{lb}} \coloneqq 
+    \mathbf{x}_{lb}\coloneqq 
     \begin{bmatrix}
     u_{min} - x_1  \\
     w_{min} - x_2 \\
@@ -269,7 +269,7 @@ Eventually, the simple bounds for each state and control variable have to be dec
 \end{equation}
 
 \begin{equation}
-    \mathbf{x_{ub}} \coloneqq 
+    \mathbf{x}_{ub} \coloneqq 
     \begin{bmatrix}
     x_1 - u_{max}  \\
     x_2 - w_{max} \\
@@ -367,8 +367,8 @@ After defining the whole \gls{ocp}, it is time to discretise the equations using
 
 \begin{equation}
     \begin{aligned}
-        \mathbf{w}_{lb} & \coloneqq \mathbf{1}_{N} \otimes \mathbf{x_{lb}} \\
-        \mathbf{w}_{ub} & \coloneqq \mathbf{1}_{N} \otimes \mathbf{x_{ub}}
+        \mathbf{w}_{lb} & \coloneqq \mathbf{1}_{N} \otimes \mathbf{x}_{lb}\\
+        \mathbf{w}_{ub} & \coloneqq \mathbf{1}_{N} \otimes \mathbf{x}_{ub}
     \end{aligned}
     \label{eq:Benchmark_NLP_Bounds}
 \end{equation}
@@ -388,7 +388,7 @@ Next, the \gls{nlp} problem can be defined properly using almost CasADi notation
     \begin{aligned}
         & \min_{\mathbf{w}} \quad J(\mathbf{w}) \coloneqq \frac{\Delta t}{2}\sum_{k=0}^{N-1} \left(L^k + L^{k+1}\right) \\
         & \text{s.t.} \quad \mathbf{g}(\mathbf{w}) \in [\mathbf{g}_{lb}, \mathbf{g}_{ub}] \\
-        & \quad \quad \mathbf{w} \in [\mathbf{1}_{N} \otimes \mathbf{lbx}, \ \mathbf{1}_{N} \otimes \mathbf{ubx}] \\
+        & \quad \quad \mathbf{w} \in [\mathbf{1}_{N} \otimes \mathbf{x}_{lb}, \ \mathbf{1}_{N} \otimes \mathbf{x}_{ub}] \\
     \end{aligned}
     \label{eq:Benchmark_NLP}
 \end{equation}
@@ -405,7 +405,7 @@ The algorithm that has been implemented to solve the \gls{nlp} problem using \gl
 
 \STATE \textbf{2. Assemble Decision Vector:} 
 \STATE \quad Formulate $\mathbf{w} \coloneqq [\mathbf{x}^0, \mathbf{u}^0, \dots, \mathbf{x}^{N}, \mathbf{u}^{N}]^\top \in \mathbb{R}^{9N}$.
-\STATE \quad Apply variable bounds: $\mathbf{w} \in [\mathbf{1}_{N} \otimes \mathbf{lbx}, \ \mathbf{1}_{N} \otimes \mathbf{ubx}]$.
+\STATE \quad Apply variable bounds: $\mathbf{w} \in [\mathbf{1}_{N} \otimes \mathbf{x}_{lb}, \ \mathbf{1}_{N} \otimes \mathbf{x}_{ub}]$.
 
 \FOR{$i = 0$ \TO $N_{iter}$}
     \STATE \textbf{3. Evaluate NLP Functions:}
@@ -483,12 +483,12 @@ Firstly, the state and control vector will incorporate a unique symbolic term or
     \end{bmatrix}, \quad
     \mathbf{w}_{lb} \coloneqq 
     \begin{bmatrix}
-        \mathbf{1}_{N} \otimes \mathbf{lbx} \\
+        \mathbf{1}_{N} \otimes \mathbf{x}_{lb}\\
         t_{F,min}
     \end{bmatrix}, \quad
     \mathbf{w}_{ub} \coloneqq 
     \begin{bmatrix}
-        \mathbf{1}_{N} \otimes \mathbf{ubx} \\
+        \mathbf{1}_{N} \otimes \mathbf{x}_{ub} \\
         t_{F,max}
     \end{bmatrix}
     \label{eq:Benchmark_Plus_NLP_w}
@@ -544,8 +544,8 @@ Eventually, the \gls{nlp} problem can be defined properly using almost CasADi no
         & \min_{\mathbf{w}} \quad J(\mathbf{w}) \coloneqq \frac{\Delta t \cdot t_F}{2}\sum_{k=0}^{N-1} \left(L^k + L^{k+1}\right) + w_{t_F} \cdot t_F \\
         & \text{s.t.} \quad \mathbf{g}(\mathbf{w}) \in [\mathbf{g}_{lb}, \mathbf{g}_{ub}] \\
         & \quad \quad \mathbf{w} \in \left[ 
-        \begin{bmatrix} \mathbf{1}_{N} \otimes \mathbf{lbx} \\ t_{F,min} \end{bmatrix}, 
-        \begin{bmatrix} \mathbf{1}_{N} \otimes \mathbf{ubx} \\ t_{F,max} \end{bmatrix} 
+        \begin{bmatrix} \mathbf{1}_{N} \otimes \mathbf{x}_{lb} \\ t_{F,min} \end{bmatrix}, 
+        \begin{bmatrix} \mathbf{1}_{N} \otimes \mathbf{x}_{ub} \\ t_{F,max} \end{bmatrix} 
         \right]
     \end{aligned}
     \label{eq:Benchmark_Plus_NLP}
@@ -560,7 +560,7 @@ Eventually, the \gls{nlp} problem can be defined properly using almost CasADi no
 \STATE \quad Construct initial guess $\mathbf{w}_0$ using $\mathbf{w}_{trim}$ and linear propagation.
 \STATE \textbf{2. Assemble Decision Vector:} 
 \STATE \quad Formulate $\mathbf{w} \coloneqq [\mathbf{x}^0, \mathbf{u}^0, \dots, \mathbf{x}^{N}, \mathbf{u}^{N}, t_F]^\top \in \mathbb{R}^{9N+1}$.
-\STATE \quad Apply variable bounds: $\mathbf{w} \in \left[ \begin{smallmatrix} \mathbf{1}_{N} \otimes \mathbf{lbx} \\ t_{F,min} \end{smallmatrix} \right], \left[ \begin{smallmatrix} \mathbf{1}_{N} \otimes \mathbf{ubx} \\ t_{F,max} \end{smallmatrix} \right]$.
+\STATE \quad Apply variable bounds: $\mathbf{w} \in \left[ \begin{smallmatrix} \mathbf{1}_{N} \otimes \mathbf{x}_{lb}\\ t_{F,min} \end{smallmatrix} \right], \left[ \begin{smallmatrix} \mathbf{1}_{N} \otimes \mathbf{x}_{ub}\\ t_{F,max} \end{smallmatrix} \right]$.
 \FOR{$i = 0$ \TO $N_{iter}$}
     \STATE \textbf{3. Evaluate NLP Functions:}
     \STATE \quad Compute trapezoidal Cost: $J(\mathbf{w}) = \frac{\Delta t \cdot t_F}{2}\sum_{k=0}^{N-1} (L^k + L^{k+1}) + w_{t_F} \cdot t_F$.
