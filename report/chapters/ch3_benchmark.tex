@@ -6,7 +6,7 @@ This chapter introduces the reader to flight dynamics using a level-cruise fligh
 Firstly, the flight dynamics for a general \gls{uav} flight trajectory has to be introduced and described. Since the aim of the project is \gls{oct} development for firefighting manoeuvres, some hypotheses have to be applied. The hypotheses considered are the follwoing ones.
 
 \begin{itemize}
-    \item A bidimensional (2D) trajectory without tridimensional (3D) effects will be considered. Thus, all lateral stability and movements will be neglected and only longitudinal static stability will be considered -i.e $\mathcal{L} = 0$, $\mathcal{N}=0$, $\Phi = 0$, $\dot{\Phi} = 0$, $\Psi = 0$, $\dot{\Psi} = 0$, $y = const.$ and $\dot{y} = 0$-.
+    \item A bidimensional (2D) trajectory without tridimensional (3D) effects will be considered. Thus, all lateral stability and movements will be neglected and only longitudinal static stability will be considered -i.e no roll or yaw moments$\mathcal{L} = 0$, $\mathcal{N}=0$; no roll or roll rate $\Phi = 0$, $\dot{\Phi} = 0$; no yaw or yaw rate $\Psi = 0$, $\dot{\Psi} = 0$; no movement outside vertical plane $y = const.$ and $\dot{y} = 0$-.
     \item All dynamic modes are neglected and only static stability phenomena will be included.
     \item The atmospheric conditions shall be modelled using International Standard Atmoshpere (ISA) model. Only static bidimensional (2D) wind field would be considered, which means that free-stream velocity has to be constant in all domain.
     \item Bidimensional (2D) level-flight cruise trajectory implies a null flight path angle and null variation of the same -i.e $\gamma = 0$ and $\dot{\gamma} = 0$ -.
@@ -16,7 +16,7 @@ Once the hypostheses have been written, its time to introduce the flight dynamic
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\linewidth]{images/benchmark_fbd.png}
+    \includegraphics[width=0.7\linewidth]{images/benchmark_fbd.jpg}
     \caption{Free-body diagram of an aircraft bidimensional (2D) flight trajectory, involving forces and moments. Own source.}
     \label{fig:Benchmark}
 \end{figure}
@@ -430,9 +430,9 @@ The algorithm that has been implemented to solve the \gls{nlp} problem using \gl
 \end{algorithm}
 
 \section{Numerical Simulation}
-The following simulation has been done for the initial states indicated in the table below, which summarises the \textit{Simulation.json} for benchmark problem. The aircraft used for this simulation has been the \gls{uav} Flyox, which parameters can be seen on appendix \ref{app:AircraftParameters} table \ref{tab:Flyox_Parameters}. In addition, the simulation has been performed with 150 collocation points -or nodes- for a end-time of 600 s.
+The following simulation has been done for the initial states indicated in the table below, which summarises the \textit{Simulation.json} for benchmark problem. The aircraft used for this simulation has been the \gls{uav} Flyox I, which parameters can be seen on appendix \ref{app:AircraftParameters}, table \ref{tab:Flyox_Parameters}. In addition, the simulation has been performed with 150 collocation points -or nodes- for a end-time of 600 s.
 
-As can be seen on figure \ref{fig:Benchmark_STATES}, the generated trajectory is a level-flight cruise trajectory for 600 s, leading the \gls{uav} to a distance of 30 km when flying at 50 m/s -or 100 kts-. States seem typical for a level-flight since flight path angle is null ($\gamma \approx 0$) and there are no apparent oscillations on altitude. Mass decreases as fuel is consumed, and velocity is mantained at target velocity. Moreover, figure \ref{fig:Benchmark_CONTROLS} shows the \gls{tps} and elevator deflection ($\delta_{e}$) trim points. Elevator deflection, which is positive-defined as trailing edge goes down -if the aircarft picthes down-, shows a trim point that compensates the natural tendency of Flyox, which is a pitch up moment due to its positive $C_{m_0}$. It has to be highlighted that the end value for states is abrupt and increases due to minor changes on controls. This abrupt end is caused by the absence of terminal cost, the solver stops caring about the trajectories once the end-time is reached.
+As can be seen on figure \ref{fig:Benchmark_STATES}, the generated trajectory is a level-flight cruise trajectory  resulting in a distance of 30 km when flying at 50 m/s -or 100 kts-. States seem typical for a level-flight since flight path angle is null ($\gamma \approx 0$) and there are no apparent oscillations on altitude. Mass decreases as fuel is consumed, and velocity is mantained at target velocity. Moreover, figure \ref{fig:Benchmark_CONTROLS} shows the \gls{tps} and elevator deflection ($\delta_{e}$) trim points. Elevator deflection, which is positive-defined as trailing edge goes down -if the aircarft picthes down-, shows a trim point that compensates the natural tendency of Flyox, which is a pitch up moment due to $C_{m_0}\geq 0$. What is more, the end value for states is abrupt and increases due to minor changes on controls. This abrupt end is caused by the absence of terminal cost: the solver stops caring about the trajectories once the end-time is reached.
 
 \begin{table}[H]
     \centering

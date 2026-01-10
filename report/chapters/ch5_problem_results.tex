@@ -2,7 +2,7 @@
 Next chapter includes a comprehensive analysis of the results obtained for the different simulations performed. Since the firefighting manoeuvre is a multi-parameter optimisation problem, only a few set of parameter variants have been tried. Then, a full review has been done and some remarks of the results have been added.
 
 \section{Simulations}
-In order to compare a few things among the different simulations, it is important to describe a base set of parameters to stablish later comparisons. The following table summarises the value of the parameters set on \textit{Simulation.json}. The aircraft used for this simulation and the following ones has been the \gls{uav} Flyox, which parameters can be seen on appendix \ref{app:AircraftParameters} table \ref{tab:Flyox_Parameters}. In addition, all simulations have been performed with 150 collocation points -or nodes-, which are enough to capture water-discharge stage.
+In order to compare a few things among the different simulations, it is important to describe a base set of parameters to stablish later comparisons. The following table summarises the value of the parameters set on \textit{Simulation.json}. The aircraft used for this simulation and the following ones has been the \gls{uav} Flyox I, which parameters can be seen on appendix \ref{app:AircraftParameters} table \ref{tab:Flyox_Parameters}. In addition, all simulations have been performed with 150 collocation points -or nodes-, which are enough to capture water-discharge stage.
 
 \begin{table}[H]
     \centering
@@ -104,7 +104,7 @@ As can be seen on previous figures, there are no noticeable changes on state tra
     \label{fig:STATES_Comparison}
 \end{figure}
 
-\subsection{Case 2: restrictive distances and end-time penalties}
+\subsection{Case 2: restrictive distances and end-time penalties}\label{sec:case2}
 Next simulation tries to see which are the effects when entry and exit distances -i.e $R_{ENTRY}$ and $R_{EXIT}$- are constrained to the limit. From base case it has been seen that minimum needed distances for a $f_{TP} = 0.35$ are $R_{ENTRY} = 6500 m$ and $R_{EXIT} = 9800  m$, respectively. This simulation uses this values to restrict the movement and adds penalty weight to end-time penalisations -$w_{t_{F,1}} = w_{t_{F,2}} = w_{t_{F,3}} = 0.5$-. 
 
 As can be seen on the graph below, the huge change respect to base case appears during climb stage. In this case, it seems that transitions between stages are more abrupt in terms of velocity ($V$), flight path angle ($\gamma$) and angle-of-attack ($\alpha$) although stationary moudulus seems equal in all cases. The reason after this behaviour is \gls{tps} control, which experiments a quick change between stage 2 and stage 3. Specifically, it reaches upper bound, holds for a few seconds and then drops until it reaches trim point. Nevertheless, this peak was not present on base case and, the transition was smoother -see figure \ref{fig:Base_CONTROLS}-. In terms of elevator deflection, both trajectories from base case and this case are similar. Eventually, it could be said that pull-up manoeuvre at the begin of stage 3 is agressive because of the addition of an end-time penalisation -the solver aims to reach exit point (\gls{ep}) the fastest-.
@@ -217,7 +217,7 @@ Fourth case has been set to determine which is the effect on setting all running
     \centering
     \begin{subfigure}[b]{\textwidth}
         \centering
-        \includesvg[width=0.9\textwidth]{images/manoeuvre/STATES_CASE1_STG2}
+        \includesvg[width=0.9\textwidth]{images/manoeuvre/STATES_CASE1_STG2_ZOOM}
         \caption{Case 1. All running costs.}
     \end{subfigure}
     
@@ -225,7 +225,7 @@ Fourth case has been set to determine which is the effect on setting all running
     
     \begin{subfigure}[b]{\textwidth}
         \centering
-        \includesvg[width=0.9\textwidth]{images/manoeuvre/STATES_CASE4_STG2}
+        \includesvg[width=0.9\textwidth]{images/manoeuvre/STATES_CASE4_STG2_ZOOM}
         \caption{Case 4. Terminal cost only.}
     \end{subfigure}
     \caption{Comparison between state trajectories during discharge stage for different costs. Own source.}
@@ -258,8 +258,8 @@ Finally, all the observations made during the set of simulations have been summa
 
 \begin{itemize}
     \item Firstly, a disturbance has been created by reducing or extending the discharge's duration. It has been observed that this system is apparently robust to instantaneous disturbances; nonetheless, control is softer and smoother in nominal conditions, which also means flatter state trajectories. Certainly, states are a consequence of control variables, as shown in figures \ref{fig:CONTROLS_Comparison} and \ref{fig:STATES_Comparison}.
-    \item Secondly, end-time penalisation in the terminal cost has been added. It must be noted that if an end-time is free and it is penalised in the terminal cost term, the resulting trajectories would be faster, but manoeuvres will be aggressive. In other words, demanding a terminal cost composed only of an end-time penalty leads to spiky control trajectories -regardless of penalising control rates- and, therefore, to less smooth state trajectories. For the simulation set, velocity and flight path angle trajectories have been the most affected. However, it is worth noting that introducing an end-time penalty provokes a more stable stationary state.
+    \item Secondly, end-time penalisation in the terminal cost has been added. It must be noted that if an end-time is free and it is penalised in the terminal cost term, the resulting trajectories would be faster, but manoeuvres will be aggressive. In other words, demanding a terminal cost composed only of an end-time penalty leads to spiky control trajectories -regardless of penalising control rates- and, therefore, to less smooth state trajectories. For the simulation set, velocity and flight path angle trajectories have been the most affected. However, it is worth noting that introducing an end-time penalty provokes a more stable stationary state, as can be seen on section \ref{sec:case2}.
     \item Next, desired states -or conditions- and control rates have been unpenalised, while certain restriction margins have been eased. This led to smoother and flatter control trajectories and continuous state trajectories as a consequence. The reason behind this is a greater optimality margin in \gls{kkt} conditions, especially in the dual feasibility condition. In other words, the solver finds solutions which can move away from the wall of constraints while generating greater optimal control. Nevertheless, it must be said that this has been possible because, at the same time as the control parameters' effect was reduced in the cost functional, constraint margins were larger; if the margins had not been extended, the optimality margin would probably have decreased. See section \ref{sec:case3} for more detail.
-    \item Fourthly, a simulation with only terminal cost has been carried out. Specifically, it has been observed that this could lead to a bang-bang control situation if the problem is more constrained—because constraint margins were amplified for the simulation. If a bang-bang control situation arose, the states would begin to oscillate, as can be seen in \ref{fig:CONTROLS_Comparison_Case4}.
-    \item Lastly, a constraints-only scheme has been tried, revealing that longer manoeuvres are the optimal solution found; nevertheless, manoeuvres are far from smooth because the control becomes aggressive: the solver has no motivation to reduce or smooth control. In other words, the absence of a cost objective gives a feasible solution for the problem but it is not optimal—it could be 'any' solution complying with the constraints and limits of the problem.
+    \item Fourthly, a simulation with only terminal cost has been carried out. Specifically, it has been observed that this could lead to a bang-bang control situation if the problem is more constrained—because constraint margins were amplified for the simulation. If a bang-bang control situation arose, the states would begin to oscillate, as can be seen in figure \ref{fig:CONTROLS_Comparison_Case4}.
+    \item Lastly, a constraints-only scheme has been tried, revealing that longer manoeuvres are the optimal solution found; nevertheless, manoeuvres are far from smooth because the control becomes aggressive: the solver has no motivation to reduce or smooth control. In other words, the absence of a cost objective gives a feasible solution for the problem but it is not optimal—it could be 'any' solution complying with the constraints and limits of the problem. For more detail see figures \ref{fig:Case5_STATES} and \ref{fig:Case5_CONTROLS}.
 \end{itemize}

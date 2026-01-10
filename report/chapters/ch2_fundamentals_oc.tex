@@ -16,20 +16,20 @@ In essence, the \gls{oct} responds the need to solve continuous time optimisatio
 \begin{equation}
     \begin{aligned}
         \max_{x\in \mathbb{R}^{n}} \ \  & f(x)\\
-        \text{s.t.} \ \  & g(x)\leq 0\
+        \text{s.t.} \ \  & g_j(x)\leq 0\ \text{ for each } j = 1, \dotsc, m
     \end{aligned}
     \label{eq:NLP}
 \end{equation}
 
-The \gls{nlp} problem is defined as function $f(x)$ that has to be optimised subject to a set of constraints $g(x)$. At this point, it has to be mentioned that any \gls{nlp} problem goes through three different phases, which are applicable to the \gls{ocp} or any optimisation problem. 
+The \gls{nlp} problem is defined as function $f(x)$ that has to be optimised subject to a set of constraints $g_j(x)$. At this point, it has to be mentioned that any \gls{nlp} problem goes through three different phases, which are applicable to the \gls{ocp} or any optimisation problem. 
 
-The first phase is modelling, which is, in fact, a mathematical description of a dynamic system through simple equations that allow future state predictions of a system thanks to a given set of control variables. In essence, $x$ is composed by $y$ and $u$; while state variables $y_i(t)$ are the variables that describe system conditions at a given time, control variables $u_i(t)$ are the variables that can be manipulated through time because they have an influence on the system. In other words, state variables are consequence of the control variables -e.g for a flight trajectory, the position of the aircraft is the state variable for the \gls{tps} control variable-. 
+The first phase is modelling, which is, in fact, a mathematical description of a dynamic system through simple equations that allow future state predictions of a system thanks to a given set of control variables. In essence, $x$ is composed by $y$ and $u$; while state variables $y_i(t)$ are the variables that describe system conditions at a given time, control variables $u_i(t)$ are the variables that can be manipulated through time because they have an influence on the system. In other words, state variables are consequence of the control variables -e.g for a flight trajectory, the position of the aircraft could be the state variable for the \gls{tps} control variable-. 
 
 Secondly, the restrictions have to be applied to the system in the form of equality or inequality constraints to describe its physical or operational limitations. In addition, the admissible trajectory and admissible control are defined, what means that state and control variables satisfy the restrictions within all time domain, respectively -later will be referred to as simple bounds-. 
 
 Third and last phase is optimisation, which means the maximisation or minimisation of the cost function or functional associated with the system while complying with all the constraints and bounds set for a determined optimisation criteria. For example, in the brachistochrone problem introduced before only the cycloidal path complies with the minimum time optimisation criteria \cite{Bernoulli1696}.
 
-It has to be highlightedthat the \gls{ocp} is a n-dimensional interpretation of the \gls{nlp} because state and control variables are time-continuous functions and, therefore, the problem's objective is to find the $n_k$-dimensional vector of state functions $y_k(t)$ and control functions $u_k(t)$ that optimise a determined functional $F(y,u)$.
+It has to be highlighted that the \gls{ocp} is a n-dimensional interpretation of the \gls{nlp} because state and control variables are time-continuous functions and, therefore, the problem's objective is to find the $n_k$-dimensional vector of state functions $y_k(t)$ and control functions $u_k(t)$ that optimise a determined functional $F(y,u)$.
 
 \subsection{Mathematical formulation}
 The \gls{ocp} is defined as follows.
@@ -216,14 +216,14 @@ The \gls{kkt} conditions are stationarity, complementary slackness, primal feasa
     \label{eq:KKT_Dual_Inf}
 \end{equation}
 
-On its part, the transversality conditions are the boundary conditions for the co-state variables $\lambda$. They are a necessary condition for optimisation in state free-end problems, which means that there is no end known for the trajectory. These transversality conditions can be defined as the existence of a n-vectorial function of the co-state variables $\lambda (t)$ and a m-vectorial function $\nu (t)$ such that the Hamiltonian function $ H(\lambda,\nu,t)$, see equation \eqref{eq:Hamiltonian}, can be defined like in a boundary value problem in his canonical form with \gls{ode}s in all time domain $t_{0} \leq t\leq t_f$ \cite{Stryk1992}\cite{Leonard1992}.
+On its part, the transversality conditions are the boundary conditions for the co-state variables $\lambda$. They are a necessary condition for optimisation in state free-end problems, which means that there is no end known for the trajectory. These transversality conditions can be defined as the existence of a n-vectorial function of the co-state variables $\lambda (t)$ such that the Hamiltonian function $ H(y,u,\lambda,t)$, see equation \eqref{eq:Hamiltonian}, can be defined like following equation in all time domain $t_{0} \leq t\leq t_f$ \cite{Stryk1992}\cite{Leonard1992}:
 
 \begin{equation}
-    H(y,u,\lambda ,t)\coloneqq L(y,u,t)+\lambda ^{T} g(y,u,t)
+    H(y,u,\lambda ,t)\coloneqq L(y,u,t)+\lambda ^{T} f(y,u,t)
     \label{eq:Hamiltonian}
 \end{equation}
 
-Once the Hamiltonian is defined, both transversality conditions can be found as the partial derivative of the Hamiltonian respect to the state variables and, the evaluation of the co-state at the end of time domain, respectively. Formulation has been adapted from \cite{Stryk1992} and \cite{Chachuat2009}.
+Once the Hamiltonian is defined, both transversality conditions can be found as the partial derivative of the Hamiltonian respect to the state variables and, the evaluation of the co-state at the end of time domain, respectively. Formulation has been adapted from \cite{Stryk1992} and \cite{Chachuat2009} and using consistent notation from the \gls{ocp}.
 
 \begin{equation}
     \begin{aligned}
@@ -240,7 +240,7 @@ Eventually, the \gls{pmp} is a fundamental result of optimal control theory, sin
         & \dot{\lambda } (t)\coloneqq -\frac{\partial H}{\partial y}\\
         & \lambda (t_f)\coloneqq \frac{\partial \Phi }{\partial y(t_f)}\\
         \text{where} & \\
-        & H(y,u,\lambda ,t)\coloneqq L(y,u,t)+\lambda ^{T} g(y,u,t)\\
+        & H(y,u,\lambda ,t)\coloneqq L(y,u,t)+\lambda ^{T} f(y,u,t)\\
         & \dot{y} (t)\coloneqq f(y,u,t)
     \end{aligned}
     \label{eq:PMP_Problem}
@@ -283,7 +283,7 @@ Below there is a general formulation of an optimisation problem followed by its 
 The barrier method transforms the inequality constraints of a problem into a sequence of equality-constrained subproblems that are easier to solve numerically. Once the barrier problem is defined, the IPOPT algorithm computes an approximate solution for a fixed value of the barrier parameter $\mu$. This process is iterative: for each $\mu_j$, the algorithm seeks a local solution to the subproblem. Upon reaching a specific inner tolerance, the barrier parameter is decreased, and the previous solution is used as a 'warm start' for the next subproblem.
 
 \begin{equation}
-    \mathcal{L}(x,\lambda,z) \coloneqq f(x) + c(x)^T\lambda - x^Tz
+    \mathcal{L}(x,\lambda,z) \coloneqq f(x) + h(x)^T\lambda - x^Tz
     \label{eq:BP_Lagrangian}
 \end{equation}
 
@@ -292,13 +292,13 @@ Following the Lagrangian, the \gls{kkt} conditions can be defined for the barrie
 \begin{subequations}
     \begin{align}
         \nabla f(x) + \nabla c(x) \lambda - z &= 0 \\
-        c(x) &= 0 \\
+        h(x) &= 0 \\
         XZe - \mu e &= 0
     \end{align}
     \label{eq:BP_KKT}
 \end{subequations}
 
-At this point, optimality error of the barrier problem can be defined using \gls{kkt} conditions. The error is the ratio that would be used to compare with tolerances to determine if local and global optimal points are reached. Full definition of the error and its terms can be found on \cite{Waechter2004}. As said before, the \gls{ipopt} is based on a primal-dual framework that iterates between variables and multipliers by solving a linearised set of the \gls{kkt} conditions via Newton's method. This method allows to find gradients for each variable or multiplier, as stated below -with $A_k \coloneqq \nabla c(x_k)$, $W_k \coloneqq \nabla_{xx} \mathcal{L}(x_k,\lambda_k,z_k)$ and k the inner-loop counter-.
+At this point, optimality error of the barrier problem can be defined using \gls{kkt} conditions. The error is the ratio that would be used to compare with tolerances to determine if local and global optimal points are reached. Full definition of the error and its terms can be found on \cite{Waechter2004}. As said before, the \gls{ipopt} is based on a primal-dual framework that iterates between variables and multipliers by solving a linearised set of the \gls{kkt} conditions via Newton's method. This method allows to find gradients for each variable or multiplier, as stated below -with $A_k \coloneqq \nabla h(x_k)$, $W_k \coloneqq \nabla_{xx} \mathcal{L}(x_k,\lambda_k,z_k)$ and k the inner-loop counter-.
 
 \begin{equation}
     \begin{bmatrix}
@@ -313,7 +313,7 @@ At this point, optimality error of the barrier problem can be defined using \gls
     \end{pmatrix} = -
     \begin{pmatrix}
     \nabla f(x_k) + A_k^T \lambda_k - z_k \\
-    c(x_k) \\
+    h(x_k) \\
     X_k Z_k e - \mu_j e
     \end{pmatrix}
     \label{eq:BP_Newton_System}

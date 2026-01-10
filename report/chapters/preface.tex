@@ -11,6 +11,7 @@ The scope of this project \underline{will} include:
     \item A mathematical formulation of firefighting manoeuvres under varying mass and heavy operational constraints.
     \item \gls{nlp} implementation and solution of the formulated problem above.
     \item A specialised water-drop trajectory planner algorithm.
+    \item A budget and an impact analysis of the whole project.
 \end{itemize}
 
 Therefore, this project \underline{will not} include:
@@ -18,26 +19,26 @@ Therefore, this project \underline{will not} include:
     \item Physical design or manufacturing of the \gls{uav} and its payloads.
     \item Real-world flight testing or hardware tests.
     \item Modification of low-level autopilot firmware or inner-loop control laws.
-    \item High-fidelity fluid modelling of the water-drop print or fire plume behaviour.
+    \item High-fidelity fluid modelling of the water-drop print or the fire plume behaviour.
     \item Formal certification -e.g. RTCA DO-178C- or cybersecurity regulatory assessment.
     \item Full migration of the Python codebase to C/C++ or embedded deployment.
 \end{itemize}
 
-Eventually, the main objective of this thesis is to develop an algorithm capable of computing the optimal flight trajectory for a \gls{uav} operating in firefighting missions. The algorithm is designed to generate restricted trajectories within a vertical plane while considering multiple operational constraints. Specifically, the algorithm aims to determine the descent path during the water-drop manoeuvre and the subsequent ascent trajectory, ensuring feasability and safety. This thesis and project has been developed in collaboration with Singular Aircraft, as part of an extracurricular internship agreement along with other tasks.
+Eventually, the main objective of this thesis is to develop an algorithm capable of computing the optimal flight trajectory for a \gls{uav} operating in firefighting missions. The algorithm is designed to generate restricted trajectories within a vertical plane while considering multiple operational constraints. Specifically, the algorithm aims to determine the descent path during the water-drop manoeuvre and the subsequent ascent trajectory, ensuring feasability and safety. 
 
 \section*{Motivation and Justification}
 \addcontentsline{toc}{section}{Motivation and Justification}
 In recent years, the increasing occurrence and intensity of wildfires have highlighted the urgent need for more effective and autonomous aerial firefighting solutions \cite{FAOFireStats2023}. From a global perspective, enhancing the autonomy and operational efficiency of \gls{uas} for emergency response represents a major step toward safer and more sustainable fire suppression operations. In particular, fixed-wing \gls{uav}s offer significant advantages over rotary-wing systems, including greater range, endurance, and payload capacity, making them suitable for long-duration firefighting missions in hazardous environments \cite{UAVFireSuppression2022}.
 
-This project is developed within the framework of an extracurricular internship at Singular Aircraft, an aerospace company founded by Luis Carrillo with over twelve years of experience in the design, manufacture, operation, and certification of \gls{rpa} and \gls{uav}. The company has designed and fully developed the Flyox, currently the largest civilian fixed-wing \gls{uav} designed for firefighting, humanitarian aid, and surveillance missions \cite{SingularWeb}. Several previous projects and studies carried out within the company have focused on the improvement of the Flyox's flight systems, payload integration, and mission control capabilities. Building upon those developments, this thesis contributes to the new generation of the Flyox platform, which aims to introduce advanced levels of autonomy for critical mission phases.
+This project is developed within the framework of an extracurricular internship at Singular Aircraft, an aerospace company founded by Luis Carrillo with over twelve years of experience in the design, manufacture, operation, and certification of \gls{rpa} and \gls{uav}. The company has designed and fully developed the Flyox, currently the largest civilian fixed-wing \gls{uas} designed for firefighting, humanitarian aid, and surveillance missions \cite{SingularWeb}. Several previous projects and studies carried out within the company have focused on the improvement of the Flyox's flight systems, payload integration, and mission control capabilities. Building upon those developments, this thesis contributes to the new generation of the Flyox platform, which aims to introduce advanced levels of autonomy for critical mission phases.
 
 Specifically, this new generation seeks to enable the aircraft to perform the water-drop manoeuvre autonomously, reducing operator workload and enabling missions under low-visibility or high-risk conditions. To achieve this, the aircraft must be equipped with a trajectory computation algorithm capable of planning and re-planning the discharge trajectory in real time, considering aircraft dynamics, environmental constraints, and safety margins, without human validation. This capability represents a fundamental step toward full operational autonomy in firefighting \gls{uas}.
 
 The current work focuses on developing such an algorithm through optimal control and numerical optimisation techniques. The approach aims to fill existing gaps in trajectory generation software for \gls{uas} by integrating non-standard operational constraints such as \gls{dem}, \gls{nfz}, atmospheric conditions, and aircraft operational limits. Although not all these constraints will be implemented in the present study, they define the broader framework in which this research is embedded.
-
+\newpage
 From a critical standpoint, the proposed approach offers clear advantages: it enables a higher degree of autonomy, improved safety by reducing human involvement in dangerous environments, and adaptability to real-time mission changes. However, potential limitations include the computational cost of real-time optimisation, the need for accurate environmental data, and the complexity of integrating such systems into certified aircraft architectures. Despite these challenges, this research represents an essential step toward achieving the next level of autonomy in firefighting \gls{uas} operations.
 
-From my viewpoint as the author of the thesis and the project, I was thrilled to be able to contribute to a real project, such as Singular Aircraft and the guidance of manoeuvres in the Flyox \gls{uav}, as well as to learn about a subject that was new to me and develop my skills in it.
+From my viewpoint as the author of the thesis and the project, I was thrilled to be able to contribute to a real project, such as Singular Aircraft and the guidance of manoeuvres in the Flyox \gls{uas}, as well as to learn about a subject that was new to me and develop my skills in it.
 
 \section*{Methodological Approach}
 \addcontentsline{toc}{section}{Methodological Approach}
